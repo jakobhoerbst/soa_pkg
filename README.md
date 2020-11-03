@@ -20,6 +20,9 @@ textwithpictures
 
 
 # ros commands: 
+
+`roslaunch soa_pkg project.launch` - startet project
+
 `rqt`       - startet rqt explorer, damit kann man topics anzeigen, schreiben und zb. auf cmd vel schreiben. 
 
 `gzclient`  - öffnet gazebo (wenn die gui zb. im launchfile deaktiviert ist) 
