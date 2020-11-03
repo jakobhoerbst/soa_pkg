@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
         <include file="$(find gazebo_ros)launch/empty_world.launch" >
-            <arg name="world_name" value="$(find SOA_pkg)/maps/Maze.world" />
+            <arg name="world_name" value="$(find soa_pkg)/maps/Maze.world" />
             <arg name="paused" value="false" />
             <arg name="use_sim_time" value="true" />
             <arg name="gui" value="false" /> <!-- kann mit gzclient auch per hand geoeffnet werden-->
