@@ -2,6 +2,13 @@
 
 note: visual studio code
 
+next steps: 
+_turn 90deg in relation to distances 
+_align turtle to maze wall 
+_intersection detection
+
+
+
 */
 
 
@@ -26,13 +33,13 @@ float   dt = 0.2;
 
 float scanResult[360]; 
 bool newLidar = false;
+float minWidth = 3.5;    
 
-
-
-
-
-
-
+ros::Publisher drivePub;
+bool hold = false; 
+float toCloseTreshold = 0.2;
+float vel = 0.3; 
+float dirDistance[4] = {0,0,0,0}; 
 
 
 #define Mx 4
@@ -68,6 +75,7 @@ bool inRange = 0;
 int correctionCounter = 0; 
 
 ros::Publisher  publisherKFPrediction;
+
 ros::Publisher  publisherEKFLocalization;
 ros::Time       oldTime, newTime;
 
@@ -162,14 +170,12 @@ void predictionFunction()
 ////////////////////////////      measure width     ////////////////////////////
 float measureWidth()
 {
-    float width[180];
-    float minWidth = 3.5;    
 
     for(int i = 0; i < 180; i++){
         if(minWidth > scanResult[i]+scanResult[i+180])
             minWidth = scanResult[i]+scanResult[i+180];
     }
-
+    
     return minWidth; 
 }
 
@@ -263,9 +269,35 @@ void localizationFunction()
 
 }
 
+////////////////////////////       directions       ////////////////////////////
+// calculates mean distances to fall for front, right, back, left side of turtle
+void directions(){
+    
+    for(int i = 0; i < 4; i++)
+        dirDistance[i] = 0;
+     
+    int range = 10; 
+
+    for(int j = 0; j < 4; j++){
+        for(int i = j*90-range; i < j*90+range; i++){
+            if(i<0)
+                dirDistance[j] += scanResult[i+360];
+            else
+                dirDistance[j] += scanResult[i];
+        } 
+        dirDistance[j] = dirDistance[j]/(2*range);
+    }
+
+    cout << "_____dirDistance_____" << endl; 
+    cout << "front: " << dirDistance[0]; 
+    cout << "\tright: " << dirDistance[1];
+    cout << "\tback: " << dirDistance[2];
+    cout << "\tleft: " << dirDistance[3] << endl;
+}
+
+
 ////////////////////////////////  callbackOdometry  ////////////////////////////////
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
-//void callbackOdometry(const geometry_msgs::Twist::ConstPtr& odometry)
 {
 
     position[0] = odometry -> pose.pose.position.x; 
@@ -274,53 +306,53 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
     position[0] = odometry -> twist.twist.linear.x; 
     position[1] = odometry -> twist.twist.linear.y;
 */
-    //u_t[0][0] = odometry -> linear.x; 
-    //u_t[1][0] = odometry -> angular.z;
-    //cout << " odom update" << endl; 
 }
 
 ////////////////////////////////  callbackLiDAR  ////////////////////////////////
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
-    vector<int>   angle;
+
     newLidar = true; 
     //cout << "lidar update" << endl; 
     inRange = 0; 
   
-    for(int i = 0; i < 360; i++){
-        //if( (LiDAR->ranges[i] > 0.1) && (LiDAR->ranges[i] < 3.5) ){
-        //    inRange = 1; 
-
-
-            //scanResult.push_back(LiDAR->ranges[i]);
-            scanResult[i] = (LiDAR->ranges[i]);
-
-        //    if( i >= 180 )
-        //        angle.push_back(i-360);
-        //    else               
-        //        angle.push_back(i);
-        
-    }
-/*
-    if(inRange){
-        float       meanAngle = 0;
-        float       meanDistance = 0;    
-
-        meanAngle = accumulate(angle.begin(), angle.end(), 0.0)/angle.size();
-        meanDistance = accumulate(distance.begin(), distance.end(), 0.0)/distance.size();
-
-    //    if(meanAngle > 360)
-    //        meanAngle -= 360;
-        float meanAngleRad = (float)meanAngle*PI/180; 
-
-        z_t[0][0] = meanDistance; 
-        z_t[1][0] = meanAngleRad;
-        z_t[2][0] = 1;
-    } 
-*/
+    for(int i = 0; i < 360; i++)
+        scanResult[359-i] = (LiDAR->ranges[i]);
 
 }
 
+////////////////////////////////   distToWall   ////////////////////////////////
+// finds angle to closest wall
+int distToWall(){
+
+    int closestWallAlign; 
+    float closestWallDist = 3.5; 
+
+    for(int i = 0; i < 360; i++){
+
+            if(closestWallDist > scanResult[i]){ 
+                closestWallDist = scanResult[i]; 
+                closestWallAlign = i; 
+            }
+           
+    }
+  
+    return closestWallAlign; 
+}
+
+geometry_msgs::Twist drive(ros::Publisher &drive){
+
+    geometry_msgs::Twist driveVal;
+
+    if(scanResult[0] > minWidth/2) 
+        driveVal.linear.x = vel;
+    else
+        driveVal.linear.x = 0; 
+            
+    drive.publish(driveVal);
+
+    return driveVal; 
+}
 
 int main(int argc, char **argv ) {
 
@@ -336,37 +368,30 @@ int main(int argc, char **argv ) {
     subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     
-
-/*
-    printOdometry = 1; 
-
-    newTime = ros::Time::now();
-
-
-
-    publisherKFPrediction = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("KFPrediction", 100);
-    publisherEKFLocalization = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("EKFLocalization", 100);
-
-    my_tm1[0][0] = 0; 
-    my_tm1[1][0] = 0;
-    my_tm1[2][0] = 0;
-    
-    Q_t = Q_t*(3*pow(10,-2));   //jakobnode 10⁻6 lt. Angabe
-
-  
-*/
+    drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
 
     while(ros::ok())
     {
 
-//        predictionFunction();
-//        localizationFunction();
+        if(newLidar){
+            cout << "POSITION x: " << position[0] << "\ty: " << position[1] << endl; 
+            cout << "WIDHT of maze: " << measureWidth() << "m" << endl; 
+            cout << "move.linear.x: " << drive(drivePub).linear.x << endl;
+            cout << "closest wall at " << distToWall() << "° \tdistance: " << scanResult[distToWall()] << endl; 
+            cout << endl; 
+            newLidar = false; 
+            directions(); 
+        }
 
-    if(newLidar){
-        cout << "POSITION x: " << position[0] << "\ty: " << position[1] << endl; 
-        cout << "WIDHT of maze: " << measureWidth() << "m" << endl << endl; ; 
-        newLidar = false; 
-    }
+   // drive(drivePub);
+        /*
+        if(hold) 
+            driveVal.linear.x = 0; 
+        else 
+            driveVal.linear.x = 10; 
+        drivePub.publish(driveVal);
+        */
+
 /*
     if(newLidar){
         cout << " - scanResult - " << endl; 
