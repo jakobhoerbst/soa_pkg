@@ -21,6 +21,20 @@ using namespace std;
 
 #define PI 3.14159265359 
 
+double position[2] = {0,0};
+float   dt = 0.2;
+
+float scanResult[360]; 
+bool newLidar = false;
+
+
+
+
+
+
+
+
+
 #define Mx 4
 #define My -2
 
@@ -50,7 +64,7 @@ cv::Mat_<float> q           = cv::Mat::eye(1,1,CV_64FC1);
 
 bool printOdometry = 0; 
 bool inRange = 0; 
-float dt = 0.025;
+
 int correctionCounter = 0; 
 
 ros::Publisher  publisherKFPrediction;
@@ -145,8 +159,29 @@ void predictionFunction()
 
 }
 
+////////////////////////////      measure width     ////////////////////////////
+float measureWidth()
+{
+    float width[180];
+    float minWidth = 3.5;    
 
-////////////////////////////////  localizationFunction  ////////////////////////////////
+    for(int i = 0; i < 180; i++){
+        if(minWidth > scanResult[i]+scanResult[i+180])
+            minWidth = scanResult[i]+scanResult[i+180];
+    }
+
+    return minWidth; 
+}
+
+////////////////////////////   crossing detection   ////////////////////////////
+void crossingDetection()
+{
+
+
+}
+
+
+////////////////////////////       printNode        ////////////////////////////
 void localizationFunction()
 {
     
@@ -232,31 +267,41 @@ void localizationFunction()
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 //void callbackOdometry(const geometry_msgs::Twist::ConstPtr& odometry)
 {
-    u_t[0][0] = odometry -> twist.twist.linear.x; 
-    u_t[1][0] = odometry -> twist.twist.angular.z;
+
+    position[0] = odometry -> pose.pose.position.x; 
+    position[1] = odometry -> pose.pose.position.y;
+/*
+    position[0] = odometry -> twist.twist.linear.x; 
+    position[1] = odometry -> twist.twist.linear.y;
+*/
     //u_t[0][0] = odometry -> linear.x; 
     //u_t[1][0] = odometry -> angular.z;
+    //cout << " odom update" << endl; 
 }
 
 ////////////////////////////////  callbackLiDAR  ////////////////////////////////
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
     vector<int>   angle;
-    vector<float> distance; 
-
+    newLidar = true; 
+    //cout << "lidar update" << endl; 
     inRange = 0; 
   
     for(int i = 0; i < 360; i++){
-        if( (LiDAR->ranges[i] > 0.1) && (LiDAR->ranges[i] < 3.5) ){
-            inRange = 1; 
-            distance.push_back(LiDAR->ranges[i]);
-            if( i >= 180 )
-                angle.push_back(i-360);
-            else               
-                angle.push_back(i);
-        }
-    }
+        //if( (LiDAR->ranges[i] > 0.1) && (LiDAR->ranges[i] < 3.5) ){
+        //    inRange = 1; 
 
+
+            //scanResult.push_back(LiDAR->ranges[i]);
+            scanResult[i] = (LiDAR->ranges[i]);
+
+        //    if( i >= 180 )
+        //        angle.push_back(i-360);
+        //    else               
+        //        angle.push_back(i);
+        
+    }
+/*
     if(inRange){
         float       meanAngle = 0;
         float       meanDistance = 0;    
@@ -272,26 +317,32 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
         z_t[1][0] = meanAngleRad;
         z_t[2][0] = 1;
     } 
+*/
+
 }
 
 
 int main(int argc, char **argv ) {
 
-    ros::init(argc, argv, "hoerbstnode");
+    ros::init(argc, argv, "DFSnode");
     ros::NodeHandle nh("~"); 
     
-    cout << "hoerbstprogramm" << endl;
-/*
-    printOdometry = 1; 
-
-    newTime = ros::Time::now();
+    cout << "- PROJECT 2 -" << endl;
 
     ros::Subscriber subscriberOdometry; 
     ros::Subscriber subscriberLiDAR;
     
     //subscriberOdometry  = nh.subscribe("cmd_vel", 10, callbackOdometry);
-    subscriberOdometry  = nh.subscribe("odom", 100, callbackOdometry);
-    subscriberLiDAR     = nh.subscribe("scan", 100, callbackLiDAR);
+    subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
+    subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
+    
+
+/*
+    printOdometry = 1; 
+
+    newTime = ros::Time::now();
+
+
 
     publisherKFPrediction = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("KFPrediction", 100);
     publisherEKFLocalization = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("EKFLocalization", 100);
@@ -302,16 +353,37 @@ int main(int argc, char **argv ) {
     
     Q_t = Q_t*(3*pow(10,-2));   //jakobnode 10⁻6 lt. Angabe
 
+  
+*/
+
     while(ros::ok())
     {
 
-        predictionFunction();
-        localizationFunction();
+//        predictionFunction();
+//        localizationFunction();
 
-        ros::spinOnce();
-        ros::Duration(dt).sleep();
-        
-    }    
+    if(newLidar){
+        cout << "POSITION x: " << position[0] << "\ty: " << position[1] << endl; 
+        cout << "WIDHT of maze: " << measureWidth() << "m" << endl << endl; ; 
+        newLidar = false; 
+    }
+/*
+    if(newLidar){
+        cout << " - scanResult - " << endl; 
+        for(int i = 0; i < 360; i ++) 
+            cout << "angle: " << i << "°\tdistance: " << scanResult[i] << "m" << endl; 
+        cout << endl; 
+        newLidar = false; 
+        cout << "width of maze: " << measureWidth() << "m" << endl; 
+        cin.get();
+    }
 */
+
+
+  //      ros::Duration(dt).sleep();
+        ros::spinOnce();
+        
+    }  
+
 return 0; 
 }
