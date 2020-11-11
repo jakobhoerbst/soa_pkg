@@ -19,3 +19,5 @@ Size Waffle: 281 x 306 x 141 mm
 
 Lidar Messung:
 Breite Gang: X 
+
+Size Maze: 12 x 12 Kästchen
