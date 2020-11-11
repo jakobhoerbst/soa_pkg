@@ -140,7 +140,7 @@ include_directories(
 add_executable(hoerbst src/hoerbst.cpp)
 target_link_libraries(hoerbst ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-add_executable(hoerbst src/ahoi.cpp)
+add_executable(ahoi src/ahoi.cpp)
 target_link_libraries(ahoi ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 ## Add cmake target dependencies of the library
