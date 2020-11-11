@@ -110,6 +110,16 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+
+find_package(OpenCV REQUIRED)
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES hoerbst
+#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  DEPENDS system_lib
+)
+
 ###########
 ## Build ##
 ###########
@@ -119,12 +129,19 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/soa_pkg.cpp
 # )
+
+add_executable(hoerbst src/hoerbst.cpp)
+target_link_libraries(hoerbst ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+add_executable(hoerbst src/ahoi.cpp)
+target_link_libraries(ahoi ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
