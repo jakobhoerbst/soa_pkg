@@ -8,27 +8,65 @@ _align turtle to maze wall
 _intersection detection
 
 
+sources: 
+Quarternion - Euler
+https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
 */
 
 
 #include "ros/ros.h"
-#include "opencv2/core.hpp"
+//#include "opencv2/core.hpp"
 #include <iostream>
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
 #include "sensor_msgs/LaserScan.h"
-#include "geometry_msgs//PoseWithCovarianceStamped.h"
+#include "sensor_msgs/Imu.h"
+
+
+//#include "geometry_msgs//PoseWithCovarianceStamped.h"
 #include <vector>
-#include <iterator>
+//#include <iterator>
 #include <math.h>
-#include <numeric>                                                              
+//#include <numeric>                                                              
 
 using namespace std;
 
-#define PI 3.14159265359 
+const double PI = 3.14159265359;
+
+struct odom_callback{
+    double posX; 
+    double posY; 
+    double linX;
+    double angZ; 
+
+};
+odom_callback odom; 
+
+struct nodestruct{
+    double x; 
+    double y; 
+
+    double dir[4]; //r, d, l, u
+
+    int move; 
+};
+
+
+
+
+const float width = 1.25; 
+const float wallThickness = 0.15; 
+const float pathWidth = 1.1; 
+
+static double closed = 0.8; 
+static double current = 0.8;
+static double visited  = 0.4;
+
+
 
 double position[2] = {0,0};
+
 float   dt = 0.2;
 
 float scanResult[360]; 
@@ -38,51 +76,67 @@ float minWidth = 3.5;
 ros::Publisher drivePub;
 bool hold = false; 
 float toCloseTreshold = 0.2;
-float vel = 0.3; 
+float vel = 0.1; 
 float dirDistance[4] = {0,0,0,0}; 
 
+//driveOneField: 
+float   DOF_currentLin = 0; 
+int     DOF_state = 0; 
+bool    DOF_next = false; 
 
-#define Mx 4
-#define My -2
+//IMU 
+double   initOrientation = 0; 
 
-//// KF ////
-cv::Mat_<float> A           = cv::Mat::eye(3,3,CV_64FC1);
-cv::Mat_<float> B           = cv::Mat::zeros(3,2,CV_64FC1);
-cv::Mat_<float> u_t         = cv::Mat::zeros(2,1,CV_64FC1);
-cv::Mat_<float> my_t_pred   = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> my_tm1      = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> my_t        = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> sig_t_pred  = cv::Mat::zeros(3,3,CV_64FC1);
-cv::Mat_<float> sig_tm1     = cv::Mat::zeros(3,3,CV_64FC1);
-cv::Mat_<float> sig_t       = cv::Mat::zeros(3,3,CV_64FC1);
-cv::Mat_<float> R           = cv::Mat::zeros(3,3,CV_64FC1);
+//drive
+bool    DRI_nextDecission = false;
 
-//// EKF ///
-cv::Mat_<float> z_t         = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> z_t_hat     = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> delta_z_t   = cv::Mat::zeros(3,1,CV_64FC1);
-cv::Mat_<float> H_t         = cv::Mat::zeros(3,3,CV_64FC1); 
-cv::Mat_<float> delta       = cv::Mat::zeros(2,1,CV_64FC1);
-cv::Mat_<float> K_t         = cv::Mat::zeros(3,3,CV_64FC1);
-cv::Mat_<float> Q_t         = cv::Mat::eye(3,3,CV_64FC1);
-cv::Mat_<float> I           = cv::Mat::eye(3,3,CV_64FC1);
-cv::Mat_<float> q           = cv::Mat::eye(1,1,CV_64FC1);
+//orientation 
+double  orientation = 0; 
+
+//start routine
+bool    startupComplete = false; 
 
 
-bool printOdometry = 0; 
-bool inRange = 0; 
-
-int correctionCounter = 0; 
-
-ros::Publisher  publisherKFPrediction;
-
-ros::Publisher  publisherEKFLocalization;
 ros::Time       oldTime, newTime;
 
-struct Quaternion
-{
+struct Quaternion {
     double w, x, y, z;
 };
+
+struct EulerAngles {
+    double roll, pitch, yaw;
+};
+
+
+////////////////////////////       prototypes       ////////////////////////////
+void printNode(vector<nodestruct> currentNode);
+void angleTo360(double &angle);
+
+
+
+EulerAngles ToEulerAngles(Quaternion q) {
+
+    EulerAngles angles;
+
+    // roll (x-axis rotation)
+    double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+    double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    angles.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+    // pitch (y-axis rotation)
+    double sinp = 2 * (q.w * q.y - q.z * q.x);
+    if (std::abs(sinp) >= 1)
+        angles.pitch = std::copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+    else
+        angles.pitch = std::asin(sinp);
+
+    // yaw (z-axis rotation)
+    double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+    double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    angles.yaw = std::atan2(siny_cosp, cosy_cosp);
+
+    return angles;
+}
 
 Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch (Y), roll (X)
 {
@@ -103,69 +157,6 @@ Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch
     return q;
 }
 
-void publisherFunction(cv::Mat_<float> my, cv::Mat_<float> sigma, string publishertopic){
-
-    Quaternion my_t_Q;
-    geometry_msgs::PoseWithCovarianceStamped prediction;  
-    geometry_msgs::PoseWithCovarianceStamped correction;  
-
-    my_t_Q = ToQuaternion(my[2][0],0,0);
-
-    prediction.header.frame_id="odom";
-    prediction.pose.pose.position.x = my[0][0];  
-    prediction.pose.pose.position.y = my[1][0]; 
-    prediction.pose.pose.position.z = 0;   
-
-    prediction.pose.pose.orientation.x = my_t_Q.x;
-    prediction.pose.pose.orientation.y = my_t_Q.y;
-    prediction.pose.pose.orientation.z = my_t_Q.z;
-    prediction.pose.pose.orientation.w = my_t_Q.w;
-
-    prediction.pose.covariance[0] = sigma[0][0];
-    prediction.pose.covariance[1] = sigma[0][1];
-    prediction.pose.covariance[5] = sigma[0][2];
-    prediction.pose.covariance[6] = sigma[1][0];
-    prediction.pose.covariance[7] = sigma[1][1];
-    prediction.pose.covariance[11] = sigma[1][2];
-    prediction.pose.covariance[30] = sigma[2][0];
-    prediction.pose.covariance[31] = sigma[2][1];
-    prediction.pose.covariance[35] = sigma[2][2];
-    
-    if(publishertopic == "prediction")
-        publisherKFPrediction.publish(prediction);
-    else if(publishertopic == "correction")
-        publisherEKFLocalization.publish(prediction);
-
-}
-
-////////////////////////////////  predictionFunction  ////////////////////////////////
-void predictionFunction()
-{
-
-    cout << endl << "---- PREDICTION ----" << endl;
-
-    B[0][0] = dt*cos(my_tm1[2][0]);
-    B[1][0] = dt*sin(my_tm1[2][0]);
-    B[2][1] = dt;
-
-    my_t_pred = (A*my_tm1)+(B*u_t);
-    while(my_t_pred[2][0] > 2*PI) 
-        my_t_pred[2][0] -= 2*PI;
-
-    while(my_t_pred[2][0] < 0) 
-        my_t_pred[2][0] += 2*PI;
-
-    cout << "my_t_pred:\t" << my_t_pred[0][0] << ", " << my_t_pred[1][0] << ", " << my_t_pred[2][0] << endl;
-
-    R[0][0]=0.00001; R[1][1]=0.00001; R[2][2]=0.001;
-    sig_t_pred = A*sig_tm1*A.t()+R;
-
-    publisherFunction(my_t_pred, sig_t_pred, "prediction");
-
-    my_tm1 = my_t_pred;
-    sig_tm1 = sig_t_pred; 
-
-}
 
 ////////////////////////////      measure width     ////////////////////////////
 float measureWidth()
@@ -179,95 +170,25 @@ float measureWidth()
     return minWidth; 
 }
 
-////////////////////////////   crossing detection   ////////////////////////////
-void crossingDetection()
+//////////////////////////// intersection detection ////////////////////////////
+void intersectionDetection()
 {
-
-
-}
-
-
-////////////////////////////       printNode        ////////////////////////////
-void localizationFunction()
-{
-    
-    cout << endl << "---- LOCALIZATION ----" << endl;
-    cout << "inRange: " << inRange << endl;
-
-    if(inRange){
-        correctionCounter ++;
-
-                cout << "z_t:\t\t" << z_t[0][0] << ", " << z_t[1][0] << endl;
-
-        delta[0][0] = Mx - my_t_pred[0][0];
-        delta[1][0] = My - my_t_pred[1][0];
-
-                cout << "delta:\t\t" << delta[0][0] << ", " << delta[1][0] << endl;
-       
-        q = ( delta.t() )*delta;
-
-                cout << "q:\t\t" << q[0][0] << endl;  
-
-        z_t_hat[0][0] = sqrt(q[0][0]);
-
-        float theta4z_t_hat = 0;
-        if(my_t_pred[2][0] > PI)
-            theta4z_t_hat = my_t_pred[2][0] - (2*PI) ;
-        else 
-            theta4z_t_hat = my_t_pred[2][0];
-
-        z_t_hat[1][0] = atan2(delta[1][0], delta[0][0]) - theta4z_t_hat;
-        if(z_t_hat[1][0] < (-PI) )
-            z_t_hat[1][0] += 2*PI;
-        if(z_t_hat[1][0] >= (PI) ) 
-            z_t_hat[1][0] -= 2*PI;   
-
-        z_t_hat[2][0] = 1; 
-
-        cout << "z_t_hat:\t" << z_t_hat[0][0] << ", "<< z_t_hat[1][0] << ", "<< z_t_hat[2][0] << endl;
-  
-        // H_t
-        H_t[0][0] = -sqrt(q[0][0]) * delta[0][0];
-        H_t[0][1] = -sqrt(q[0][0]) * delta[1][0];
-        H_t[1][0] = delta[1][0];
-        H_t[1][1] = -delta[0][0];
-        H_t[1][2] = -1;
-
-        H_t = H_t * (1/q[0][0]);
-
-
-        cout << "H_t:\t\t" << H_t[0][0] << ", " << H_t[0][1] << ", " << H_t[0][2] << endl;
-        cout << "\t\t"   << H_t[1][0] << ", " << H_t[1][1] << ", " << H_t[1][2] << endl;
-        cout << "\t\t"   << H_t[2][0] << ", " << H_t[2][1] << ", " << H_t[2][2] << endl;
-
-        K_t = (sig_t_pred * (H_t.t())) * ((H_t * sig_t_pred * H_t.t() + Q_t).inv());
-
-        cout << "K_t:\t\t" << K_t[0][0] << ", " << K_t[0][1] << ", " << K_t[0][2] << endl;
-        cout << "\t\t"   << K_t[1][0] << ", " << K_t[1][1] << ", " << K_t[1][2] << endl;
-        cout << "\t\t"   << K_t[2][0] << ", " << K_t[2][1] << ", " << K_t[2][2] << endl;
-       
-        delta_z_t = z_t - z_t_hat;
-            if(z_t_hat[1][0] < (-PI) )
-                z_t_hat[1][0] += 2*PI;
-            if(z_t_hat[1][0] >= (PI) ) 
-                z_t_hat[1][0] -= 2*PI;
-
-        my_t = my_t_pred + K_t * (delta_z_t);
-        cout << "my_t:\t\t" << my_t[0][0] << ", " << my_t[1][0] << ", " << my_t[2][0] << endl;
-
-        sig_t = (I - K_t * H_t) * sig_t_pred;
-        cout << "sig_t:\t\t" << sig_t[0][0] << ", " << sig_t[0][1] << ", " << sig_t[0][2] << endl;
-        cout << "\t\t"   << sig_t[1][0] << ", " << sig_t[1][1] << ", " << sig_t[1][2] << endl;
-        cout << "\t\t"   << sig_t[2][0] << ", " << sig_t[2][1] << ", " << sig_t[2][2] << endl;
-
-        publisherFunction(my_t, sig_t, "correction");
-        my_tm1 = my_t;
-        sig_tm1 = sig_t;
-
-        //cin.get();    
+    int notAWall = 0; 
+    for(int i = 0; i < 4; i++){
+        if(dirDistance[i]>minWidth)
+            notAWall++; 
     }
 
+    if(notAWall>2){ 
+        cout << "intersection detected" << endl; 
+    
+    }
+
+
 }
+
+
+
 
 ////////////////////////////       directions       ////////////////////////////
 // calculates mean distances to fall for front, right, back, left side of turtle
@@ -300,12 +221,11 @@ void directions(){
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
 
-    position[0] = odometry -> pose.pose.position.x; 
-    position[1] = odometry -> pose.pose.position.y;
-/*
-    position[0] = odometry -> twist.twist.linear.x; 
-    position[1] = odometry -> twist.twist.linear.y;
-*/
+    odom.posX = odometry -> pose.pose.position.x; 
+    odom.posY = odometry -> pose.pose.position.y;
+    odom.linX = odometry -> twist.twist.linear.x; 
+    odom.angZ = odometry -> twist.twist.angular.z; 
+
 }
 
 ////////////////////////////////  callbackLiDAR  ////////////////////////////////
@@ -313,13 +233,87 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
 
     newLidar = true; 
-    //cout << "lidar update" << endl; 
-    inRange = 0; 
+   // inRange = 0; 
   
     for(int i = 0; i < 360; i++)
         scanResult[359-i] = (LiDAR->ranges[i]);
 
 }
+
+////////////////////////////////  callbackIMU   ////////////////////////////////
+void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
+{
+    
+    Quaternion q; 
+    EulerAngles e; 
+
+    q.w = IMU->orientation.w;
+    q.x = IMU->orientation.x;
+    q.y = IMU->orientation.y;
+    q.z = IMU->orientation.z;
+
+    e = ToEulerAngles(q);
+    orientation = (e.yaw*180.0)/PI;
+    angleTo360(orientation);
+    //cout << "orientation: " << (e.yaw*180)/PI << endl; 
+
+}
+////////////////////////////    get orientation     ////////////////////////////
+int getOrientation(){
+    cout << "orientation difference: " << orientation - initOrientation << endl; 
+    cout << "initial Orientation" << initOrientation << endl; 
+
+}
+
+void angleTo360(double &angle){
+    if(angle < 0) 
+        angle = -angle; 
+    else
+        angle = 360 - angle; 
+}
+
+
+////////////////////////////         scan           ////////////////////////////
+void scan(vector<nodestruct> &node){
+    cout << node[node.size()-1].x << endl; 
+    
+    for(int i = 0; i < 4; i++){
+        if(dirDistance[i] > pathWidth) 
+            node[node.size()-1].dir[i] = 0;
+        else 
+            node[node.size()-1].dir[i] = 1;
+    }
+
+    node[node.size()-1].x = odom.posX;
+    node[node.size()-1].y = odom.posY;
+    
+    node[node.size()-1].dir[2] = visited; // because we came from this direction
+    printNode(node);
+
+
+/*
+    node.dir[4] = mazescan.at<double>(node.y-2,node.x); 
+    node.dir[1] = mazescan.at<double>(node.y,node.x+2); 
+    node.dir[2] = mazescan.at<double>(node.y+2,node.x); 
+    node.dir[3] = mazescan.at<double>(node.y,node.x-2);   
+*/
+    //return node;
+}
+
+////////////////////////////       printNode        ////////////////////////////
+void printNode(vector<nodestruct> currentNode){
+
+    cout << "node: " << currentNode.size();
+    cout << "\tx: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
+    cout << "\ty: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
+    cout << "\tf: " << currentNode[currentNode.size()-1].dir[0] << 
+            "\tr: " << currentNode[currentNode.size()-1].dir[1] << 
+            "\tb: " << currentNode[currentNode.size()-1].dir[2] << 
+            "\tl: " << currentNode[currentNode.size()-1].dir[3] << 
+            "\tmove: " << currentNode[currentNode.size()-1].move << endl;
+
+}
+
 
 ////////////////////////////////   distToWall   ////////////////////////////////
 // finds angle to closest wall
@@ -340,22 +334,67 @@ int distToWall(){
     return closestWallAlign; 
 }
 
-geometry_msgs::Twist drive(ros::Publisher &drive){
+bool driveOneField(ros::Publisher &drive, int direction){
 
     geometry_msgs::Twist driveVal;
+    
+    switch(DOF_state)
+    {
+    case 0: 
+        DOF_currentLin = odom.linX; 
+        DOF_state++; 
+        break; 
+    case 1: 
+        if((odom.linX - DOF_currentLin) < pathWidth){
+            driveVal.linear.x = vel;
+            drive.publish(driveVal);
+            DOF_next = true; 
+        }
+        else{
+            driveVal.linear.x = 0;
+            drive.publish(driveVal);
+            intersectionDetection();
+            DOF_state ++; 
+            return 0; 
+        }
+        break; 
+    case 2: 
+        return 0; 
+        break; 
+    }
 
-    if(scanResult[0] > minWidth/2) 
-        driveVal.linear.x = vel;
-    else
-        driveVal.linear.x = 0; 
-            
-    drive.publish(driveVal);
-
-    return driveVal; 
+    return 1;
 }
 
+
+////////////////////////////////      DRIVE     ////////////////////////////////
+bool drive(ros::Publisher &drive){
+    
+    geometry_msgs::Twist driveVal;
+
+    if(scanResult[0] > pathWidth/2) 
+        //driveVal.linear.x = vel;
+        return driveOneField(drive, 0); 
+    else{
+        driveVal.linear.x = 0; 
+        drive.publish(driveVal);
+        DRI_nextDecission = true; 
+        intersectionDetection();
+        return 0; 
+    }        
+    
+    return 1;   
+}
+
+
+
+
+////////////////////////////////      main      ////////////////////////////////
+////////////////////////////////      main      ////////////////////////////////
+////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
 
+    //////////////// ROS ////////////////
     ros::init(argc, argv, "DFSnode");
     ros::NodeHandle nh("~"); 
     
@@ -363,46 +402,77 @@ int main(int argc, char **argv ) {
 
     ros::Subscriber subscriberOdometry; 
     ros::Subscriber subscriberLiDAR;
+    ros::Subscriber subscriberIMU;
     
     //subscriberOdometry  = nh.subscribe("cmd_vel", 10, callbackOdometry);
     subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
+    subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+
+    //////////////// directed graph ////////////////
+    vector<nodestruct> graph; 
+    graph.push_back(nodestruct());
+
+    //while(drive(drivePub)){cout << "initial position" << endl;}
+
 
     while(ros::ok())
     {
 
-        if(newLidar){
-            cout << "POSITION x: " << position[0] << "\ty: " << position[1] << endl; 
-            cout << "WIDHT of maze: " << measureWidth() << "m" << endl; 
-            cout << "move.linear.x: " << drive(drivePub).linear.x << endl;
-            cout << "closest wall at " << distToWall() << "° \tdistance: " << scanResult[distToWall()] << endl; 
-            cout << endl; 
-            newLidar = false; 
-            directions(); 
+        if(!startupComplete){
+            initOrientation = orientation;
+            if(initOrientation != 0.0)
+                startupComplete = true; 
         }
 
-   // drive(drivePub);
-        /*
-        if(hold) 
-            driveVal.linear.x = 0; 
-        else 
-            driveVal.linear.x = 10; 
-        drivePub.publish(driveVal);
-        */
 
-/*
-    if(newLidar){
-        cout << " - scanResult - " << endl; 
-        for(int i = 0; i < 360; i ++) 
-            cout << "angle: " << i << "°\tdistance: " << scanResult[i] << "m" << endl; 
-        cout << endl; 
-        newLidar = false; 
-        cout << "width of maze: " << measureWidth() << "m" << endl; 
-        cin.get();
-    }
-*/
+
+
+
+
+        if(newLidar && startupComplete){
+            if(DOF_next)
+                directions(); 
+
+            if(!drive(drivePub) && DOF_next){
+                DOF_next = false; 
+                getOrientation();
+
+                // cout << "posX: " << odom.posX << "\tposY: " << odom.posY << endl;
+                
+                scan(graph);
+
+                // deciding next movement (prefered: keep previous direction)
+                for(int i = 0; i < 4; i++){
+                    //if((prevDirection+i)>4)
+                    //    prevDirection -= 4; 
+
+                    if(graph[graph.size()-1].dir[i] == 0){ 
+                        graph[graph.size()-1].move = (i); 
+                        //newMovement = true; 
+                        break; 
+                    }
+                  
+                } 
+
+            
+
+               // graph[graph.size()-1] = scan(graph[graph.size()-1]);
+            //newMovement = false; 
+            //nodelist = setStatus(nodelist, visited);
+
+            }
+            //getOrientation();
+            cout << "orienatation" << orientation << endl; 
+
+
+            //cout << "move.linear.x: " << drive(drivePub).linear.x << endl;
+         
+            newLidar = false; 
+            
+        }
 
 
   //      ros::Duration(dt).sleep();
