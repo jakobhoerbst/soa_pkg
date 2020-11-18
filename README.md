@@ -19,15 +19,24 @@ short text
 textwithpictures
 
 
-# ros commands: 
+# ros commands:
+## Starting
+Terminal 1: `$ roslaunch soa_pkg project.launch`
 
-`roslaunch soa_pkg project.launch` - startet project
+[Terminal 2 visualization: `$ gzclient` ]
+
+Terminal 3: `$ rosrun soa_pkg hoerbst`
+
+
+## Miscellaneous 
+
 
 `rqt`       - startet rqt explorer, damit kann man topics anzeigen, schreiben und zb. auf cmd vel schreiben. 
 
 `gzclient`  - öffnet gazebo (wenn die gui zb. im launchfile deaktiviert ist) 
 
 `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch` - öffnet Teleoperator Manuelle Steuerung Turtlebot
+
 
 # git commands: 
 
