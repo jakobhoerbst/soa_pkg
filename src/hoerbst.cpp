@@ -12,6 +12,14 @@ sources:
 Quarternion - Euler
 https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
+
+0 ... right 
+1 ... down
+2 ... left 
+3 ... up     
+
+jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch 
+
 */
 
 
@@ -53,17 +61,15 @@ struct nodestruct{
 };
 
 
+bool positionReached = false;
 
-
-const float width = 1.25; 
+const float width = 1.25;           // kantenlänge ein einem Segment 
 const float wallThickness = 0.15; 
-const float pathWidth = 1.1; 
+const float pathWidth = 1.1;        // befahrbare Pfadbreit
 
 static double closed = 0.8; 
 static double current = 0.8;
 static double visited  = 0.4;
-
-
 
 double position[2] = {0,0};
 
@@ -74,10 +80,10 @@ bool newLidar = false;
 float minWidth = 3.5;    
 
 ros::Publisher drivePub;
-bool hold = false; 
+bool  hold = false; 
 float toCloseTreshold = 0.2;
 float vel = 0.1; 
-float dirDistance[4] = {0,0,0,0}; 
+float orientedDistances[4] = {0,0,0,0}; 
 
 //driveOneField: 
 float   DOF_currentLin = 0; 
@@ -87,11 +93,14 @@ bool    DOF_next = false;
 //IMU 
 double   initOrientation = 0; 
 
+
 //drive
 bool    DRI_nextDecission = false;
 
 //orientation 
-double  orientation = 0; 
+double  orientationDeg = 0; 
+int     orientation = 0; 
+
 
 //start routine
 bool    startupComplete = false; 
@@ -175,7 +184,7 @@ void intersectionDetection()
 {
     int notAWall = 0; 
     for(int i = 0; i < 4; i++){
-        if(dirDistance[i]>minWidth)
+        if(orientedDistances[i]>minWidth)
             notAWall++; 
     }
 
@@ -194,9 +203,7 @@ void intersectionDetection()
 // calculates mean distances to fall for front, right, back, left side of turtle
 void directions(){
     
-    for(int i = 0; i < 4; i++)
-        dirDistance[i] = 0;
-     
+    float dirDistance[4] = {0,0,0,0}; 
     int range = 10; 
 
     for(int j = 0; j < 4; j++){
@@ -209,11 +216,19 @@ void directions(){
         dirDistance[j] = dirDistance[j]/(2*range);
     }
 
+    for(int i = 0; i < 4; i++){
+        if(i-orientation < 0) 
+            orientedDistances[i-orientation+4] = dirDistance[i];
+        else            
+            orientedDistances[i-orientation] = dirDistance[i];
+    }
+
     cout << "_____dirDistance_____" << endl; 
-    cout << "front: " << dirDistance[0]; 
-    cout << "\tright: " << dirDistance[1];
-    cout << "\tback: " << dirDistance[2];
-    cout << "\tleft: " << dirDistance[3] << endl;
+    cout << "right: " << orientedDistances[0]; 
+    cout << "\tdown: " << orientedDistances[1];
+    cout << "\tleft: " << orientedDistances[2];
+    cout << "\tup: " << orientedDistances[3] << endl;
+
 }
 
 
@@ -253,16 +268,37 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
     q.z = IMU->orientation.z;
 
     e = ToEulerAngles(q);
-    orientation = (e.yaw*180.0)/PI;
-    angleTo360(orientation);
+    orientationDeg = (e.yaw*180.0)/PI;
+    //angleTo360(orientationDeg);
+
+    
     //cout << "orientation: " << (e.yaw*180)/PI << endl; 
 
 }
+
 ////////////////////////////    get orientation     ////////////////////////////
 int getOrientation(){
-    cout << "orientation difference: " << orientation - initOrientation << endl; 
-    cout << "initial Orientation" << initOrientation << endl; 
+  //  cout << "orientation difference: " << orientation - initOrientation << endl; 
+  //  cout << "initial Orientation" << initOrientation << endl; 
 
+    //r, d, l, u    
+
+    int toleranceAngle = 45; 
+    
+    cout << "orientationDeg: " << orientationDeg; 
+    
+    if(abs(orientationDeg) < toleranceAngle) 
+        orientation = 0; 
+    else if(orientationDeg < 90+toleranceAngle && orientationDeg > 90-toleranceAngle) 
+        orientation = 1; 
+    else if(abs(orientationDeg) < 180 && abs(orientationDeg) > 180-toleranceAngle) 
+        orientation = 2; 
+    else if(orientationDeg < -90+toleranceAngle && orientationDeg > -90-toleranceAngle) 
+        orientation = 3;      
+    else
+        cout << "ERROR at finding orientation" << endl;  
+
+    cout << "\torientation: " << orientation << endl; 
 }
 
 void angleTo360(double &angle){
@@ -278,26 +314,21 @@ void scan(vector<nodestruct> &node){
     cout << node[node.size()-1].x << endl; 
     
     for(int i = 0; i < 4; i++){
-        if(dirDistance[i] > pathWidth) 
+        //cout << "distancse " << orientedDistances[i] << endl; 
+        if(orientedDistances[i] > pathWidth) 
             node[node.size()-1].dir[i] = 0;
         else 
             node[node.size()-1].dir[i] = 1;
+
+        //cout << "result " << node[node.size()-1].dir[i] << endl; 
     }
 
     node[node.size()-1].x = odom.posX;
     node[node.size()-1].y = odom.posY;
     
     node[node.size()-1].dir[2] = visited; // because we came from this direction
-    printNode(node);
+    //printNode(node);
 
-
-/*
-    node.dir[4] = mazescan.at<double>(node.y-2,node.x); 
-    node.dir[1] = mazescan.at<double>(node.y,node.x+2); 
-    node.dir[2] = mazescan.at<double>(node.y+2,node.x); 
-    node.dir[3] = mazescan.at<double>(node.y,node.x-2);   
-*/
-    //return node;
 }
 
 ////////////////////////////       printNode        ////////////////////////////
@@ -306,11 +337,27 @@ void printNode(vector<nodestruct> currentNode){
     cout << "node: " << currentNode.size();
     cout << "\tx: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
     cout << "\ty: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
-    cout << "\tf: " << currentNode[currentNode.size()-1].dir[0] << 
-            "\tr: " << currentNode[currentNode.size()-1].dir[1] << 
-            "\tb: " << currentNode[currentNode.size()-1].dir[2] << 
-            "\tl: " << currentNode[currentNode.size()-1].dir[3] << 
-            "\tmove: " << currentNode[currentNode.size()-1].move << endl;
+    cout << "\tr: " << currentNode[currentNode.size()-1].dir[0] << 
+            "\td: " << currentNode[currentNode.size()-1].dir[1] << 
+            "\tl: " << currentNode[currentNode.size()-1].dir[2] << 
+            "\tu: " << currentNode[currentNode.size()-1].dir[3] << 
+            "\tmove: ";
+    //r, d, l, u    
+    switch(currentNode[currentNode.size()-1].move){
+        case 0: 
+            cout << "r" << endl; 
+            break; 
+        case 1: 
+            cout << "d" << endl; 
+            break; 
+        case 2: 
+            cout << "l" << endl; 
+            break; 
+        case 3:
+            cout << "u" << endl; 
+            break; 
+        
+    }
 
 }
 
@@ -417,32 +464,39 @@ int main(int argc, char **argv ) {
 
     //while(drive(drivePub)){cout << "initial position" << endl;}
 
-
+    startupComplete = true; 
+    bool initialLiader = false; 
+    positionReached = true; 
     while(ros::ok())
     {
-
+    
+        /*
         if(!startupComplete){
             initOrientation = orientation;
             if(initOrientation != 0.0)
                 startupComplete = true; 
         }
+        */
 
+        //if(newLidar && startupComplete){
+            //if(DOF_next)
+        if(newLidar){
+            //newPosition = true;      
+            initialLiader = true;    
+        }       
 
-
-
-
-
-        if(newLidar && startupComplete){
-            if(DOF_next)
-                directions(); 
-
-            if(!drive(drivePub) && DOF_next){
-                DOF_next = false; 
-                getOrientation();
+            //if(!drive(drivePub) && DOF_next){
+            //    DOF_next = false; 
+               // getOrientation();
 
                 // cout << "posX: " << odom.posX << "\tposY: " << odom.posY << endl;
-                
-                scan(graph);
+
+
+        if(positionReached && initialLiader){
+            cout << "new Position" << endl; 
+            getOrientation();
+            directions(); 
+            scan(graph);
 
                 // deciding next movement (prefered: keep previous direction)
                 for(int i = 0; i < 4; i++){
@@ -456,6 +510,16 @@ int main(int argc, char **argv ) {
                     }
                   
                 } 
+            printNode(graph);
+            positionReached = false;
+
+
+
+
+        } 
+
+
+
 
             
 
@@ -463,16 +527,16 @@ int main(int argc, char **argv ) {
             //newMovement = false; 
             //nodelist = setStatus(nodelist, visited);
 
-            }
+
             //getOrientation();
-            cout << "orienatation" << orientation << endl; 
+           // cout << "orienatation" << orientation << endl; 
 
 
             //cout << "move.linear.x: " << drive(drivePub).linear.x << endl;
          
-            newLidar = false; 
+           // newLidar = false; 
             
-        }
+        
 
 
   //      ros::Duration(dt).sleep();

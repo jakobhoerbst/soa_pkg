@@ -7,6 +7,8 @@
             <arg name="gui" value="false" /> <!-- kann mit gzclient auch per hand geoeffnet werden-->
         </include>
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_waffle_pi.urdf.xacro" />
-        <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_waffle -x 0.5 -y 0.5 -z 0 -Y 0 -param robot_description" />
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_waffle -x 0.625 -y 0.625 -z 0 -Y 0 -param robot_description" />
+
+ <include file="$(find turtlebot3_bringup)launch/turtlebot3_remote.launch" />    
 </launch>
 
