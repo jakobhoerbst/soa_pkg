@@ -1,5 +1,7 @@
 #!/bin/bash
-echo "PROJECT 2 - startung"
+echo ""
+echo "PROJECT 2 - starting"
+echo ""
 echo "note: killing running gazebo processes"
 
 killall -9 gzserver
@@ -7,8 +9,13 @@ killall -9 gzclient
 sleep 5
 
 #mate-terminal -e 'sh -c "roslaunch hoerbst hoerbst.launch; exec bash"'
+
+#roslaunch turtlebot3_bringup turtlebot3_model.launch 
+export TURTLEBOT3 MODELL=waffle_pi
+
+#sleep 5
 roslaunch soa_pkg project.launch &
-sleep 10
+sleep 15
 rviz -d rviz/rvizConfig.rviz &
 
 sleep 5

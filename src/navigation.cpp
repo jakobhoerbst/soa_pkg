@@ -10,12 +10,34 @@ this node ist for navigating the robot
 #include "geometry_msgs/Twist.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Imu.h"
+#include "std_msgs/Bool.h"
 
+
+
+#include <math.h>               // for atan2
                                                              
 
 using namespace std;
 
 const double PI = 3.14159265359;
+
+const float toleranceDistance = 0.05; 
+const float toleranceAngle = 2; 
+
+const float angularVel = 0.2;
+
+ros::Publisher drivePub;
+ros::Publisher posReachedPub; 
+
+//orientation 
+double  orientationDeg = 0; 
+int     orientation = 0; 
+
+//desired Position
+float desiredPos[2] = {0,0}; 
+
+std_msgs::Bool reached;
+
 
 struct odom_callback{
     double posX; 
@@ -96,7 +118,7 @@ Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch
 }
 
 
-
+/*
 ////////////////////////////////  callbackOdometry  ////////////////////////////////
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
@@ -107,7 +129,7 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
     odom.angZ = odometry -> twist.twist.angular.z; 
 
 }
-
+*/
 ////////////////////////////////  callbackIMU   ////////////////////////////////
 void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 {
@@ -129,24 +151,52 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 
 }
 
+////////////////////////////////callbackPosition////////////////////////////////
+void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
+{
+    
+    desiredPos[0] = pose->position.x; 
+    desiredPos[1] = pose->position.y; 
 
+}
 
 ////////////////////////////////      DRIVE     ////////////////////////////////
-bool drive(ros::Publisher &drive){
+
+bool drive(ros::Publisher &drive, float desiredAngle,  bool move){
     
     geometry_msgs::Twist driveVal;
+ 
+    float requiredRotation = desiredAngle - orientationDeg;
+    int dir = 0; 
+    if(requiredRotation > 0) 
+        dir = 1;
+    else
+        dir = -1; 
 
-    if(scanResult[0] > pathWidth/2) 
-        //driveVal.linear.x = vel;
-        return driveOneField(drive, 0); 
+    if(move){
+        driveVal.angular.z = dir*angularVel;
+        drive.publish(driveVal);
+    }
     else{
+        driveVal.angular.z = 0;
         driveVal.linear.x = 0; 
         drive.publish(driveVal);
+
+    }
+
+
+/*
+    if(scanResult[0] > pathWidth/2) 
+        //driveVal.linear.x = vel;
+        //return driveOneField(drive, 0); 
+    else{
+        driveVal.linear.x = 0; 
+
         DRI_nextDecission = true; 
         intersectionDetection();
         return 0; 
     }        
-    
+  */  
     return 1;   
 }
 
@@ -164,25 +214,54 @@ int main(int argc, char **argv ) {
     
     //cout << "- PROJECT 2 -" << endl;
 
-    ros::Subscriber subscriberOdometry; 
+    //ros::Subscriber subscriberOdometry; 
     //ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberIMU;
-    
+    ros::Subscriber subscriberPosition;    
+
     //subscriberOdometry  = nh.subscribe("cmd_vel", 10, callbackOdometry);
-    subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
+    //subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
     //subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
-    
-    drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);    
 
-    int currentPos[2] = {0.625, 0.625};
-    int desiredPos[2] = {0.625, - 0.625};  
+    drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    posReachedPub = nh.advertise<std_msgs::Bool>("/positionReached", 100);
+
+
+    float currentPos[2] = {0.625, 0.625};
+
+    float difPos[2] = {0,0};     
+
     int currentOrientation = 0; 
 
     while(ros::ok())
     {
-    
-       
+        for(int i = 0; i < 2; i++){    
+            difPos[i] = desiredPos[i] - currentPos[i];
+            if(abs(difPos[i]) <  toleranceDistance) 
+                difPos[i] = 0;          
+        }
+        cout << "x: " << difPos[0] << "\ty: " << difPos[1] << endl; 
+
+        float desiredAngle =  atan2(difPos[1], difPos[0]) * 180 / PI;         
+        cout << "theta: " << desiredAngle << endl;    
+        cout << "currenOrientation: " << orientationDeg << endl;      
+
+        if(abs(desiredAngle - orientationDeg) > toleranceAngle){ 
+            cout << "you gotta move" << endl; 
+            drive(drivePub, desiredAngle, true);  
+            reached.data = false; 
+            posReachedPub.publish(reached);           
+        }
+        else{
+            drive(drivePub, desiredAngle, false); 
+
+            reached.data = true; 
+            posReachedPub.publish(reached);
+
+        }
+
         ros::spinOnce();
         
     }  

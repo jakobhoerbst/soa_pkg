@@ -28,8 +28,11 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include <iostream>
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Pose.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Imu.h"
+#include "std_msgs/Bool.h"
+//#include "move_base_msgs/MoveBacesActionGoal.h"
 
 
 //#include "geometry_msgs//PoseWithCovarianceStamped.h"
@@ -276,6 +279,15 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 
 }
 
+////////////////////////////////callbackReached ////////////////////////////////
+void callbackReached(const std_msgs::Bool reached)
+{
+    
+    positionReached = reached.data;
+    cout << "reached: " << positionReached << endl; 
+
+}
+
 ////////////////////////////    get orientation     ////////////////////////////
 int getOrientation(){
   //  cout << "orientation difference: " << orientation - initOrientation << endl; 
@@ -450,13 +462,19 @@ int main(int argc, char **argv ) {
     ros::Subscriber subscriberOdometry; 
     ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberIMU;
-    
+    ros::Subscriber subscriberPosReached;
+
+    ros::Publisher drivePub;
+    ros::Publisher movePub;    
+
     //subscriberOdometry  = nh.subscribe("cmd_vel", 10, callbackOdometry);
     subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
+    subscriberPosReached= nh.subscribe("/positionReached", 100, callbackReached);
     
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
+    movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
 
     //////////////// directed graph ////////////////
     vector<nodestruct> graph; 
@@ -513,10 +531,14 @@ int main(int argc, char **argv ) {
             printNode(graph);
             positionReached = false;
 
-
-
-
         } 
+
+        geometry_msgs::Pose newPosition;     
+        newPosition.position.x = 0.625;
+        newPosition.position.y = -0,625; 
+        movePub.publish(newPosition);
+        
+
 
 
 
