@@ -32,6 +32,9 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Bool.h"
+
+#include "gazebo_msgs/ModelStates.h"
+
 //#include "move_base_msgs/MoveBacesActionGoal.h"
 
 
@@ -96,6 +99,9 @@ bool    DOF_next = false;
 //IMU 
 double   initOrientation = 0; 
 
+// ground truth position 
+float positionGT[2] = {0,0};
+
 
 //drive
 bool    DRI_nextDecission = false;
@@ -123,6 +129,19 @@ struct EulerAngles {
 ////////////////////////////       prototypes       ////////////////////////////
 void printNode(vector<nodestruct> currentNode);
 void angleTo360(double &angle);
+
+
+
+
+////////////////////////////          class         ////////////////////////////
+class SubscriberPublisher{
+    public: 
+
+
+    private:
+        
+
+};
 
 
 
@@ -343,6 +362,17 @@ void scan(vector<nodestruct> &node){
 
 }
 
+////////////////////////////      callbackGT        ////////////////////////////
+void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
+
+    positionGT[0] = GT->pose[2].position.x;
+    positionGT[1] = GT->pose[2].position.y;
+
+    cout << "positionGT.x " << positionGT[0] << endl; 
+    cout << "positionGT.y " << positionGT[1] << endl;
+
+}
+
 ////////////////////////////       printNode        ////////////////////////////
 void printNode(vector<nodestruct> currentNode){
 
@@ -463,6 +493,7 @@ int main(int argc, char **argv ) {
     ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberIMU;
     ros::Subscriber subscriberPosReached;
+    ros::Subscriber subscriberGT;
 
     ros::Publisher drivePub;
     ros::Publisher movePub;    
@@ -472,6 +503,7 @@ int main(int argc, char **argv ) {
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberPosReached= nh.subscribe("/positionReached", 100, callbackReached);
+    subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth
     
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
