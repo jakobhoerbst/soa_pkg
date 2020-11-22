@@ -15,10 +15,11 @@ export TURTLEBOT3 MODELL=waffle_pi
 
 #sleep 5
 roslaunch soa_pkg project.launch &
-sleep 15
-rviz -d rviz/rvizConfig.rviz &
+#sleep 15
+#rviz -d rviz/rvizConfig.rviz &
 
-sleep 5
+#mate-terminal -e 'sh -c "rviz -d rviz/rvizConfig.rviz"'
+#sleep 10
 #xterm -e 'rosrun hoerbst hoerbst __name:=JACUP /JACUP/odom:=/odom /JACUP/scan:=/scan' &
 #xterm -e 'roslaunch hoerbst remote.launch'
 

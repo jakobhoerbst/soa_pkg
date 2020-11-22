@@ -1,6 +1,15 @@
 /*
 
 this node ist for navigating the robot
+
+
+
+nav_status: 
+
+-1 ... error 
+ 1 ... in motion 
+ 2 ... reached goal 
+
 */
 
 
@@ -10,7 +19,7 @@ this node ist for navigating the robot
 #include "geometry_msgs/Twist.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Imu.h"
-#include "std_msgs/Bool.h"
+#include "std_msgs/Int8.h"
 
 
 
@@ -27,7 +36,7 @@ const float toleranceAngle = 2;
 const float angularVel = 0.2;
 
 ros::Publisher drivePub;
-ros::Publisher posReachedPub; 
+ros::Publisher navStatusPub; 
 
 //orientation 
 double  orientationDeg = 0; 
@@ -36,8 +45,11 @@ int     orientation = 0;
 //desired Position
 float desiredPos[2] = {0,0}; 
 
-std_msgs::Bool reached;
+//new goal on subscriber
+bool newGoalReceived = false; 
 
+// navigation status for topic 
+std_msgs::Int8 nav_status;
 
 struct odom_callback{
     double posX; 
@@ -157,6 +169,10 @@ void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
     
     desiredPos[0] = pose->position.x; 
     desiredPos[1] = pose->position.y; 
+    
+    cout << "NEW GOAL\tx: " << desiredPos[0] << "\ty:" << desiredPos[1] << endl; 
+
+    newGoalReceived = true; 
 
 }
 
@@ -184,7 +200,6 @@ bool drive(ros::Publisher &drive, float desiredAngle,  bool move){
 
     }
 
-
 /*
     if(scanResult[0] > pathWidth/2) 
         //driveVal.linear.x = vel;
@@ -196,7 +211,7 @@ bool drive(ros::Publisher &drive, float desiredAngle,  bool move){
         intersectionDetection();
         return 0; 
     }        
-  */  
+*/  
     return 1;   
 }
 
@@ -226,7 +241,7 @@ int main(int argc, char **argv ) {
     subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);    
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    posReachedPub = nh.advertise<std_msgs::Bool>("/positionReached", 100);
+    navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
 
 
     float currentPos[2] = {0.625, 0.625};
@@ -235,35 +250,61 @@ int main(int argc, char **argv ) {
 
     int currentOrientation = 0; 
 
+    int navigationState = 0; 
+
+
     while(ros::ok())
     {
-        for(int i = 0; i < 2; i++){    
-            difPos[i] = desiredPos[i] - currentPos[i];
-            if(abs(difPos[i]) <  toleranceDistance) 
-                difPos[i] = 0;          
+
+        float desiredAngle; 
+        switch(navigationState){
+            // waiting for new goals
+            case 0: 
+                if(newGoalReceived){
+                    navigationState ++;
+                    newGoalReceived = false;                 
+                } 
+                break; 
+            // publish nav_status: in motion 
+            case 1: 
+                nav_status.data = 1; 
+                navStatusPub.publish(nav_status);
+                navigationState ++; 
+                break; 
+            // calculate angle to new goal
+            case 2: 
+                for(int i = 0; i < 2; i++){    
+                    difPos[i] = desiredPos[i] - currentPos[i];
+                    if(abs(difPos[i]) <  toleranceDistance) 
+                        difPos[i] = 0;          
+                }
+                cout << "DIF: x: " << difPos[0] << "\ty: " << difPos[1] << endl; 
+                desiredAngle =  atan2(difPos[1], difPos[0]) * 180 / PI;         
+                cout << "theta: " << desiredAngle << endl;    
+                cout << "currenOrientation: " << orientationDeg << endl;  
+                navigationState ++; 
+                break; 
+            // align towards new goal
+            case 3: 
+                if(abs(desiredAngle - orientationDeg) > toleranceAngle){ 
+                    //cout << "you gotta move" << endl; 
+                    drive(drivePub, desiredAngle, true);           
+                }
+                else{
+                    drive(drivePub, desiredAngle, false);
+                    navigationState ++;             
+                }
+                break; 
+            // drive to new goal 
+            case 4: 
+                nav_status.data = 2; 
+                navStatusPub.publish(nav_status);  
+                navigationState = 0;               
+                break; 
+
         }
-        cout << "x: " << difPos[0] << "\ty: " << difPos[1] << endl; 
 
-        float desiredAngle =  atan2(difPos[1], difPos[0]) * 180 / PI;         
-        cout << "theta: " << desiredAngle << endl;    
-        cout << "currenOrientation: " << orientationDeg << endl;      
-
-        if(abs(desiredAngle - orientationDeg) > toleranceAngle){ 
-            cout << "you gotta move" << endl; 
-            drive(drivePub, desiredAngle, true);  
-            reached.data = false; 
-            posReachedPub.publish(reached);           
-        }
-        else{
-            drive(drivePub, desiredAngle, false); 
-
-            reached.data = true; 
-            posReachedPub.publish(reached);
-
-        }
-
-        ros::spinOnce();
-        
+        ros::spinOnce();        
     }  
 
 return 0; 

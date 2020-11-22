@@ -1,14 +1,23 @@
 <?xml version="1.0" ?>
 <launch>
-        <include file="$(find gazebo_ros)launch/empty_world.launch" >
-            <arg name="world_name" value="$(find soa_pkg)/maps/Maze.world" />
-            <arg name="paused" value="false" />
-            <arg name="use_sim_time" value="true" />
-            <arg name="gui" value="false" /> <!-- kann mit gzclient auch per hand geoeffnet werden-->
-        </include>
-        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_waffle_pi.urdf.xacro" />
-        <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_waffle -x 0.625 -y 0.625 -z 0 -Y 0 -param robot_description" />
 
-<include file="$(find turtlebot3_bringup)launch/turtlebot3_remote.launch" />  
+    <include file="$(find gazebo_ros)launch/empty_world.launch" >
+        <arg name="world_name" value="$(find soa_pkg)/maps/Maze.world" />
+        <arg name="paused" value="false" />
+        <arg name="use_sim_time" value="true" />
+        <arg name="gui" value="false" /> <!-- kann mit gzclient auch per hand geoeffnet werden-->
+    </include>
+
+    <include file="$(find turtlebot3_bringup)launch/turtlebot3_remote.launch" /> 
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_waffle_pi.urdf.xacro" />
+
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_waffle_pi -x 0.625 -y 0.625 -z 0 -Y 0 -param robot_description" />
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find soa_pkg)/rviz/rvizConfig.rviz" />
+
+   <!-- <node type="hoerbst" name="hoerbst" pkg="soa_pkg"/> -->
+
+
 </launch>
 
