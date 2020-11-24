@@ -39,8 +39,6 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 
 using namespace std;
 
-const double PI = 3.14159265359;
-
 struct odom_callback{
     double posX; 
     double posY; 
@@ -146,6 +144,8 @@ void callbackNavStatus(const std_msgs::Int8 reached)
     //positionReached = reached.data;
     nav_status = reached.data; 
     cout << "nav_status: " << nav_status << endl; 
+    if(nav_status == 2) 
+        positionReached = true; 
 
 }
 

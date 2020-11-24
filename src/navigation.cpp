@@ -2,8 +2,6 @@
 
 this node ist for navigating the robot
 
-
-
 nav_status: 
 
 -1 ... error 
@@ -12,7 +10,6 @@ nav_status:
 
 */
 
-
 #include "ros/ros.h"
 #include <iostream>
 #include "nav_msgs/Odometry.h"
@@ -20,30 +17,33 @@ nav_status:
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Int8.h"
-
-
-
+#include "gazebo_msgs/ModelStates.h"
 #include <math.h>               // for atan2
-                                                             
 
+#include "operations.hpp"
+                                                      
 using namespace std;
-
-const double PI = 3.14159265359;
 
 const float toleranceDistance = 0.05; 
 const float toleranceAngle = 2; 
 
-const float angularVel = 0.2;
+const float angularVel = 0.5;
+const float linearVel = 0.3;
 
 ros::Publisher drivePub;
 ros::Publisher navStatusPub; 
 
-//orientation 
-double  orientationDeg = 0; 
-int     orientation = 0; 
-
 //desired Position
-float desiredPos[2] = {0,0}; 
+float desiredPose[3] = {0,0,0}; 
+
+// ground truth position 
+float poseGT[3] = {0,0,0};
+
+// current pose from robot
+float currentPose[3] = {0.625, 0.625, 0};
+
+// for switch case
+int navigationState = 0; 
 
 //new goal on subscriber
 bool newGoalReceived = false; 
@@ -54,12 +54,11 @@ std_msgs::Int8 nav_status;
 struct odom_callback{
     double posX; 
     double posY; 
-    double linX;
     double angZ; 
-
 };
 odom_callback odom; 
 
+/*
 struct nodestruct{
     double x; 
     double y; 
@@ -68,67 +67,7 @@ struct nodestruct{
 
     int move; 
 };
-
-
-
-struct Quaternion {
-    double w, x, y, z;
-};
-
-struct EulerAngles {
-    double roll, pitch, yaw;
-};
-
-
-////////////////////////////       prototypes       ////////////////////////////
-void printNode(vector<nodestruct> currentNode);
-void angleTo360(double &angle);
-
-
-
-EulerAngles ToEulerAngles(Quaternion q) {
-
-    EulerAngles angles;
-
-    // roll (x-axis rotation)
-    double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-    double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
-    angles.roll = std::atan2(sinr_cosp, cosr_cosp);
-
-    // pitch (y-axis rotation)
-    double sinp = 2 * (q.w * q.y - q.z * q.x);
-    if (std::abs(sinp) >= 1)
-        angles.pitch = std::copysign(M_PI / 2, sinp); // use 90 degrees if out of range
-    else
-        angles.pitch = std::asin(sinp);
-
-    // yaw (z-axis rotation)
-    double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-    double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-    angles.yaw = std::atan2(siny_cosp, cosy_cosp);
-
-    return angles;
-}
-
-Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch (Y), roll (X)
-{
-
-    double cy = cos(yaw * 0.5);
-    double sy = sin(yaw * 0.5);
-    double cp = cos(pitch * 0.5);
-    double sp = sin(pitch * 0.5);
-    double cr = cos(roll * 0.5);
-    double sr = sin(roll * 0.5);
-
-    Quaternion q;
-    q.w = cr * cp * cy + sr * sp * sy;
-    q.x = sr * cp * cy - cr * sp * sy;
-    q.y = cr * sp * cy + sr * cp * sy;
-    q.z = cr * cp * sy - sr * sp * cy;
-
-    return q;
-}
-
+*/
 
 /*
 ////////////////////////////////  callbackOdometry  ////////////////////////////////
@@ -142,10 +81,29 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 
 }
 */
+
+////////////////////////////      callbackGT        ////////////////////////////
+void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
+
+    poseGT[0] = GT->pose[2].position.x;
+    poseGT[1] = GT->pose[2].position.y;
+
+    Quaternion orientationQ; 
+    orientationQ.x = GT->pose[2].orientation.x; 
+    orientationQ.y = GT->pose[2].orientation.y; 
+    orientationQ.z = GT->pose[2].orientation.z; 
+    orientationQ.w = GT->pose[2].orientation.w;
+
+    EulerAngles orientationE; 
+    orientationE = ToEulerAngles(orientationQ); 
+    poseGT[2] = (orientationE.yaw*180.0)/PI;
+
+}
+
 ////////////////////////////////  callbackIMU   ////////////////////////////////
 void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 {
-    
+/*    
     Quaternion q; 
     EulerAngles e; 
 
@@ -160,62 +118,92 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 
     
     //cout << "orientation: " << (e.yaw*180)/PI << endl; 
-
+*/
 }
 
 ////////////////////////////////callbackPosition////////////////////////////////
 void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
 {
     
-    desiredPos[0] = pose->position.x; 
-    desiredPos[1] = pose->position.y; 
+    desiredPose[0] = pose->position.x; 
+    desiredPose[1] = pose->position.y; 
     
-    cout << "NEW GOAL\tx: " << desiredPos[0] << "\ty:" << desiredPos[1] << endl; 
+    cout << "NEW GOAL\tx: " << desiredPose[0] << "\ty:" << desiredPose[1] << endl; 
 
     newGoalReceived = true; 
 
 }
 
-////////////////////////////////      DRIVE     ////////////////////////////////
+////////////////////////////////      ROTATE    ////////////////////////////////
+bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float linVel){
 
-bool drive(ros::Publisher &drive, float desiredAngle,  bool move){
-    
-    geometry_msgs::Twist driveVal;
- 
-    float requiredRotation = desiredAngle - orientationDeg;
+    float difPose[3] = {0,0,0}; 
+
+    // calculate absolute angle to goal     
+    for(int i = 0; i < 2; i++){    
+        difPose[i] = desiredPose[i] - curPose[i];
+        if(abs(difPose[i]) <  toleranceDistance) 
+            difPose[i] = 0;          
+    }
+    float absAngleToGoal; 
+    absAngleToGoal =  atan2(difPose[1], difPose[0]) * 180 / PI;         
+
+    // calculate relative angle to goal  
+    cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
+
+    // decide wether turn right or left
     int dir = 0; 
-    if(requiredRotation > 0) 
+    if(absAngleToGoal - curPose[2] > 0) 
         dir = 1;
     else
         dir = -1; 
 
-    if(move){
+    // publish on cmd_vel
+    geometry_msgs::Twist driveVal;
+    if(abs(absAngleToGoal - curPose[2]) > toleranceAngle){
         driveVal.angular.z = dir*angularVel;
+        driveVal.linear.x = linVel; 
         drive.publish(driveVal);
     }
     else{
         driveVal.angular.z = 0;
-        driveVal.linear.x = 0; 
         drive.publish(driveVal);
-
+        return 1; 
     }
 
-/*
-    if(scanResult[0] > pathWidth/2) 
-        //driveVal.linear.x = vel;
-        //return driveOneField(drive, 0); 
-    else{
-        driveVal.linear.x = 0; 
-
-        DRI_nextDecission = true; 
-        intersectionDetection();
-        return 0; 
-    }        
-*/  
-    return 1;   
+    return 0;  
 }
 
+////////////////////////////////      DRIVE     ////////////////////////////////
+bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 
+    float difPose[3] = {0,0,0}; 
+
+    // calculate distance to goal     
+    for(int i = 0; i < 2; i++){    
+        difPose[i] = desPose[i] - curPose[i];
+        if(abs(difPose[i]) <  toleranceDistance) 
+            difPose[i] = 0;          
+    } 
+    float distToGoal = sqrt(pow(difPose[0], 2) + pow(difPose[1], 2));
+    cout << "distToGoal: " << distToGoal << endl; 
+
+    // publish on cmd_vel
+    geometry_msgs::Twist driveVal;
+    if(distToGoal > toleranceDistance){
+        driveVal.linear.x = linearVel;
+        drive.publish(driveVal);
+        rotate(drive, desPose, curPose, linearVel);
+    }
+    else{
+        driveVal.angular.z = 0;
+        driveVal.linear.x = 0;
+        drive.publish(driveVal);
+        return 1; 
+    }
+
+    return 0;  
+}
 
 
 ////////////////////////////////      main      ////////////////////////////////
@@ -226,43 +214,35 @@ int main(int argc, char **argv ) {
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
     ros::NodeHandle nh("~"); 
-    
-    //cout << "- PROJECT 2 -" << endl;
 
-    //ros::Subscriber subscriberOdometry; 
-    //ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberIMU;
-    ros::Subscriber subscriberPosition;    
+    ros::Subscriber subscriberPosition; 
+    ros::Subscriber subscriberGT;   
 
-    //subscriberOdometry  = nh.subscribe("cmd_vel", 10, callbackOdometry);
-    //subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
-    //subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
-    subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);    
+    subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);  
+    subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth  
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
 
-
-    float currentPos[2] = {0.625, 0.625};
-
-    float difPos[2] = {0,0};     
-
-    int currentOrientation = 0; 
-
-    int navigationState = 0; 
-
-
     while(ros::ok())
     {
+
+    // get current pose from ground truth
+    currentPose[0] = poseGT[0];
+    currentPose[1] = poseGT[1];
+    currentPose[2] = poseGT[2];
 
         float desiredAngle; 
         switch(navigationState){
             // waiting for new goals
             case 0: 
                 if(newGoalReceived){
+                    cin.get();
                     navigationState ++;
-                    newGoalReceived = false;                 
+                    newGoalReceived = false;  
+                    cout << "new state: " << navigationState << endl;          
                 } 
                 break; 
             // publish nav_status: in motion 
@@ -270,38 +250,30 @@ int main(int argc, char **argv ) {
                 nav_status.data = 1; 
                 navStatusPub.publish(nav_status);
                 navigationState ++; 
+                cout << endl << "new state: " << navigationState << endl;          
                 break; 
-            // calculate angle to new goal
+            // calculate dif to new goal
             case 2: 
-                for(int i = 0; i < 2; i++){    
-                    difPos[i] = desiredPos[i] - currentPos[i];
-                    if(abs(difPos[i]) <  toleranceDistance) 
-                        difPos[i] = 0;          
-                }
-                cout << "DIF: x: " << difPos[0] << "\ty: " << difPos[1] << endl; 
-                desiredAngle =  atan2(difPos[1], difPos[0]) * 180 / PI;         
-                cout << "theta: " << desiredAngle << endl;    
-                cout << "currenOrientation: " << orientationDeg << endl;  
+                cout << "DIF: x: " << desiredPose[0] - currentPose[0];
+                cout << "\ty: " << desiredPose[1] - currentPose[1] << endl; 
                 navigationState ++; 
+                cout << endl << "new state: " << navigationState << endl;          
                 break; 
             // align towards new goal
             case 3: 
-                if(abs(desiredAngle - orientationDeg) > toleranceAngle){ 
-                    //cout << "you gotta move" << endl; 
-                    drive(drivePub, desiredAngle, true);           
-                }
-                else{
-                    drive(drivePub, desiredAngle, false);
-                    navigationState ++;             
-                }
+                if(rotate(drivePub, desiredPose, currentPose, 0)){
+                    navigationState ++; 
+                    cout << endl << "new state: " << navigationState << endl;}          
                 break; 
             // drive to new goal 
             case 4: 
-                nav_status.data = 2; 
-                navStatusPub.publish(nav_status);  
-                navigationState = 0;               
+                if(drive(drivePub, desiredPose, currentPose)){
+                    cout << endl << "goalReached " << endl; 
+                    nav_status.data = 2; 
+                    navStatusPub.publish(nav_status);  
+                    navigationState = 0;
+                }                        
                 break; 
-
         }
 
         ros::spinOnce();        

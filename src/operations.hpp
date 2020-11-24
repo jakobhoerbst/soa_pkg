@@ -9,7 +9,7 @@ struct EulerAngles {
     double roll, pitch, yaw;
 };
 
-
+const double PI = 3.14159265359;
 
 EulerAngles ToEulerAngles(Quaternion q) {
 

@@ -6,7 +6,7 @@ echo "note: killing running gazebo processes"
 
 killall -9 gzserver
 killall -9 gzclient
-sleep 5
+##sleep 5
 
 #mate-terminal -e 'sh -c "roslaunch hoerbst hoerbst.launch; exec bash"'
 
@@ -14,8 +14,11 @@ sleep 5
 export TURTLEBOT3 MODELL=waffle_pi
 
 #sleep 5
-roslaunch soa_pkg project.launch &
-#sleep 15
+roslaunch soa_pkg project.launch&
+sleep 15
+roslaunch soa_pkg rvizLaunch.launch&
+#mate-terminal -e 'sh -c "roslaunch soa_pkg rvizLaunch.launch; exec bash"'
+
 #rviz -d rviz/rvizConfig.rviz &
 
 #mate-terminal -e 'sh -c "rviz -d rviz/rvizConfig.rviz"'
@@ -24,3 +27,4 @@ roslaunch soa_pkg project.launch &
 #xterm -e 'roslaunch hoerbst remote.launch'
 
 mate-terminal -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
+mate-terminal -e 'sh -c "rosrun soa_pkg navigation; exec bash"'

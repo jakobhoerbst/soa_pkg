@@ -10,7 +10,7 @@ Panels:
         - /Axes1
         - /RobotModel1/Links1
       Splitter Ratio: 0.6029411554336548
-    Tree Height: 359
+    Tree Height: 697
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -29,7 +29,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -166,7 +166,27 @@ Visualization Manager:
         All Enabled: true
         base_footprint:
           Value: true
+        base_link:
+          Value: true
+        base_scan:
+          Value: true
+        camera_link:
+          Value: true
+        camera_rgb_frame:
+          Value: true
+        camera_rgb_optical_frame:
+          Value: true
+        caster_back_left_link:
+          Value: true
+        caster_back_right_link:
+          Value: true
+        imu_link:
+          Value: true
         odom:
+          Value: true
+        wheel_left_link:
+          Value: true
+        wheel_right_link:
           Value: true
       Marker Scale: 0.4000000059604645
       Name: TF
@@ -176,7 +196,23 @@ Visualization Manager:
       Tree:
         odom:
           base_footprint:
-            {}
+            base_link:
+              base_scan:
+                {}
+              camera_link:
+                camera_rgb_frame:
+                  camera_rgb_optical_frame:
+                    {}
+              caster_back_left_link:
+                {}
+              caster_back_right_link:
+                {}
+              imu_link:
+                {}
+              wheel_left_link:
+                {}
+              wheel_right_link:
+                {}
       Update Interval: 0
       Value: true
     - Class: rviz/Axes
@@ -197,7 +233,7 @@ Visualization Manager:
   Global Options:
     Background Color: 156; 153; 153
     Default Light: true
-    Fixed Frame: base_footprint
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -257,5 +293,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1141
-  X: 774
+  X: 773
   Y: 28
