@@ -50,3 +50,8 @@ Terminal 3: `$ rosrun soa_pkg hoerbst`
 
 `git push` - push des aktuellen Stands
 
+`git push origin [name_of_your_new_branch]` - push von dem aktuellen branch
+
+`git checkout -b [name_of_your_new_branch]` - neuer branch auf local machine erstellen
+
+`git checkout [branch name]` - change branch
