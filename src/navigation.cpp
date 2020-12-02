@@ -239,6 +239,7 @@ int main(int argc, char **argv ) {
             // waiting for new goals
             case 0: 
                 if(newGoalReceived){
+                    cout << "press enter" << endl;     
                     cin.get();
                     navigationState ++;
                     newGoalReceived = false;  
