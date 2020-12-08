@@ -21,12 +21,8 @@ textwithpictures
 
 # ros commands:
 ## Starting
-Terminal 1: `$ roslaunch soa_pkg project.launch`
-
-[Terminal 2 visualization: `$ gzclient` ]
-
-Terminal 3: `$ rosrun soa_pkg hoerbst`
-
+`$ cd /PathTo/soa_pkg`
+`$ bash SOA.sh`
 
 ## Miscellaneous 
 
