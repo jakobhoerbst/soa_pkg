@@ -108,7 +108,7 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 
 }
 
-////////////////////////////////  callbackLiDAR  ////////////////////////////////
+////////////////////////////////  callbackLiDAR ////////////////////////////////
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
 
@@ -135,6 +135,8 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
     e = ToEulerAngles(q);
     orientationDeg = (e.yaw*180.0)/PI;
 
+    //cout << "orientationDeg: " << orientationDeg << endl; 
+
 }
 
 ////////////////////////////////callbackReached ////////////////////////////////
@@ -143,7 +145,7 @@ void callbackNavStatus(const std_msgs::Int8 reached)
     
     //positionReached = reached.data;
     nav_status = reached.data; 
-    cout << "nav_status: " << nav_status << endl; 
+    cout << "\tnav_status: " << nav_status << endl; 
     if(nav_status == 2) 
         positionReached = true; 
 
@@ -182,18 +184,20 @@ void directions(){
     }
 
     for(int i = 1; i < 5; i++){
-        if(i-(orientation-1) < 1)
-            orientedDistances[i-(orientation-1)+4] = dirDistance[i]; 
-        else           
-            orientedDistances[i-(orientation-1)] = dirDistance[i];
+        if( (orientation+(i-1)) > 4 )
+            orientedDistances[orientation+(i-1)-4] = dirDistance[i];
+        else
+            orientedDistances[orientation+(i-1)] = dirDistance[i]; 
+                   
+
     }   
-/*
+
     cout << "_____dirDistance_____" << endl; 
     cout << "right: " << orientedDistances[1]; 
     cout << "\tdown: " << orientedDistances[2];
     cout << "\tleft: " << orientedDistances[3];
     cout << "\tup: " << orientedDistances[4] << endl;
-*/
+
 }
 
 ////////////////////////////    get orientation     ////////////////////////////
@@ -210,30 +214,78 @@ int getOrientation(){
     if(abs(orientationDeg) < toleranceAngle) 
         orientation = 1; 
     else if(orientationDeg < 90+toleranceAngle && orientationDeg > 90-toleranceAngle) 
-        orientation = 2; 
+        orientation = 4; 
     else if(abs(orientationDeg) < 180 && abs(orientationDeg) > 180-toleranceAngle) 
         orientation = 3; 
     else if(orientationDeg < -90+toleranceAngle && orientationDeg > -90-toleranceAngle) 
-        orientation = 4;      
+        orientation = 2;      
     else
         cout << "ERROR at finding orientation" << endl;  
 
-    //cout << "\torientation: " << orientation << endl; 
+    cout << "\torientation: " << orientation << endl; 
 }
+
+////////////////////////////       setStatus        ////////////////////////////
+vector<nodestruct> setStatus(vector<nodestruct> &node, double newStatus){
+
+    cout << "in setStatus" << endl; 
+
+    int motion = 0; 
+
+    if(newStatus == closed)
+        motion = node[node.size()-1].move;
+    else if(newStatus == visited) 
+        motion = node[node.size()-2].move;
+    else
+        cout << "- ERROR -" << endl;  
+
+    switch(motion){
+        case 0: 
+            break;
+        case 1: 
+            if(newStatus == closed)
+                node[node.size()-1].dir[1] = newStatus;
+            else
+                node[node.size()-1].dir[3] = newStatus; 
+            break; 
+        case 2: 
+            if(newStatus == closed)
+                node[node.size()-1].dir[2] = newStatus;
+            else            
+                node[node.size()-1].dir[4] = newStatus; 
+            break; 
+        case 3: 
+            if(newStatus == closed)
+                node[node.size()-1].dir[3] = newStatus;
+            else
+                node[node.size()-1].dir[1] = newStatus; 
+            break;
+        case 4: 
+            if(newStatus == closed)
+                node[node.size()-1].dir[4] = newStatus;
+            else            
+                node[node.size()-1].dir[2] = newStatus; 
+            break; 
+    }
+
+    return node;
+}
+
 
 ////////////////////////////         scan           ////////////////////////////
 void scan(vector<nodestruct> &node){
     
     for(int i = 1; i < 5; i++){
-        if(orientedDistances[i] > pathWidth) 
+        if(orientedDistances[i] > pathWidth)
             node[node.size()-1].dir[i] = 0;
         else 
-            node[node.size()-1].dir[i] = 1;
+            node[node.size()-1].dir[i] = 1; 
     }
 
     node[node.size()-1].x = odom.posX;
     node[node.size()-1].y = odom.posY;
-    
+    cout << "scanupdate" << endl; 
+    printNode(node);
 }
 
 ////////////////////////////  correctNodePosition   ////////////////////////////
@@ -259,10 +311,10 @@ void printNode(vector<nodestruct> currentNode){
     cout << "node: " << currentNode.size();
     cout << "\tx: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
     cout << "\ty: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
-    cout << "\tr: " << currentNode[currentNode.size()-1].dir[0] << 
-            "\td: " << currentNode[currentNode.size()-1].dir[1] << 
-            "\tl: " << currentNode[currentNode.size()-1].dir[2] << 
-            "\tu: " << currentNode[currentNode.size()-1].dir[3] << 
+    cout << "\tr: " << currentNode[currentNode.size()-1].dir[1] << 
+            "\td: " << currentNode[currentNode.size()-1].dir[2] << 
+            "\tl: " << currentNode[currentNode.size()-1].dir[3] << 
+            "\tu: " << currentNode[currentNode.size()-1].dir[4] << 
             "\tmove: ";
     //dead end, r, d, l, u    
     switch(currentNode[currentNode.size()-1].move){
@@ -323,6 +375,7 @@ int main(int argc, char **argv ) {
     graph.push_back(nodestruct());
 
     positionReached = true; 
+    newMovement = true; 
     while(ros::ok())
     {
 
@@ -338,7 +391,14 @@ int main(int argc, char **argv ) {
 
             getOrientation();
             directions();
-            scan(graph);
+
+            // scan if new node is reached
+            if(newMovement){
+                scan(graph);
+                newMovement = false; 
+                setStatus(graph, visited);
+            }
+
             correctNodePosition(graph);
 
             // set previous direction (necessary for first node)
