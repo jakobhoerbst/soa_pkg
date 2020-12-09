@@ -223,7 +223,10 @@ int getOrientation(){
         cout << "ERROR at finding orientation" << endl;  
 
     cout << "\torientation: " << orientation << endl; 
+
     // Sometimes error in catkin_make: no return statement in non-void !
+    return orientation;
+
 }
 
 ////////////////////////////       setStatus        ////////////////////////////
@@ -368,9 +371,11 @@ int main(int argc, char **argv ) {
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberNavStatus = nh.subscribe("/nav_status", 100, callbackNavStatus);
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth
-    
+    cout << "Created subscriber /odom, /scan, /imu, /nav_status and /gazebo/model_states (Ground Truth)" << endl;
+
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
+    cout << "Created node handler /cmd_vel (drivePub) and /nav_status (navStatusPub)" << endl;
 
     //////////////// directed graph ////////////////
     vector<nodestruct> graph; 
