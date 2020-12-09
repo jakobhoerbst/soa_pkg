@@ -236,7 +236,6 @@ int main(int argc, char **argv ) {
     currentPose[1] = poseGT[1];
     currentPose[2] = poseGT[2];
 
-    cout << "navigationState: " << navigationState << endl;
         float desiredAngle; 
         switch(navigationState){
             // waiting for new goals
