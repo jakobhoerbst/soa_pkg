@@ -212,7 +212,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 ////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
 
-    cout << "- Navigation Node - " << endl << endl;
+    cout << "- PROJECT 2 -" << endl << endl;
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
@@ -232,6 +232,10 @@ int main(int argc, char **argv ) {
     navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
     cout << "Created node handler /cmd_vel (drivePub) and /nav_status (navStatusPub)" << endl;
 
+    cout << "current pose[0]: " << currentPose[0] << "  PoseGT[0]: " << poseGT[0] << endl;
+    cout << "current pose[1]: " << currentPose[1] << "  PoseGT[1]: " << poseGT[1] << endl;
+    cout << "current pose[2]: " << currentPose[2] << "  PoseGT[2]: " << poseGT[2] << endl;
+
     while(ros::ok())
     {
 
@@ -244,6 +248,7 @@ int main(int argc, char **argv ) {
         switch(navigationState){
             // waiting for new goals
             case 0: 
+                //newGoalReceived = true;
                 if(newGoalReceived){
                     cout << "press enter" << endl;     
                     cin.get();

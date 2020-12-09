@@ -226,7 +226,6 @@ int getOrientation(){
 
     // Sometimes error in catkin_make: no return statement in non-void !
     return orientation;
-
 }
 
 ////////////////////////////       setStatus        ////////////////////////////
