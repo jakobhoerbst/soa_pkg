@@ -148,7 +148,8 @@ bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     float absAngleToGoal; 
     absAngleToGoal =  atan2(difPose[1], difPose[0]) * 180 / PI;         
 
-    // calculate relative angle to goal  
+    // calculate relative angle to goal
+    // relative oder absolute?   
     cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
 
     // decide wether turn right or left
