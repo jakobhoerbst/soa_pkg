@@ -148,7 +148,8 @@ bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     float absAngleToGoal; 
     absAngleToGoal =  atan2(difPose[1], difPose[0]) * 180 / PI;         
 
-    // calculate relative angle to goal  
+    // calculate relative angle to goal
+    // relative oder absolute?   
     cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
 
     // decide wether turn right or left
@@ -213,6 +214,7 @@ int main(int argc, char **argv ) {
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
+    cout << "Ros init: navigationNode" << endl;
     ros::NodeHandle nh("~"); 
 
     ros::Subscriber subscriberIMU;
@@ -234,6 +236,7 @@ int main(int argc, char **argv ) {
     currentPose[1] = poseGT[1];
     currentPose[2] = poseGT[2];
 
+    cout << "navigationState: " << navigationState << endl;
         float desiredAngle; 
         switch(navigationState){
             // waiting for new goals
