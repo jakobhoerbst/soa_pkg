@@ -2,11 +2,14 @@
 echo ""
 echo "PROJECT 2 - starting"
 echo ""
-echo "note: killing running gazebo processes"
+echo "note 1: killing running gazebo processes"
+echo "note 2: killing all running roscore & rosmaster"
 
 killall -9 gzserver
 killall -9 gzclient
-##sleep 5
+killall -9 roscore
+killall -9 rosmaster
+sleep 1
 
 # select Robot
 export TURTLEBOT3 MODELL=waffle_pi
