@@ -212,11 +212,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 ////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
 
-<<<<<<< HEAD
     cout << "- PROJECT 2 -" << endl << endl;
-=======
-    cout << "- Navigation Node - " << endl << endl;
->>>>>>> 6261290305b6d635e068bc2d12aa0bccf1ffc789
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
