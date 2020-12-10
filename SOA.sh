@@ -26,16 +26,26 @@ roslaunch soa_pkg project.launch x_pos:=0.625 y_pos:=0.625&
 sleep 15
 roslaunch soa_pkg rvizLaunch.launch&
 
-#mate-terminal -e 'sh -c "roslaunch soa_pkg rvizLaunch.launch; exec bash"'
-
-#rviz -d rviz/rvizConfig.rviz &
-
-#mate-terminal -e 'sh -c "rviz -d rviz/rvizConfig.rviz"'
-#sleep 10
-#xterm -e 'rosrun hoerbst hoerbst __name:=JACUP /JACUP/odom:=/odom /JACUP/scan:=/scan' &
-#xterm -e 'roslaunch hoerbst remote.launch'
-
 mate-terminal -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
 sleep 2
 mate-terminal -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
 
+userinput=""
+echo ""
+echo "Press \"q\" key to quit and kill all"
+
+while read -r -n1 key
+do
+
+    if [[ $key == q ]] ; then
+        break;
+    fi
+
+done
+printf "\nsee you\n"
+killall -9 gzserver
+killall -9 gzclient
+rosnode kill --all
+
+#ps -ef | grep ros
+#rosnode kill /gazebo
