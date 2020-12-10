@@ -119,6 +119,7 @@ void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
     desiredPose[1] = pose->position.y; 
     
     cout << "NEW GOAL\tx: " << desiredPose[0] << "\ty:" << desiredPose[1] << endl; 
+    cout << "pose: \tx: " << pose->position.x << "\ty: " << pose->position.y << endl;
 
     newGoalReceived = true; 
 
@@ -170,8 +171,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 
     float difPose[3] = {0,0,0}; 
 
-    /*
-    Alt:
+/*
     // calculate distance to goal     
     for(int i = 0; i < 2; i++){    
         difPose[i] = desPose[i] - curPose[i];
@@ -195,15 +195,10 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     }
     
     return 0;  
-    */
+    
 
     /*
         pidMarc
-    */
-
-    /* compiler: 
-    In function ‘bool drive(ros::Publisher&, float*, float*)’:
-    error: conversion from ‘double’ to non-scalar type ‘pidTuner’ requested
     */
 
     // Values to be adapted
