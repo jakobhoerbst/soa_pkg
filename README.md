@@ -51,3 +51,7 @@ textwithpictures
 `git checkout -b [name_of_your_new_branch]` - neuer branch auf local machine erstellen
 
 `git checkout [branch name]` - change branch
+
+`git branch -d localBranchName` - delete branch locally
+
+`git push origin --delete remoteBranchName` - delete branch remotely
