@@ -32,27 +32,27 @@ roslaunch soa_pkg rvizLaunch.launch&
 # Start Nodes in one Terminal (--tab)
 gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
 sleep 1
-gnome-terminal --tab -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
+gnome-terminal --tab -e 'sh -c "rosrun soa_pkg main; exec bash"'
 
 
 # killing all running rosnodes and gazebo client/server after pressing q
-sleep 10
-userinput=""
-echo ""
-echo "Press \"q\" key to quit and kill all"
+#sleep 10
+#userinput=""
+#echo ""
+#echo "Press \"q\" key to quit and kill all"
 
-while read -r -n1 key
-do
+#while read -r -n1 key
+#do
 
-    if [[ $key == q ]] ; then
-        break;
-    fi
+   # if [[ $key == q ]] ; then
+    #    break;
+    #fi
 
-done
-printf "\nsee you\n"
-killall -9 gzserver
-killall -9 gzclient
-rosnode kill --all
+#done
+#printf "\nsee you\n"
+#killall -9 gzserver
+#killall -9 gzclient
+#rosnode kill --all
 
 #ps -ef | grep ros
 #rosnode kill /gazebo
