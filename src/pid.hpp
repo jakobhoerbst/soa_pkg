@@ -5,18 +5,16 @@
     source: https://gist.github.com/bradley219/5373998
     -> Fur jeden pose[i] muss es gemacht werden, vereinfachen!
     -> Testen, testen, testen
-    -> momentan noch falsch verlinkt, es wird eine main gesucht, die es nicht gibt in der make
-*/
-/*
-EXAMPLE Use: 
-    PID pid = PID(0.1, 100, -100, 0.1, 0.01, 0.5);
-        double dStartPos = currentPose[i], dEndPos = desiredPose[i];
-        for (int i = 0; i < 100; i++) 
-        {
-            double dIncrement = pid.calculate(0, val);
-            std::cout << "i: " << i << "   dEndPos: " << dEndPos << "   dIncrement: " << dIncrement << std::endl;
-            dEndPos += dIncrement;
-        }
+
+    EXAMPLE Use: 
+        PID pid = PID(0.1, 100, -100, 0.1, 0.01, 0.5);
+            double dStartPos = currentPose[i], dEndPos = desiredPose[i];
+            for (int i = 0; i < 100; i++) 
+            {
+                double dIncrement = pid.calculate(0, val);
+                std::cout << "i: " << i << "   dEndPos: " << dEndPos << "   dIncrement: " << dIncrement << std::endl;
+                dEndPos += dIncrement;
+            }
 */
 
 #include <iostream>
@@ -27,68 +25,65 @@ using namespace std;
 class pidTuner
 {
     public:
-        pidTuner(double dt, float fkp, float fki, float fkd, double dmin, double dmax);
+        pidTuner(float fdt, float fkp, float fki, float fkd, float fmin, float fmax);
         // dmin = minimum value of tuner
         // dmax = maximum value of tuner
-        double dCalculate (double dSetPoint, double dProcessValue); // next to array? 
+        float dCalculate (float fSetPoint, float fProcessValue); // next to array? 
 
     private:
-        double dT, dMIN, dMAX;
+        float fDT, fMIN, fMAX;
         float fKP, fKI, fKD;
-        double dCalcError;
-        double dIntegral;
+        float fCalcError;
+        float fIntegral;
 
 
 };
 
-/**
- * Implementation
- */
-pidTuner::pidTuner( double dt, float fkp, float fki, float fkd, double dmin, double dmax) :
-    dT(dt),
+pidTuner::pidTuner( float fdt, float fkp, float fki, float fkd, float fmin, float fmax) :
+    fDT(fdt),
     fKP(fkp),
     fKI(fki),
     fKD(fkd),
-    dMIN(dmin),
-    dMAX(dmax),
-    dCalcError(0),
-    dIntegral(0)
+    fMIN(fmin),
+    fMAX(fmax),
+    fCalcError(0),
+    fIntegral(0)
 {
 }
 
-double pidTuner::dCalculate( double dSetPoint, double dProcessValue )
+float pidTuner::dCalculate( float fSetPoint, float fProcessValue )
 {
     // Check if divide by 0
-    if(dT == 0.0)
+    if(fDT == 0.0)
     {
         cout << "Impossible to create a PID regulator with a null loop interval time" << endl;
         return -1;
     }
     // Calculate error
-    double dError = dSetPoint - dProcessValue;
+    float fError = fSetPoint - fProcessValue;
 
     // Proportional term
-    double dPout = fKP * dError;
+    float fPout = fKP * fError;
 
     // Integral term
-    dIntegral += dError * dT;
-    double Iout = fKI * dIntegral;
+    fIntegral += fError * fDT;
+    float fIout = fKI * fIntegral;
 
     // Derivative term
-    double dDerivative = (dError - dCalcError) / dT;
-    double Dout = fKD * dDerivative;
+    float fDerivative = (fError - fCalcError) / fDT;
+    float fDout = fKD * fDerivative;
 
     // Calculate total output
-    double dOutput = dPout + Iout + Dout;
+    float fOutput = fPout + fIout + fDout;
 
     // Restrict to max/min
-    if( dOutput > dMAX )
-        dOutput = dMAX;
-    else if( dOutput < dMIN )
-        dOutput = dMIN;
+    if( fOutput > fMAX )
+        fOutput = fMAX;
+    else if( fOutput < fMIN )
+        fOutput = fMIN;
 
     // Save error to previous error
-    dCalcError = dError;
+    fCalcError = fError;
 
-    return dOutput;
+    return fOutput;
 }

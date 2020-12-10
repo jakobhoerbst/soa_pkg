@@ -137,19 +137,14 @@ include_directories(
 #   src/${PROJECT_NAME}/soa_pkg.cpp
 # )
 
-add_executable(hoerbst src/hoerbst.cpp)
-target_link_libraries(hoerbst ${catkin_LIBRARIES} ${OpenCV_LIBS})
-
-#add_executable(ahoi src/ahoi.cpp)
-#target_link_libraries(ahoi ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_executable(main src/main.cpp)
+target_link_libraries(main ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 add_executable(maze2rviz src/maze2rviz.cpp)
 target_link_libraries(maze2rviz ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-add_executable(marcNavigation src/marcNavigation.cpp)
-target_link_libraries(marcNavigation ${catkin_LIBRARIES} ${OpenCV_LIBS})
-
-
+add_executable(navigation src/navigation.cpp)
+target_link_libraries(navigation ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
 ## Add cmake target dependencies of the library

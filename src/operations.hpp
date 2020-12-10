@@ -1,6 +1,8 @@
 #include <math.h>
 #include <vector>
 
+using namespace std;
+
 struct Quaternion {
     double w, x, y, z;
 };
@@ -8,6 +10,33 @@ struct Quaternion {
 struct EulerAngles {
     double roll, pitch, yaw;
 };
+
+//! PID Tuner
+
+/*
+class pidTuner
+{
+    public:
+        // Kp -  proportional gain
+        // Ki -  Integral gain
+        // Kd -  derivative gain
+        // dt -  loop interval time
+        // max - maximum value of manipulated variable
+        // min - minimum value of manipulated variable
+        pidTuner(float dt, float fkp, float fki, float fkd, float dmin, float dmax);
+        // dmin = minimum value of tuner
+        // dmax = maximum value of tuner
+        float dCalculate (float dSetPoint, float dProcessValue); // return
+        ~pidTuner();
+
+    private:
+        double dT, dMIN, dMAX;
+        float fKP, fKI, fKD;
+        double dCalcError;
+        double dIntegral;
+};
+*/
+//! PID Tuner
 
 const double PI = 3.14159265359;
 
@@ -60,9 +89,56 @@ void angleTo360(double &angle){
     else
         angle = 360 - angle; 
 }
+/*
+pidTuner::pidTuner( float dt, float fkp, float fki, float fkd, float dmin, float dmax) :
+    dT(dt),
+    fKP(fkp),
+    fKI(fki),
+    fKD(fkd),
+    dMIN(dmin),
+    dMAX(dmax),
+    dCalcError(0),
+    dIntegral(0)
+{
+}
 
+float pidTuner::dCalculate( float dSetPoint, float dProcessValue )
+{
+    // Check if divide by 0
+    if(dT == 0.0)
+    {
+       // cout << "Impossible to create a PID regulator with a null loop interval time" << endl;
+        return -1;
+    }
+    // Calculate error
+    float dError = dSetPoint - dProcessValue;
 
+    // Proportional term
+    float dPout = fKP * dError;
 
+    // Integral term
+    dIntegral += dError * dT;
+    float Iout = fKI * dIntegral;
+
+    // Derivative term
+    float dDerivative = (dError - dCalcError) / dT;
+    float Dout = fKD * dDerivative;
+
+    // Calculate total output
+    float dOutput = dPout + Iout + Dout;
+
+    // Restrict to max/min
+    if( dOutput > dMAX )
+        dOutput = dMAX;
+    else if( dOutput < dMIN )
+        dOutput = dMIN;
+
+    // Save error to previous error
+    dCalcError = dError;
+
+    return dOutput;
+}
+*/
 
 
 ////////////////////////////////      LAGER     ////////////////////////////////
@@ -94,12 +170,9 @@ void angleTo360(double &angle){
 // finds angle to closest wall
 /*
 int distToWall(){
-
     int closestWallAlign; 
     float closestWallDist = 3.5; 
-
     for(int i = 0; i < 360; i++){
-
             if(closestWallDist > scanResult[i]){ 
                 closestWallDist = scanResult[i]; 
                 closestWallAlign = i; 
@@ -112,7 +185,6 @@ int distToWall(){
 */
 /*
 bool driveOneField(ros::Publisher &drive, int direction){
-
     geometry_msgs::Twist driveVal;
     
     switch(DOF_state)
@@ -139,7 +211,6 @@ bool driveOneField(ros::Publisher &drive, int direction){
         return 0; 
         break; 
     }
-
     return 1;
 }
 */
@@ -149,7 +220,6 @@ bool driveOneField(ros::Publisher &drive, int direction){
 bool drive(ros::Publisher &drive){
     
     geometry_msgs::Twist driveVal;
-
     if(scanResult[0] > pathWidth/2) 
         //driveVal.linear.x = vel;
         return driveOneField(drive, 0); 
@@ -169,7 +239,6 @@ bool drive(ros::Publisher &drive){
 /*
 float measureWidth()
 {
-
     for(int i = 0; i < 180; i++){
         if(minWidth > scanResult[i]+scanResult[i+180])
             minWidth = scanResult[i]+scanResult[i+180];
@@ -188,15 +257,10 @@ void intersectionDetection()
         if(orientedDistances[i]>minWidth)
             notAWall++; 
     }
-
     if(notAWall>2){ 
         cout << "intersection detected" << endl; 
     
     }
-
-
 }
 */
-
-
 
