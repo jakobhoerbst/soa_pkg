@@ -1,5 +1,8 @@
 #!/bin/bash
 
+gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'s
+
+
 userinput=""
 echo "Press \"q\" key to quit"
 

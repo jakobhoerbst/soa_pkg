@@ -148,7 +148,8 @@ bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     float absAngleToGoal; 
     absAngleToGoal =  atan2(difPose[1], difPose[0]) * 180 / PI;         
 
-    // calculate relative angle to goal  
+    // calculate relative angle to goal
+    // relative oder absolute?   
     cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
 
     // decide wether turn right or left
@@ -211,8 +212,11 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 ////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
 
+    cout << "- PROJECT 2 -" << endl << endl;
+
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
+    cout << "Ros init: navigationNode" << endl;
     ros::NodeHandle nh("~"); 
 
     ros::Subscriber subscriberIMU;
@@ -222,9 +226,15 @@ int main(int argc, char **argv ) {
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);  
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth  
+    cout << "Created subscriber /imu, /nextPosition and /gazebo/model_states (Ground Truth)" << endl;
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
+    cout << "Created node handler /cmd_vel (drivePub) and /nav_status (navStatusPub)" << endl;
+
+    cout << "current pose[0]: " << currentPose[0] << "  PoseGT[0]: " << poseGT[0] << endl;
+    cout << "current pose[1]: " << currentPose[1] << "  PoseGT[1]: " << poseGT[1] << endl;
+    cout << "current pose[2]: " << currentPose[2] << "  PoseGT[2]: " << poseGT[2] << endl;
 
     while(ros::ok())
     {
@@ -238,6 +248,7 @@ int main(int argc, char **argv ) {
         switch(navigationState){
             // waiting for new goals
             case 0: 
+                //newGoalReceived = true;
                 if(newGoalReceived){
                     cout << "press enter" << endl;     
                     cin.get();
