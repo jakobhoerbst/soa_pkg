@@ -28,16 +28,13 @@ roslaunch soa_pkg project.launch x_pos:=0.625 y_pos:=0.625&
 sleep 15
 roslaunch soa_pkg rvizLaunch.launch&
 
-#mate-terminal -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
-#sleep 2
-#mate-terminal -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
 # Start Nodes in one Terminal (--tab)
 gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
 sleep 1
 gnome-terminal --tab -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
 
 
-
+# killing all running rosnodes and gazebo client/server after pressing q
 sleep 10
 userinput=""
 echo ""
