@@ -32,7 +32,7 @@ roslaunch soa_pkg rvizLaunch.launch&
 # Start Nodes in one Terminal (--tab)
 gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
 sleep 1
-gnome-terminal --tab -e 'sh -c "rosrun soa_pkg hoerbst; exec bash"'
+gnome-terminal --tab -e 'sh -c "rosrun soa_pkg main; exec bash"'
 
 
 # killing all running rosnodes and gazebo client/server after pressing q

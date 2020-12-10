@@ -1,13 +1,9 @@
 /*
-
 this node ist for navigating the robot
-
 nav_status: 
-
 -1 ... error 
  1 ... in motion 
  2 ... reached goal 
-
 */
 
 #include "ros/ros.h"
@@ -21,7 +17,8 @@ nav_status:
 #include <math.h>               // for atan2
 
 #include "operations.hpp"
-                                                      
+#include "pid.hpp"               
+                                       
 using namespace std;
 
 const float toleranceDistance = 0.05; 
@@ -62,9 +59,7 @@ odom_callback odom;
 struct nodestruct{
     double x; 
     double y; 
-
     double dir[4]; //r, d, l, u
-
     int move; 
 };
 */
@@ -73,12 +68,10 @@ struct nodestruct{
 ////////////////////////////////  callbackOdometry  ////////////////////////////////
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
-
     odom.posX = odometry -> pose.pose.position.x; 
     odom.posY = odometry -> pose.pose.position.y;
     odom.linX = odometry -> twist.twist.linear.x; 
     odom.angZ = odometry -> twist.twist.angular.z; 
-
 }
 */
 
@@ -106,16 +99,13 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 /*    
     Quaternion q; 
     EulerAngles e; 
-
     q.w = IMU->orientation.w;
     q.x = IMU->orientation.x;
     q.y = IMU->orientation.y;
     q.z = IMU->orientation.z;
-
     e = ToEulerAngles(q);
     orientationDeg = (e.yaw*180.0)/PI;
     //angleTo360(orientationDeg);
-
     
     //cout << "orientation: " << (e.yaw*180)/PI << endl; 
 */
@@ -180,6 +170,8 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 
     float difPose[3] = {0,0,0}; 
 
+    /*
+    Alt:
     // calculate distance to goal     
     for(int i = 0; i < 2; i++){    
         difPose[i] = desPose[i] - curPose[i];
@@ -188,8 +180,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     } 
     float distToGoal = sqrt(pow(difPose[0], 2) + pow(difPose[1], 2));
     cout << "distToGoal: " << distToGoal << endl; 
-
-    // publish on cmd_vel
+        // publish on cmd_vel
     geometry_msgs::Twist driveVal;
     if(distToGoal > toleranceDistance){
         driveVal.linear.x = linearVel;
@@ -202,7 +193,48 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
         drive.publish(driveVal);
         return 1; 
     }
+    
+    return 0;  
+    */
 
+    /*
+        pidMarc
+    */
+
+    /* compiler: 
+    In function ‘bool drive(ros::Publisher&, float*, float*)’:
+    error: conversion from ‘double’ to non-scalar type ‘pidTuner’ requested
+    */
+
+    // Values to be adapted
+    pidTuner pidDrive(0.1, 100, -100, 0.1, 0.01, 0.5);
+
+    for (int i = 0; i < 3; i++)
+    {
+        float dStartPos = curPose[i], dEndPos = desPose[i];
+        for (int j = 0; j < 100; j++) // 100 = Wert um zu testen, kann/soll reduziert werden
+        {
+            float dIncrement = pidDrive.dCalculate( dStartPos, dEndPos);
+            dEndPos += dIncrement;
+
+            // publish on cmd_vel
+            geometry_msgs::Twist driveVal;
+            if(dIncrement > toleranceDistance){
+                driveVal.linear.x = linearVel;
+                drive.publish(driveVal);
+                rotate(drive, desPose, curPose, linearVel);
+            }
+            else{
+                driveVal.angular.z = 0;
+                driveVal.linear.x = 0;
+                drive.publish(driveVal);
+                return 1; 
+            }
+        }
+    }
+
+    
+    
     return 0;  
 }
 
@@ -226,7 +258,7 @@ int main(int argc, char **argv ) {
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);  
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth  
-    cout << "Created subscriber /imu, /nextPosition and /gazebo/model_states (Ground Truth)" << endl;
+    cout << "Created subscriber /imu, /nextPosition and /gazebo/model_states (Ground Truth)" << endl << endl;
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
@@ -249,6 +281,7 @@ int main(int argc, char **argv ) {
             // waiting for new goals
             case 0: 
                 //newGoalReceived = true;
+                //callbackPosition;
                 if(newGoalReceived){
                     cout << "press enter" << endl;     
                     cin.get();
