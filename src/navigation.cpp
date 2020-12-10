@@ -21,7 +21,7 @@ nav_status:
                                        
 using namespace std;
 
-const float toleranceDistance = 0.05; 
+const float toleranceDistance = 0.1;  // jakob: 0.05
 const float toleranceAngle = 2; 
 
 const float angularVel = 0.5;
@@ -202,12 +202,15 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     */
 
     // Values to be adapted
+    // V1: (0.1, 100, -100, 0.1, 0.01, 0.5)
     pidTuner pidDrive(0.1, 100, -100, 0.1, 0.01, 0.5);
 
     for (int i = 0; i < 3; i++)
     {
         float dStartPos = curPose[i], dEndPos = desPose[i];
-        for (int j = 0; j < 100; j++) // 100 = Wert um zu testen, kann/soll reduziert werden
+        // fuer eine Regeldifferenz von 10 ist iteration von 50 guter Wert mit V1
+        // Annahme: Posendifferenz < 10
+        for (int j = 0; j < 50; j++) 
         {
             float dIncrement = pidDrive.dCalculate( dStartPos, dEndPos);
             dEndPos += dIncrement;
@@ -282,7 +285,7 @@ int main(int argc, char **argv ) {
                     cin.get();
                     navigationState ++;
                     newGoalReceived = false;  
-                    cout << "new state: " << navigationState << endl;          
+                    cout << "new state: " << navigationState << ":  Waiting for new goals" << endl;          
                 } 
                 break; 
             // publish nav_status: in motion 
@@ -290,25 +293,27 @@ int main(int argc, char **argv ) {
                 nav_status.data = 1; 
                 navStatusPub.publish(nav_status);
                 navigationState ++; 
-                cout << endl << "new state: " << navigationState << endl;          
+                cout << endl << "new state: " << navigationState << ":  In Motion" << endl;          
                 break; 
             // calculate dif to new goal
             case 2: 
                 cout << "DIF: x: " << desiredPose[0] - currentPose[0];
                 cout << "\ty: " << desiredPose[1] - currentPose[1] << endl; 
                 navigationState ++; 
-                cout << endl << "new state: " << navigationState << endl;          
+                cout << endl << "new state: " << navigationState << ":  Calculate difference to new goal" << endl;          
                 break; 
             // align towards new goal
             case 3: 
                 if(rotate(drivePub, desiredPose, currentPose, 0)){
                     navigationState ++; 
-                    cout << endl << "new state: " << navigationState << endl;}          
+                    cout << endl << "new state: " << navigationState << ":  Align towards new goal" << endl;}          
                 break; 
             // drive to new goal 
             case 4: 
                 if(drive(drivePub, desiredPose, currentPose)){
-                    cout << endl << "goalReached " << endl; 
+                    navigationState ++; 
+                    cout << endl << "new state: " << navigationState << ":  Goal reached" << endl;
+                    //cout << endl << "goalReached " << endl; 
                     nav_status.data = 2; 
                     navStatusPub.publish(nav_status);  
                     navigationState = 0;
