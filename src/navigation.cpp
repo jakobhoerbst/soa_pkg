@@ -21,8 +21,11 @@ nav_status:
                                        
 using namespace std;
 
+long lauf = 0; 
+
 const float toleranceDistance = 0.1;  // jakob: 0.05
 const float toleranceAngle = 2; 
+const float toleranceAngleLinVel = 30; 
 
 const float angularVel = 0.5;
 const float linearVel = 0.3;
@@ -118,15 +121,15 @@ void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
     desiredPose[0] = pose->position.x; 
     desiredPose[1] = pose->position.y; 
     
+    cout << "_________________________________" << endl; 
     cout << "NEW GOAL\tx: " << desiredPose[0] << "\ty:" << desiredPose[1] << endl; 
-    cout << "pose: \tx: " << pose->position.x << "\ty: " << pose->position.y << endl;
 
     newGoalReceived = true; 
 
 }
 
 ////////////////////////////////      ROTATE    ////////////////////////////////
-bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float linVel){
+bool motion(ros::Publisher &drive, float desPose[3], float curPose[3], float linVel){
 
     float difPose[3] = {0,0,0}; 
 
@@ -139,9 +142,12 @@ bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     float absAngleToGoal; 
     absAngleToGoal =  atan2(difPose[1], difPose[0]) * 180 / PI;         
 
+    // calculate distance to goal     
+    float distToGoal = sqrt(pow(difPose[0], 2) + pow(difPose[1], 2));    
+
     // calculate relative angle to goal
     // relative oder absolute?   
-    cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
+    //cout << "angle diff: " << absAngleToGoal - curPose[2] << endl; 
 
     // decide wether turn right or left
     int dir = 0; 
@@ -154,7 +160,13 @@ bool rotate(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     geometry_msgs::Twist driveVal;
     if(abs(absAngleToGoal - curPose[2]) > toleranceAngle){
         driveVal.angular.z = dir*angularVel;
-        driveVal.linear.x = linVel; 
+        driveVal.linear.x = mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0);
+        //cout << "speed: " << driveVal.linear.x << endl; 
+        drive.publish(driveVal);
+    }
+    else if(distToGoal > toleranceDistance && linVel != 0){
+        driveVal.angular.z = 0; 
+        driveVal.linear.x = mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0);
         drive.publish(driveVal);
     }
     else{
@@ -171,7 +183,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 
     float difPose[3] = {0,0,0}; 
 
-/*
+
     // calculate distance to goal     
     for(int i = 0; i < 2; i++){    
         difPose[i] = desPose[i] - curPose[i];
@@ -179,13 +191,12 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
             difPose[i] = 0;          
     } 
     float distToGoal = sqrt(pow(difPose[0], 2) + pow(difPose[1], 2));
-    cout << "distToGoal: " << distToGoal << endl; 
+    //cout << "distToGoal: " << distToGoal << endl; 
         // publish on cmd_vel
     geometry_msgs::Twist driveVal;
     if(distToGoal > toleranceDistance){
-        driveVal.linear.x = linearVel;
-        drive.publish(driveVal);
-        rotate(drive, desPose, curPose, linearVel);
+        motion(drive, desPose, curPose, linearVel);
+
     }
     else{
         driveVal.angular.z = 0;
@@ -195,11 +206,8 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     }
     
     return 0;  
+/*
     
-
-    /*
-        pidMarc
-    */
 
     // Values to be adapted
     // V1: (0.1, 100, -100, 0.1, 0.01, 0.5)
@@ -234,6 +242,7 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     
     
     return 0;  
+*/
 }
 
 
@@ -242,11 +251,10 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
 ////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
 
-    cout << "- PROJECT 2 -" << endl << endl;
+    cout << "- NAVIGATION -" << endl << endl;
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "navigationNode");
-    cout << "Ros init: navigationNode" << endl;
     ros::NodeHandle nh("~"); 
 
     ros::Subscriber subscriberIMU;
@@ -256,16 +264,14 @@ int main(int argc, char **argv ) {
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberPosition  = nh.subscribe("/nextPosition", 100, callbackPosition);  
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth  
-    cout << "Created subscriber /imu, /nextPosition and /gazebo/model_states (Ground Truth)" << endl << endl;
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     navStatusPub = nh.advertise<std_msgs::Int8>("/nav_status", 100);
-    cout << "Created node handler /cmd_vel (drivePub) and /nav_status (navStatusPub)" << endl;
-
+/*
     cout << "current pose[0]: " << currentPose[0] << "  PoseGT[0]: " << poseGT[0] << endl;
     cout << "current pose[1]: " << currentPose[1] << "  PoseGT[1]: " << poseGT[1] << endl;
     cout << "current pose[2]: " << currentPose[2] << "  PoseGT[2]: " << poseGT[2] << endl;
-
+*/
     while(ros::ok())
     {
 
@@ -285,7 +291,7 @@ int main(int argc, char **argv ) {
                     cin.get();
                     navigationState ++;
                     newGoalReceived = false;  
-                    cout << "new state: " << navigationState << ":  Waiting for new goals" << endl;          
+                    cout << "new state: " << navigationState << endl;          
                 } 
                 break; 
             // publish nav_status: in motion 
@@ -293,26 +299,26 @@ int main(int argc, char **argv ) {
                 nav_status.data = 1; 
                 navStatusPub.publish(nav_status);
                 navigationState ++; 
-                cout << endl << "new state: " << navigationState << ":  In Motion" << endl;          
+                cout << "new state: " << navigationState;          
                 break; 
             // calculate dif to new goal
             case 2: 
-                cout << "DIF: x: " << desiredPose[0] - currentPose[0];
+                cout << ":  Difference: x: " << desiredPose[0] - currentPose[0];
                 cout << "\ty: " << desiredPose[1] - currentPose[1] << endl; 
                 navigationState ++; 
-                cout << endl << "new state: " << navigationState << ":  Calculate difference to new goal" << endl;          
+                cout << "new state: " << navigationState << ":  Align towards new goal" << endl;          
                 break; 
             // align towards new goal
             case 3: 
-                if(rotate(drivePub, desiredPose, currentPose, 0)){
+                if(motion(drivePub, desiredPose, currentPose, 0)){
                     navigationState ++; 
-                    cout << endl << "new state: " << navigationState << ":  Align towards new goal" << endl;}          
+                    cout << "new state: " << navigationState << ":  Drive to new goal" << endl;}          
                 break; 
             // drive to new goal 
             case 4: 
                 if(drive(drivePub, desiredPose, currentPose)){
                     navigationState ++; 
-                    cout << endl << "new state: " << navigationState << ":  Goal reached" << endl;
+                    cout << "new state: " << navigationState << ":  Goal reached" << endl;
                     //cout << endl << "goalReached " << endl; 
                     nav_status.data = 2; 
                     navStatusPub.publish(nav_status);  

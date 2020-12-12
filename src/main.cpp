@@ -145,7 +145,7 @@ void callbackNavStatus(const std_msgs::Int8 reached)
     
     //positionReached = reached.data;
     nav_status = reached.data; 
-    cout << "\tnav_status: " << nav_status << endl; 
+    //cout << "\tnav_status: " << nav_status << endl; 
     if(nav_status == 2) 
         positionReached = true; 
 
@@ -191,13 +191,13 @@ void directions(){
                    
 
     }   
-
+/*
     cout << "[-dirDistance-]  Mean distance to wall of turtle to: " << endl; 
     cout << "right: " << orientedDistances[1]; 
     cout << "\tdown: " << orientedDistances[2];
     cout << "\tleft: " << orientedDistances[3];
     cout << "\tup: " << orientedDistances[4] << endl;
-
+*/
 }
 
 ////////////////////////////    get orientation     ////////////////////////////
@@ -222,7 +222,7 @@ int getOrientation(){
     else
         cout << "ERROR at finding orientation" << endl;  
 
-    cout << "\torientation: " << orientation << endl; 
+    //cout << "\torientation: " << orientation << endl; 
 
     // Sometimes error in catkin_make: no return statement in non-void !
     return orientation;
@@ -230,8 +230,6 @@ int getOrientation(){
 
 ////////////////////////////       setStatus        ////////////////////////////
 vector<nodestruct> setStatus(vector<nodestruct> &node, double newStatus){
-
-    cout << "in setStatus" << endl; 
 
     int motion = 0; 
 
@@ -287,8 +285,8 @@ void scan(vector<nodestruct> &node){
 
     node[node.size()-1].x = odom.posX;
     node[node.size()-1].y = odom.posY;
-    cout << "scan update" << endl; 
-    printNode(node);
+
+    //printNode(node);
 }
 
 ////////////////////////////  correctNodePosition   ////////////////////////////
@@ -353,7 +351,6 @@ int main(int argc, char **argv ) {
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "DFSnode");
-    cout << "Ros init: DFSnode" << endl;
     ros::NodeHandle nh("~"); 
     
     ros::Subscriber subscriberOdometry; 
@@ -370,11 +367,9 @@ int main(int argc, char **argv ) {
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
     subscriberNavStatus = nh.subscribe("/nav_status", 100, callbackNavStatus);
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth
-    cout << "Created subscriber /odom, /scan, /imu, /nav_status and /gazebo/model_states (Ground Truth)" << endl;
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
     movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
-    cout << "Created node handler /cmd_vel (drivePub) and /nav_status (navStatusPub)" << endl << endl;
 
     //////////////// directed graph ////////////////
     vector<nodestruct> graph; 
@@ -392,7 +387,7 @@ int main(int argc, char **argv ) {
 
         if(positionReached && startupComplete){
             positionReached = false;
-
+            cout << "__________________________________" << endl; 
             cout << "new position reached" << endl; 
 
             getOrientation();
