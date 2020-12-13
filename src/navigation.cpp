@@ -131,6 +131,8 @@ void callbackPosition(const geometry_msgs::Pose::ConstPtr& pose)
 ////////////////////////////////      ROTATE    ////////////////////////////////
 bool motion(ros::Publisher &drive, float desPose[3], float curPose[3], float linVel){
 
+    linVel = linearVel; 
+
     float difPose[3] = {0,0,0}; 
 
     // calculate absolute angle to goal     
@@ -156,19 +158,49 @@ bool motion(ros::Publisher &drive, float desPose[3], float curPose[3], float lin
     else
         dir = -1; 
 
+    cout << "relAngle: " << absAngleToGoal - curPose[2] << "  dir: " << dir << endl; 
+
     // publish on cmd_vel
     geometry_msgs::Twist driveVal;
-    if(abs(absAngleToGoal - curPose[2]) > toleranceAngle){
-        driveVal.angular.z = dir*angularVel;
-        driveVal.linear.x = mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0);
-        //cout << "speed: " << driveVal.linear.x << endl; 
+    if(distToGoal > toleranceDistance){
+
+        if(abs(absAngleToGoal - curPose[2]) > toleranceAngle) 
+            driveVal.angular.z = dir*angularVel;
+        else
+            driveVal.angular.z = 0; 
+
+        float relAngleAbs = abs(absAngleToGoal - curPose[2]);
+        if(relAngleAbs > toleranceAngleLinVel) 
+            relAngleAbs = toleranceAngleLinVel; 
+        driveVal.linear.x = mapValue(relAngleAbs, 0, toleranceAngleLinVel, linVel, 0);
+        //cout << "1. speed: " << driveVal.linear.x << endl; 
+        if(driveVal.linear.x < 0){
+            cout << "linVel: " << linVel << endl; 
+            cout << "relAng: " << abs(absAngleToGoal - curPose[2]) << endl; 
+            cout << "mapped: " << mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0) << endl; 
+            cin.get();         
+        }
+    
         drive.publish(driveVal);
     }
+/*
     else if(distToGoal > toleranceDistance && linVel != 0){
         driveVal.angular.z = 0; 
-        driveVal.linear.x = mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0);
+        float relAngleAbs = abs(absAngleToGoal - curPose[2]);
+        if(relAngleAbs > toleranceAngleLinVel) 
+            relAngleAbs = toleranceAngleLinVel;
+        driveVal.linear.x = mapValue(relAngleAbs, 0, toleranceAngleLinVel, linVel, 0);
+        //cout << "2. speed: " << driveVal.linear.x << endl; 
+        if(driveVal.linear.x < 0){
+            cout << "linVel: " << linVel << endl; 
+            cout << "relAng: " << abs(absAngleToGoal - curPose[2]) << endl; 
+            cout << "mapped: " << mapValue(abs(absAngleToGoal - curPose[2]), 0, toleranceAngleLinVel, linVel, 0) << endl; 
+
+
+            cin.get();         
+        }
         drive.publish(driveVal);
-    }
+    }*/
     else{
         driveVal.angular.z = 0;
         drive.publish(driveVal);
@@ -196,7 +228,6 @@ bool drive(ros::Publisher &drive, float desPose[3], float curPose[3]){
     geometry_msgs::Twist driveVal;
     if(distToGoal > toleranceDistance){
         motion(drive, desPose, curPose, linearVel);
-
     }
     else{
         driveVal.angular.z = 0;
@@ -287,8 +318,8 @@ int main(int argc, char **argv ) {
                 //newGoalReceived = true;
                 //callbackPosition;
                 if(newGoalReceived){
-                    cout << "press enter" << endl;     
-                    cin.get();
+                    //cout << "press enter" << endl;     
+                    //cin.get();
                     navigationState ++;
                     newGoalReceived = false;  
                     cout << "new state: " << navigationState << endl;          
