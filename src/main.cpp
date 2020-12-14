@@ -492,7 +492,7 @@ int main(int argc, char **argv ) {
             int motion = graph[graph.size()-1].move;
             switch(motion){
                 case 0: // move back 
-                    cout << " - DEAD END -" << endl; 
+                    cout << "  - DEAD END -" << endl; 
                     graph.pop_back();
                     graph = setStatus(graph, closed);
                     
