@@ -24,8 +24,8 @@ echo random y: $y_pos
 echo "" 
 
 # Start launchfile and load generated Start Position
-#roslaunch soa_pkg project.launch x_pos:=$x_pos y_pos:=$y_pos&
-roslaunch soa_pkg project.launch x_pos:=0.625 y_pos:=0.625&
+roslaunch soa_pkg project.launch x_pos:=$x_pos y_pos:=$y_pos&
+#roslaunch soa_pkg project.launch x_pos:=0.625 y_pos:=0.625&
 sleep 15
 roslaunch soa_pkg rvizLaunch.launch&
 

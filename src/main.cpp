@@ -56,9 +56,17 @@ struct nodestruct{
     int move; 
 };
 
+struct coordinatesStruct{
+    double x; 
+    double y; 
+};
+vector<coordinatesStruct> visitedVector;  
+
+
 const float width           = 1.25;         // kantenlänge ein einem Segment 
 const float wallThickness   = 0.15; 
 const float pathWidth       = 1.1;          // befahrbare Pfadbreit
+const float exitDistance    = 2.5;
 
 // values from using cv::Mat for visualization
 static double closed        = 0.8; 
@@ -71,6 +79,7 @@ bool newLidar = false;
 
 // ground truth position 
 float positionGT[2] = {0,0};
+bool initialGT = false; 
 
 //orientation 
 double  orientationDeg = 0; 
@@ -82,10 +91,14 @@ bool    startupComplete = false;
 
 //
 bool    newMovement = false; 
+bool    escaped = false; 
 
 // status from navigation node
 int nav_status = 0; 
 bool positionReached = false;
+
+// odom
+bool initialOdom = false; 
 
 
 ////////////////////////////       prototypes       ////////////////////////////
@@ -105,6 +118,8 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
     odom.posY = odometry -> pose.pose.position.y;
     odom.linX = odometry -> twist.twist.linear.x; 
     odom.angZ = odometry -> twist.twist.angular.z; 
+
+    initialOdom = true; 
 
 }
 
@@ -143,9 +158,8 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 void callbackNavStatus(const std_msgs::Int8 reached)
 {
     
-    //positionReached = reached.data;
     nav_status = reached.data; 
-    //cout << "\tnav_status: " << nav_status << endl; 
+
     if(nav_status == 2) 
         positionReached = true; 
 
@@ -156,10 +170,9 @@ void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
 
     positionGT[0] = GT->pose[2].position.x;
     positionGT[1] = GT->pose[2].position.y;
-
-    //cout << "positionGT.x " << positionGT[0] << endl; 
-    //cout << "positionGT.y " << positionGT[1] << endl;
-
+    
+    initialGT = true; 
+    
 }
 
 ////////////////////////////////   FUNCTIONS    ////////////////////////////////
@@ -188,9 +201,9 @@ void directions(){
             orientedDistances[orientation+(i-1)-4] = dirDistance[i];
         else
             orientedDistances[orientation+(i-1)] = dirDistance[i]; 
-                   
-
     }   
+
+    
 /*
     cout << "[-dirDistance-]  Mean distance to wall of turtle to: " << endl; 
     cout << "right: " << orientedDistances[1]; 
@@ -198,6 +211,23 @@ void directions(){
     cout << "\tleft: " << orientedDistances[3];
     cout << "\tup: " << orientedDistances[4] << endl;
 */
+}
+
+////////////////////////////        checkExit       ////////////////////////////
+
+bool checkExit(){
+
+    int counter = 0; 
+    for(int i = 1; i < 5; i++){
+        if(orientedDistances[i] > exitDistance) 
+            counter ++;  
+    }   
+
+    if(counter >= 3) 
+        return true; 
+
+    return false; 
+
 }
 
 ////////////////////////////    get orientation     ////////////////////////////
@@ -289,6 +319,25 @@ void scan(vector<nodestruct> &node){
     //printNode(node);
 }
 
+////////////////////////////     checkIfVisited     ////////////////////////////
+bool checkIfVisited(vector<nodestruct> &node){
+
+    coordinatesStruct currentPos = {node[node.size()-1].x, node[node.size()-1].y};
+
+    for(int i = 0; i < (visitedVector.size()-1); i++){
+        if(visitedVector[i].x == node[node.size()-1].x && visitedVector[i].y == node[node.size()-1].y){
+            cout << " - VISITED BEFORE -" << endl; 
+            //visumaze.at<double>(NV[NV.size()-1].y,NV[NV.size()-1].x) = 0.1;    
+            node.pop_back();
+            //nodelist.pop_back();
+            node = setStatus(node, closed);
+            return 1; 
+        }
+    }
+    visitedVector.push_back(currentPos);
+    return 0;
+}
+
 ////////////////////////////  correctNodePosition   ////////////////////////////
 void correctNodePosition(vector<nodestruct> &node){
 
@@ -310,15 +359,18 @@ void correctNodePosition(vector<nodestruct> &node){
 void printNode(vector<nodestruct> currentNode){
 
     cout << "node: " << currentNode.size();
-    cout << "\tx: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
-    cout << "\ty: " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
-    cout << "\tr: " << currentNode[currentNode.size()-1].dir[1] << 
+    cout << " pos: (" /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
+    cout << ", " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
+    cout << ")\tr: " << currentNode[currentNode.size()-1].dir[1] << 
             "\td: " << currentNode[currentNode.size()-1].dir[2] << 
             "\tl: " << currentNode[currentNode.size()-1].dir[3] << 
             "\tu: " << currentNode[currentNode.size()-1].dir[4] << 
             "\tmove: ";
     //dead end, r, d, l, u    
     switch(currentNode[currentNode.size()-1].move){
+        case 0: 
+            cout << "back" << endl; 
+            break;
         case 1: 
             cout << "r" << endl; 
             break; 
@@ -337,10 +389,6 @@ void printNode(vector<nodestruct> currentNode){
     }
 
 }
-
-
-
-
 
 ////////////////////////////////      main      ////////////////////////////////
 ////////////////////////////////      main      ////////////////////////////////
@@ -372,7 +420,7 @@ int main(int argc, char **argv ) {
     movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
 
     //////////////// directed graph ////////////////
-    vector<nodestruct> graph; 
+    vector<nodestruct> graph;
     graph.push_back(nodestruct());
 
     positionReached = true; 
@@ -380,27 +428,39 @@ int main(int argc, char **argv ) {
     while(ros::ok())
     {
 
-        if(newLidar){
-            startupComplete = true;    
+        if(newLidar && initialOdom && !startupComplete){
+            cout << "STARTUP" << endl; 
+            coordinatesStruct initialPos = {odom.posX, odom.posY}; // noch ändern 
+            visitedVector.push_back(initialPos); 
+            correctNodePosition(graph);
+
+            startupComplete = true;              
         }       
 
 
         if(positionReached && startupComplete){
             positionReached = false;
+
             cout << "__________________________________" << endl; 
             cout << "new position reached" << endl; 
 
             getOrientation();
             directions();
+            if(checkExit()){
+                cout << "\t\tEXIT FOUND" << endl; 
+                escaped = true;
+                break; 
+            }
 
             // scan if new node is reached
             if(newMovement){
                 scan(graph);
                 newMovement = false; 
                 setStatus(graph, visited);
+                correctNodePosition(graph);
             }
 
-            correctNodePosition(graph);
+
 
             // set previous direction (necessary for first node)
             int prevDirection; 
@@ -433,32 +493,32 @@ int main(int argc, char **argv ) {
                 case 0: // move back 
                     cout << " - DEAD END -" << endl; 
                     graph.pop_back();
-                    //graph = setStatus(graph, closed);
+                    graph = setStatus(graph, closed);
                     
                     break;
                 case 1: // move right
                     graph.push_back(nodestruct());
                     graph[graph.size()-1].x = graph[graph.size()-2].x + width;
                     graph[graph.size()-1].y = graph[graph.size()-2].y;
-                    //newMovement = !checkIfVisited(graph);         
+                    newMovement = !checkIfVisited(graph);         
                     break;
                 case 2: // move dowm
                     graph.push_back(nodestruct());
                     graph[graph.size()-1].x = graph[graph.size()-2].x;
                     graph[graph.size()-1].y = graph[graph.size()-2].y - width;
-                    //newMovement = !checkIfVisited(graph); 
+                    newMovement = !checkIfVisited(graph); 
                     break;
                 case 3: // move left
                     graph.push_back(nodestruct());
                     graph[graph.size()-1].x = graph[graph.size()-2].x - width;
                     graph[graph.size()-1].y = graph[graph.size()-2].y;
-                    //newMovement = !checkIfVisited(graph);
+                    newMovement = !checkIfVisited(graph);
                     break;
                 case 4: // move up
                     graph.push_back(nodestruct());
                     graph[graph.size()-1].x = graph[graph.size()-2].x;
                     graph[graph.size()-1].y = graph[graph.size()-2].y + width;
-                    //newMovement = !checkIfVisited(graph); 
+                    newMovement = !checkIfVisited(graph); 
                     break; 
 
             }
@@ -467,6 +527,8 @@ int main(int argc, char **argv ) {
             geometry_msgs::Pose newPosition;     
             newPosition.position.x = graph[graph.size()-1].x;
             newPosition.position.y = graph[graph.size()-1].y; 
+
+            cout << "sending: (" << newPosition.position.x << ", " << newPosition.position.y << ")\t" << endl; 
             movePub.publish(newPosition);
 
 
@@ -476,6 +538,7 @@ int main(int argc, char **argv ) {
         ros::spinOnce();
         
     }  
+    cout << "finished" << endl; 
 
 return 0; 
 }
