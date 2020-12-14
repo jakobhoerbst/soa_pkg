@@ -36,7 +36,7 @@ bool navigationClass::moveTo(float desiredPose[2]){
         case 0: 
             navigationState ++;
             cout << "TURTLEBOT MOTION:" << endl; 
-            cout << "new state: " << navigationState << ":   New goal received" << endl; 
+            cout << "  new state: " << navigationState << ":   New goal received" << endl; 
             //cout << "desPosition " << desiredPose[0] << ", " << desiredPose[1] << endl;
             //cout << "curPosition " << currentPose[0] << ", " << currentPose[1] << endl;     
             break; 
@@ -44,7 +44,7 @@ bool navigationClass::moveTo(float desiredPose[2]){
         // publish nav_status: in motion 
         case 1: 
             navigationState ++; 
-            cout << "new state: " << navigationState;          
+            cout << "  new state: " << navigationState;          
             break; 
 
         // calculate dif to new goal
@@ -52,14 +52,14 @@ bool navigationClass::moveTo(float desiredPose[2]){
             cout << ":   Difference: x: " << (desiredPose[0] - currentPose[0]);
             cout << "\ty: " << (desiredPose[1] - currentPose[1]) << endl; 
             navigationState ++; 
-            cout << "new state: " << navigationState << ":   Drive to new goal" << endl;          
+            cout << "  new state: " << navigationState << ":   Drive to new goal" << endl;          
             break; 
 
         // align towards new goal
         case 3: 
             if(motion(drivePub, desiredPose, currentPose)){
                 navigationState ++; 
-                cout << "new state: " << navigationState << ":   Goal reached" << endl;
+                cout << "  new state: " << navigationState << ":   Goal reached" << endl;
             }
             break; 
 

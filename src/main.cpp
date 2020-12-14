@@ -360,7 +360,7 @@ void correctNodePosition(vector<nodestruct> &node){
 ////////////////////////////       printNode        ////////////////////////////
 void printNode(vector<nodestruct> currentNode){
 
-    cout << "node: " << currentNode.size();
+    cout << "  node: " << currentNode.size();
     cout << " pos: (" /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].x;
     cout << ", " /*<< std::setprecision(2)*/ << currentNode[currentNode.size()-1].y;
     cout << ")\tr: " << currentNode[currentNode.size()-1].dir[1] << 
@@ -447,6 +447,7 @@ int main(int argc, char **argv ) {
             getOrientation();
             directions();
             if(checkExit()){
+                cout << endl; 
                 cout << "----------------------------------" << endl; 
                 cout << "            EXIT FOUND" << endl; 
                 cout << "----------------------------------" << endl; 
