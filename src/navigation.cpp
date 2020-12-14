@@ -17,6 +17,7 @@ nav_status:
 #include <math.h>               // for atan2
 
 #include "operations.hpp"
+
 #include "pid.hpp"               
                                        
 using namespace std;
@@ -47,6 +48,8 @@ int navigationState = 0;
 
 //new goal on subscriber
 bool newGoalReceived = false; 
+
+bool startupComplete = false; 
 
 // navigation status for topic 
 std_msgs::Int8 nav_status;
@@ -202,20 +205,32 @@ int main(int argc, char **argv ) {
     cout << "current pose[1]: " << currentPose[1] << "  PoseGT[1]: " << poseGT[1] << endl;
     cout << "current pose[2]: " << currentPose[2] << "  PoseGT[2]: " << poseGT[2] << endl;
 */
+
+
     while(ros::ok())
     {
+
+        if(!startupComplete){
+            // publish navigation is ready
+            nav_status.data = 0; 
+            navStatusPub.publish(nav_status);  
+            if(newGoalReceived)
+                startupComplete = true; 
+
+        }
 
     // get current pose from ground truth
     currentPose[0] = poseGT[0];
     currentPose[1] = poseGT[1];
     currentPose[2] = poseGT[2];
-
+    
         float desiredAngle; 
         switch(navigationState){
             // waiting for new goals
             case 0: 
                 if(newGoalReceived){
-
+                    nav_status.data = 1; 
+                    navStatusPub.publish(nav_status);                    
                     navigationState ++;
                     newGoalReceived = false;  
                     cout << "new state: " << navigationState << ":   New goal received" << endl;          
@@ -224,8 +239,7 @@ int main(int argc, char **argv ) {
 
             // publish nav_status: in motion 
             case 1: 
-                nav_status.data = 1; 
-                navStatusPub.publish(nav_status);
+
                 navigationState ++; 
                 cout << "new state: " << navigationState;          
                 break; 

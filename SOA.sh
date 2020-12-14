@@ -26,11 +26,11 @@ echo ""
 # Start launchfile and load generated Start Position
 roslaunch soa_pkg project.launch x_pos:=$x_pos y_pos:=$y_pos&
 #roslaunch soa_pkg project.launch x_pos:=0.625 y_pos:=0.625&
-sleep 15
+sleep 10
 roslaunch soa_pkg rvizLaunch.launch&
 
 # Start Nodes in one Terminal (--tab)
-gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
+#gnome-terminal --tab -e 'sh -c "rosrun soa_pkg navigation; exec bash"'
 sleep 5
 gnome-terminal --tab -e 'sh -c "rosrun soa_pkg main; exec bash"'
 

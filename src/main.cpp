@@ -1,6 +1,5 @@
 /*
 
-
 next steps: 
 _ PID regler für navigation 
 _ ground truth nicht mehr verwenden
@@ -36,6 +35,7 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
     
 // own header                                                   
 #include "operations.hpp"
+#include "navigation.hpp"
 
 using namespace std;
 
@@ -75,10 +75,10 @@ static double visited       = 0.4;
 
 // LiDAR 
 float scanResult[360]; 
-bool newLidar = false;
+bool initialLidar = false;
 
 // ground truth position 
-float positionGT[2] = {0,0};
+float poseGT[3] = {0,0,0};
 bool initialGT = false; 
 
 //orientation 
@@ -90,21 +90,25 @@ float   orientedDistances[5] = {0,0,0,0,0};
 bool    startupComplete = false; 
 
 //
-bool    newMovement = false; 
+bool    newMovement = true; 
 bool    escaped = false; 
 
 // status from navigation node
 int nav_status = 0; 
-bool positionReached = false;
+bool positionReceived = false; 
+bool positionReached = true;
+bool sendPosition = false; 
+bool navigationReady = false; 
 
 // odom
 bool initialOdom = false; 
 
 
+float nextPosition[2] = {0,0};
+
 ////////////////////////////       prototypes       ////////////////////////////
 void printNode(vector<nodestruct> currentNode);
 void angleTo360(double &angle);
-
 
 ////////////////////////////////       SUB      ////////////////////////////////
 ////////////////////////////////       SUB      ////////////////////////////////
@@ -123,11 +127,30 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 
 }
 
+////////////////////////////      callbackGT        ////////////////////////////
+void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
+
+    poseGT[0] = GT->pose[2].position.x;
+    poseGT[1] = GT->pose[2].position.y;
+
+    Quaternion orientationQ; 
+    orientationQ.x = GT->pose[2].orientation.x; 
+    orientationQ.y = GT->pose[2].orientation.y; 
+    orientationQ.z = GT->pose[2].orientation.z; 
+    orientationQ.w = GT->pose[2].orientation.w;
+
+    EulerAngles orientationE; 
+    orientationE = ToEulerAngles(orientationQ); 
+    poseGT[2] = (orientationE.yaw*180.0)/PI;
+
+}
+
+
 ////////////////////////////////  callbackLiDAR ////////////////////////////////
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
 
-    newLidar = true; 
+    initialLidar = true; 
    // inRange = 0; 
   
     for(int i = 0; i < 360; i++)
@@ -152,27 +175,6 @@ void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
 
     //cout << "orientationDeg: " << orientationDeg << endl; 
 
-}
-
-////////////////////////////////callbackReached ////////////////////////////////
-void callbackNavStatus(const std_msgs::Int8 reached)
-{
-    
-    nav_status = reached.data; 
-
-    if(nav_status == 2) 
-        positionReached = true; 
-
-}
-
-////////////////////////////      callbackGT        ////////////////////////////
-void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
-
-    positionGT[0] = GT->pose[2].position.x;
-    positionGT[1] = GT->pose[2].position.y;
-    
-    initialGT = true; 
-    
 }
 
 ////////////////////////////////   FUNCTIONS    ////////////////////////////////
@@ -223,7 +225,7 @@ bool checkExit(){
             counter ++;  
     }   
 
-    if(counter >= 3) 
+    if(counter >= 4) 
         return true; 
 
     return false; 
@@ -404,32 +406,29 @@ int main(int argc, char **argv ) {
     ros::Subscriber subscriberOdometry; 
     ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberIMU;
-    ros::Subscriber subscriberNavStatus;
     ros::Subscriber subscriberGT;
 
     ros::Publisher drivePub;
-    ros::Publisher movePub;    
 
     subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
-    subscriberNavStatus = nh.subscribe("/nav_status", 100, callbackNavStatus);
-    subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT); //GT ... ground truth
+    subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT);
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
-    movePub = nh.advertise<geometry_msgs::Pose>("/nextPosition", 100);
 
     //////////////// directed graph ////////////////
     vector<nodestruct> graph;
     graph.push_back(nodestruct());
 
-    positionReached = true; 
-    newMovement = true; 
+    // class for moving the robot
+    navigationClass navigation(drivePub, poseGT);
+ 
     while(ros::ok())
     {
 
-        if(newLidar && initialOdom && !startupComplete){
-            cout << "STARTUP" << endl; 
+        if(initialLidar && initialOdom && !startupComplete){
+            cout << "STARTUP complete" << endl; 
             coordinatesStruct initialPos = {odom.posX, odom.posY}; // noch ändern 
             visitedVector.push_back(initialPos); 
             correctNodePosition(graph);
@@ -442,12 +441,15 @@ int main(int argc, char **argv ) {
             positionReached = false;
 
             cout << "__________________________________" << endl; 
-            cout << "new position reached" << endl; 
+            //cout << "new position reached" << endl; 
+            cout << "DFS algorithm:" << endl; 
 
             getOrientation();
             directions();
             if(checkExit()){
-                cout << "\t\tEXIT FOUND" << endl; 
+                cout << "----------------------------------" << endl; 
+                cout << "            EXIT FOUND" << endl; 
+                cout << "----------------------------------" << endl; 
                 escaped = true;
                 break; 
             }
@@ -459,8 +461,6 @@ int main(int argc, char **argv ) {
                 setStatus(graph, visited);
                 correctNodePosition(graph);
             }
-
-
 
             // set previous direction (necessary for first node)
             int prevDirection; 
@@ -523,22 +523,21 @@ int main(int argc, char **argv ) {
 
             }
     
-            //publish new goal to navigation node
-            geometry_msgs::Pose newPosition;     
-            newPosition.position.x = graph[graph.size()-1].x;
-            newPosition.position.y = graph[graph.size()-1].y; 
-
-            cout << "sending: (" << newPosition.position.x << ", " << newPosition.position.y << ")\t" << endl; 
-            movePub.publish(newPosition);
-
+            // next node
+            nextPosition[0] = graph[graph.size()-1].x;
+            nextPosition[1] = graph[graph.size()-1].y;
 
         } 
 
-        //ros::Duration(dt).sleep();
+        if(startupComplete){
+            if(navigation.moveTo(nextPosition)){
+                positionReached = true; 
+            }
+        }
+
         ros::spinOnce();
         
     }  
-    cout << "finished" << endl; 
 
 return 0; 
 }
