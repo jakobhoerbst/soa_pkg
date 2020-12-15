@@ -20,7 +20,7 @@ private:
     const float toleranceAngleLinVel = 30; 
     const float angularVel = 1;
     const float linearVel = 0.3;
-    const float decelerateDistance = 0.5;
+    const float decelDist = 0.5;
 
 };
 
@@ -100,22 +100,15 @@ bool navigationClass::motion(ros::Publisher &drive, float desPose[3], float curP
     else if(relAngle >= toleranceAngleLinVel)
         relAngle = toleranceAngleLinVel; 
 
-    if(relAngle < -180 || relAngle > 180){ cout << "ERROR relAngle: " << relAngle << "press ENTER to continue" << endl; cin.get(); } 
-
     geometry_msgs::Twist driveVal;
 
     if(distToGoal > toleranceDistance){
 
-        
         driveVal.angular.z = mapValue(relAngle, -90, 90, -angularVel, angularVel);
 
-       // float relAngleAbs = abs(absAngleToGoal - curPose[2]);
-       // if(relAngleAbs > toleranceAngleLinVel) 
-       //     relAngleAbs = toleranceAngleLinVel; 
         driveVal.linear.x = mapValue(abs(relAngle), 0, toleranceAngleLinVel, linearVel, 0);
-        if(distToGoal < decelerateDistance)   
-            driveVal.linear.x = mapValue(driveVal.linear.x, decelerateDistance, 0, driveVal.linear.x, 0);
-
+        if(distToGoal < decelDist)   
+            driveVal.linear.x = mapValue(driveVal.linear.x, decelDist, 0, driveVal.linear.x, 0);
         drive.publish(driveVal);
 
     }

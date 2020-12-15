@@ -140,12 +140,6 @@ include_directories(
 add_executable(main src/main.cpp)
 target_link_libraries(main ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-add_executable(maze2rviz src/maze2rviz.cpp)
-target_link_libraries(maze2rviz ${catkin_LIBRARIES} ${OpenCV_LIBS})
-
-add_executable(navigation src/navigation.cpp)
-target_link_libraries(navigation ${catkin_LIBRARIES} ${OpenCV_LIBS})
-
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

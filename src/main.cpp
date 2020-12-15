@@ -158,7 +158,7 @@ int main(int argc, char **argv ) {
         navigation.currentPose = poseOdom; 
     }
 
-    // starup and waiting for initial sensor data
+    // startup and waiting for initial sensor data
     while(ros::ok())
     {
         if(initialLidar && initialGT && initialOdom){
