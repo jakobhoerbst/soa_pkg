@@ -24,7 +24,6 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/Pose.h"
 #include "sensor_msgs/LaserScan.h"
-#include "sensor_msgs/Imu.h"
 #include "std_msgs/Int8.h"
 #include "gazebo_msgs/ModelStates.h"
 #include <vector>
@@ -35,15 +34,6 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include "navigation.hpp"
 
 using namespace std;
-/*
-struct odom_callback{
-    double posX; 
-    double posY; 
-    double linX;
-    double angZ; 
-};
-odom_callback odom; 
-*/
 
 // LiDAR 
 float scanResult[360]; 
@@ -53,42 +43,41 @@ bool initialLidar = false;
 float poseGT[3] = {0,0,0};
 bool initialGT = false; 
 
+// odom position
+float poseOdom[3] = {0,0,0};
+bool initialOdom = false; 
+
+// feedback from navigation
 bool positionReached = true;
 
 // next Position from DFS to navigation
 float nextPosition[2] = {0,0};
 
-// status from navigation node
-/*
-int nav_status = 0; 
-bool positionReceived = false; 
-
-bool sendPosition = false; 
-bool navigationReady = false; 
-
-// odom
-bool initialOdom = false; 
-*/
-
-
-
 ////////////////////////////////       SUB      ////////////////////////////////
 ////////////////////////////////       SUB      ////////////////////////////////
 ////////////////////////////////       SUB      ////////////////////////////////
-/*
+
 ////////////////////////////////callbackOdometry////////////////////////////////
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
 
-    odom.posX = odometry -> pose.pose.position.x; 
-    odom.posY = odometry -> pose.pose.position.y;
-    odom.linX = odometry -> twist.twist.linear.x; 
-    odom.angZ = odometry -> twist.twist.angular.z; 
+    poseOdom[0] = odometry -> pose.pose.position.x; 
+    poseOdom[1] = odometry -> pose.pose.position.y;
+
+    Quaternion orientationQ; 
+    orientationQ.x = odometry -> pose.pose.orientation.x; 
+    orientationQ.y = odometry -> pose.pose.orientation.y; 
+    orientationQ.z = odometry -> pose.pose.orientation.z; 
+    orientationQ.w = odometry -> pose.pose.orientation.w;
+
+    EulerAngles orientationE; 
+    orientationE = ToEulerAngles(orientationQ); 
+    poseOdom[2] = (orientationE.yaw*180.0)/PI;
 
     initialOdom = true; 
 
 }
-*/
+
 ////////////////////////////      callbackGT        ////////////////////////////
 void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
 
@@ -109,7 +98,6 @@ void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
 
 }
 
-
 ////////////////////////////////  callbackLiDAR ////////////////////////////////
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
@@ -121,31 +109,24 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
         scanResult[359-i] = (LiDAR->ranges[i]);
 
 }
-/*
-////////////////////////////////  callbackIMU   ////////////////////////////////
-void callbackIMU(const sensor_msgs::Imu::ConstPtr& IMU)
-{
-    
-    Quaternion q; 
-    EulerAngles e; 
-
-    q.w = IMU->orientation.w;
-    q.x = IMU->orientation.x;
-    q.y = IMU->orientation.y;
-    q.z = IMU->orientation.z;
-
-    e = ToEulerAngles(q);
-    orientationDeg = (e.yaw*180.0)/PI;
-
-}
-*/
 
 ////////////////////////////////      main      ////////////////////////////////
 ////////////////////////////////      main      ////////////////////////////////
 ////////////////////////////////      main      ////////////////////////////////
 int main(int argc, char **argv ) {
+    
+    string argument = argv[1];
 
-    cout << "- PROJECT 2 -" << endl << endl;
+    cout << " - PROJECT 2 -" << endl << endl;
+
+    if(argument == "GT")
+        cout << "using: ground truth " << endl;
+    else if(argument == "odom") 
+        cout << "using: odom" << endl; 
+    else{
+        cout << "ERROR with input argument" << endl; 
+        return 0;     
+    }
 
     //////////////// ROS ////////////////
     ros::init(argc, argv, "DFSnode");
@@ -153,29 +134,34 @@ int main(int argc, char **argv ) {
     
     ros::Subscriber subscriberLiDAR;
     ros::Subscriber subscriberGT;
-    //ros::Subscriber subscriberOdometry; 
-    //ros::Subscriber subscriberIMU;
+    ros::Subscriber subscriberOdometry; 
 
     ros::Publisher drivePub;
 
     subscriberLiDAR     = nh.subscribe("/scan", 100, callbackLiDAR);
     subscriberGT        = nh.subscribe("/gazebo/model_states", 100, callbackGT);
-    //subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
-    //subscriberIMU       = nh.subscribe("/imu", 100, callbackIMU);
+    subscriberOdometry  = nh.subscribe("/odom", 100, callbackOdometry);
 
     drivePub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 100);
 
+    // classes for navigation and DFS algorithm
+    navigationClass navigation(drivePub);
+    DFSClass DFS(scanResult, nextPosition);
 
-    // class for moving the robot (included in navigation.hpp)
-    navigationClass navigation(drivePub, poseGT);
-    // class for DFS algorithm (included in DFS.hpp)
-    DFSClass DFS(poseGT, scanResult, nextPosition); 
-    
+    // set pointer to GT or odom
+    if(argument == "GT"){
+        DFS.currentPose = poseGT;
+        navigation.currentPose = poseGT; 
+    }
+    else if(argument == "odom"){
+        DFS.currentPose = poseOdom;
+        navigation.currentPose = poseOdom; 
+    }
 
     // starup and waiting for initial sensor data
     while(ros::ok())
     {
-        if(initialLidar && initialGT){
+        if(initialLidar && initialGT && initialOdom){
             cout << "STARTUP complete" << endl; 
             break;             
         }
@@ -185,13 +171,14 @@ int main(int argc, char **argv ) {
     // loop solving the maze
     while(ros::ok())
     {
-
+        // if new position is reached calculate the next movement
         if(positionReached){
             positionReached = false;
             if(DFS.handleNode())
                 break;
         } 
   
+        // navigate to next movement
         if(navigation.moveTo(nextPosition))
             positionReached = true; 
 

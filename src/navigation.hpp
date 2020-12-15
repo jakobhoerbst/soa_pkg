@@ -4,14 +4,14 @@ using namespace std;
 
 class navigationClass{
 public: 
-    navigationClass(ros::Publisher &drive, float pose[3]);
+    navigationClass(ros::Publisher &drive);
     bool moveTo(float desiredPose[2]);
+    float *currentPose;
 
 private: 
     bool motion(ros::Publisher &drive, float desPose[3], float curPose[3]);
     
     int navigationState = 0; 
-    float *currentPose;
     ros::Publisher drivePub;
 
     // setup 
@@ -24,7 +24,7 @@ private:
 
 };
 
-navigationClass::navigationClass(ros::Publisher &drive, float pose[3]): drivePub(drive), currentPose(pose){
+navigationClass::navigationClass(ros::Publisher &drive): drivePub(drive){
 }
 
 ////////////////////////////////      ROTATE    ////////////////////////////////

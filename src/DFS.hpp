@@ -4,25 +4,23 @@ using namespace std;
 
 class DFSClass{
 public: 
-    DFSClass(float pose[3], float scan[360], float nextPos[2]);
+    DFSClass(float scan[360], float nextPos[2]);
     bool handleNode();
+    float *currentPose;
 
 private:
-
-
 
     // SETUP
     const float width           = 1.25;         // kantenlänge ein einem Segment 
     const float wallThickness   = 0.15; 
     const float pathWidth       = 1.1;          // befahrbare Pfadbreit
     const float exitDistance    = 2.5;
-
     // values from using cv::Mat for visualization
     const double closed        = 0.8; 
     const double current       = 0.8;
     const double visited       = 0.4;
 
-    // struct for node information
+    //////////////// directed graph ////////////////
     struct nodestruct{
         double x; 
         double y; 
@@ -31,6 +29,7 @@ private:
 
         int move; 
     };
+    vector<nodestruct> graph;
 
     struct coordinatesStruct{
         double x; 
@@ -38,14 +37,11 @@ private:
     };
     vector<coordinatesStruct> visitedVector;
 
-    float *currentPose;
+    // pointer to main 
     float *scanResult;
     float *nextPosition;
 
-    //////////////// directed graph ////////////////
-    vector<nodestruct> graph;
-
-    //orientation 
+    // orientation 
     int     orientation = 0; 
     float   orientedDistances[5] = {0,0,0,0,0};
 
@@ -65,7 +61,7 @@ private:
 
 };
 
-DFSClass::DFSClass(float pose[3], float scan[360], float nextPos[2]): currentPose(pose), scanResult(scan), nextPosition(nextPos){
+DFSClass::DFSClass(float scan[360], float nextPos[2]): scanResult(scan), nextPosition(nextPos){
     graph.push_back(nodestruct());
     visitedVector.push_back(coordinatesStruct()); 
 }
