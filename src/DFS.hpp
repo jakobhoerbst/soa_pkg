@@ -7,6 +7,7 @@ public:
     DFSClass(float scan[360], float nextPos[2]);
     bool handleNode();
     float *currentPose;
+    int getNodeNumber();
 
 private:
 
@@ -66,7 +67,14 @@ DFSClass::DFSClass(float scan[360], float nextPos[2]): scanResult(scan), nextPos
     visitedVector.push_back(coordinatesStruct()); 
 }
 
-////////////////////////////handleNode       ////////////////////////////
+////////////////////////////      getNodeNumber     ////////////////////////////
+int DFSClass::getNodeNumber(){
+
+    return graph.size();
+
+}
+
+////////////////////////////       handleNode       ////////////////////////////
 bool DFSClass::handleNode(){
    
     cout << "__________________________________" << endl; 

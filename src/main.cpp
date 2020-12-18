@@ -27,11 +27,13 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include "std_msgs/Int8.h"
 #include "gazebo_msgs/ModelStates.h"
 #include <vector>
+
     
 // own header                                                   
 #include "operations.hpp"
 #include "DFS.hpp"
 #include "navigation.hpp"
+#include "dataRecording.hpp"
 
 using namespace std;
 
@@ -52,6 +54,10 @@ bool positionReached = true;
 
 // next Position from DFS to navigation
 float nextPosition[2] = {0,0};
+
+// for time measurement
+long currentSeconds = 0; 
+long initialSeconds = 0; 
 
 ////////////////////////////////       SUB      ////////////////////////////////
 ////////////////////////////////       SUB      ////////////////////////////////
@@ -108,6 +114,8 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
     for(int i = 0; i < 360; i++)
         scanResult[359-i] = (LiDAR->ranges[i]);
 
+    currentSeconds = LiDAR->header.stamp.sec; 
+
 }
 
 ////////////////////////////////      main      ////////////////////////////////
@@ -128,6 +136,21 @@ int main(int argc, char **argv ) {
         return 0;     
     }
 
+/*
+        
+        // creates datatype
+        ofstream csvDataInput;
+        // reads csvFile, ios::app = adds text at the end of the file
+	    csvDataInput.open("testResults.csv", ios::in | ios::app);
+        if (csvDataInput.is_open()) 
+	    {
+		    csvDataInput << "\nStart of new Program cycle.   ";	
+	    }else
+        {
+            cout << "Could not load CSV-File" << endl;
+            return 0;
+        }  
+*/
     //////////////// ROS ////////////////
     ros::init(argc, argv, "DFSnode");
     ros::NodeHandle nh("~"); 
@@ -147,6 +170,9 @@ int main(int argc, char **argv ) {
     // classes for navigation and DFS algorithm
     navigationClass navigation(drivePub);
     DFSClass DFS(scanResult, nextPosition);
+    dataRecording CSV(argument);
+    
+    CSV.start();
 
     // set pointer to GT or odom
     if(argument == "GT"){
@@ -163,8 +189,10 @@ int main(int argc, char **argv ) {
     {
         if(initialLidar && initialGT && initialOdom){
             cout << "STARTUP complete" << endl; 
+            initialSeconds = currentSeconds; 
             break;             
         }
+
         ros::spinOnce();
     }
 
@@ -174,8 +202,12 @@ int main(int argc, char **argv ) {
         // if new position is reached calculate the next movement
         if(positionReached){
             positionReached = false;
-            if(DFS.handleNode())
+            if(DFS.handleNode()){
+                CSV.writeSuccess(DFS.getNodeNumber(), (currentSeconds-initialSeconds));
                 break;
+
+            }
+
         } 
   
         // navigate to next movement
@@ -185,6 +217,14 @@ int main(int argc, char **argv ) {
         ros::spinOnce();
         
     }  
+/*
+        // Write data to csv
+        //unsigned int counterNodes = navigation.cntNode; 
+        cout << "Counter Nodes: " << DFS.getNodeNumber() << endl;
+        csvDataInput << "Counter Nodes: ";
+        csvDataInput << DFS.getNodeNumber();
+        csvDataInput.close();
 
+*/
 return 0; 
 }
