@@ -11,7 +11,7 @@ Panels:
         - /LaserScan1
         - /LaserScan1/Autocompute Value Bounds1
       Splitter Ratio: 0.6029411554336548
-    Tree Height: 593
+    Tree Height: 359
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -258,25 +258,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 16.170732498168945
+      Distance: 19.07077980041504
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.7985023260116577
-        Y: -3.2820653915405273
-        Z: -1.495271862950176e-5
+        X: 0.49059221148490906
+        Y: -4.2771782875061035
+        Z: -1.399904431309551e-5
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.119796633720398
+      Pitch: 1.1747965812683105
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 4.683608055114746
+      Yaw: 4.708606719970703
     Saved: ~
 Window Geometry:
   Displays:
@@ -294,5 +294,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1141
-  X: 770
+  X: 769
   Y: 28
