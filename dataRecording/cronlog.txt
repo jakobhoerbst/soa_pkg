@@ -1,0 +1,32 @@
+
+PROJECT 2 - starting
+
+note 1: killing running gazebo processes
+note 2: killing all running roscore & rosmaster
+
+random x: 3.125
+random y: 3.125
+
+# Option “-e” is deprecated and might be removed in a later version of gnome-terminal.
+# Use “-- ” to terminate the options and put the command line to execute after it.
+# Failed to parse arguments: Cannot open display: 
+
+Press "q" key to quit and kill all
+
+see you
+
+PROJECT 2 - starting
+
+note 1: killing running gazebo processes
+note 2: killing all running roscore & rosmaster
+
+random x: -1.875
+random y: -1.875
+
+# Option “-e” is deprecated and might be removed in a later version of gnome-terminal.
+# Use “-- ” to terminate the options and put the command line to execute after it.
+# Failed to parse arguments: Cannot open display: 
+
+Press "q" key to quit and kill all
+
+see you

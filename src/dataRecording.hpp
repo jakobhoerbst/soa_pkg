@@ -24,7 +24,7 @@ class dataRecording{
        
     private:
         ofstream csvFile;
-        string fileName = "dataRecording/testResult_";
+        string fileName = "/home/jakob/SOA_ws/src/soa_pkg/dataRecording/testResult_";
         int openFile();
         void closeFile();
 
@@ -63,7 +63,7 @@ int dataRecording::start(){
     int year = 1900 + ltm->tm_year;
     int month = 1 + ltm->tm_mon;
     int day = ltm->tm_mday;
-    int hour =  ((ltm->tm_hour)+9)%24;
+    int hour =  ltm->tm_hour;
     int minute = ltm->tm_min;
     int second = ltm->tm_sec;
 
