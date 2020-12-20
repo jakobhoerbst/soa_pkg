@@ -4,24 +4,23 @@ next steps:
 
 sources: 
 time
-https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
+https://www.tutorialspoint.com/cplusplus/cpp_date_time.html
+https://en.cppreference.com/w/cpp/chrono
 
 */
+
 #include <fstream>
-
 #include <ctime>
-
+#include <chrono>
 
 using namespace std;
-
 
 class dataRecording{
     public:
         dataRecording(string argument);
         int start();
-        void writeSuccess(int usedNodes, long duration);
+        void writeSuccess(int usedNodes, long duration,std::chrono::duration<double> durationReal);
 
-       
     private:
         ofstream csvFile;
         string fileName = "dataRecording/testResult_";
@@ -31,10 +30,8 @@ class dataRecording{
 };
 
 dataRecording::dataRecording(string argument){
-
     fileName += argument;
     fileName += ".csv"; 
-
 }
 
 int dataRecording::openFile(){
@@ -45,18 +42,14 @@ int dataRecording::openFile(){
         cin.get();
         return 0;
     }  
-
 }
 
 void dataRecording::closeFile(){
-
     csvFile.close(); 
-
 }
 
 
 int dataRecording::start(){
-
     time_t now = time(NULL);
     tm *ltm = localtime(&now);
 
@@ -73,20 +66,12 @@ int dataRecording::start(){
     closeFile();
 }
 
-void dataRecording::writeSuccess(int usedNodes, long duration){
+void dataRecording::writeSuccess(int usedNodes, long duration,std::chrono::duration<double> durationReal){
+    std::cout << std::endl << "duration: " << durationReal.count() << "s"<< std::endl;
 
     openFile(); 
-	csvFile << usedNodes << "; " << int(duration/60) << ":" << (duration%60) << "; ESCAPED;";	
+	csvFile << usedNodes << "; " << int(duration/60) << ":" << (duration%60) << "; ESCAPED; ";
+    csvFile << (long(durationReal.count())/60) << ":" << (long(durationReal.count())%60) <<";";
     closeFile();
-
 }
 
-
-/*
-// Write data to csv
-unsigned int counterNodes = navigation.cntNode; 
-cout << "Counter Nodes: " << navigation.cntNode << endl;
-csvDataInput << "Counter Nodes: ";
-csvDataInput << counterNodes;
-csvDataInput.close();
-*/

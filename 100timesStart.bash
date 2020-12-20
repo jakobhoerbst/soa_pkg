@@ -12,6 +12,7 @@ do
     killall -9 gzclient
     killall -9 roscore
     killall -9 rosmaster
+    killall -9 rviz
     rosnode kill --all
     sleep 5
 
@@ -35,5 +36,5 @@ do
     rosrun soa_pkg main GT&
 
     echo "TEST RUN: " $i 
-    sleep 400
+    sleep 900
 done

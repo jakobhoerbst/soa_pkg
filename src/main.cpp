@@ -27,7 +27,7 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 #include "std_msgs/Int8.h"
 #include "gazebo_msgs/ModelStates.h"
 #include <vector>
-
+#include <chrono>
     
 // own header                                                   
 #include "operations.hpp"
@@ -189,12 +189,14 @@ int main(int argc, char **argv ) {
     {
         if(initialLidar && initialGT && initialOdom){
             cout << "STARTUP complete" << endl; 
-            initialSeconds = currentSeconds; 
+            initialSeconds = currentSeconds;
+
             break;             
         }
 
         ros::spinOnce();
     }
+    auto start = std::chrono::high_resolution_clock::now(); 
 
     // loop solving the maze
     while(ros::ok())
@@ -203,7 +205,9 @@ int main(int argc, char **argv ) {
         if(positionReached){
             positionReached = false;
             if(DFS.handleNode()){
-                CSV.writeSuccess(DFS.getNodeNumber(), (currentSeconds-initialSeconds));
+                auto finish = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> durationReal = finish - start;
+                CSV.writeSuccess(DFS.getNodeNumber(), (currentSeconds-initialSeconds), durationReal);
                 break;
 
             }
@@ -226,5 +230,6 @@ int main(int argc, char **argv ) {
         csvDataInput.close();
 
 */
+    system("~jakob/SOA_ws/src/soa_pkg/kill.bash");
 return 0; 
 }
