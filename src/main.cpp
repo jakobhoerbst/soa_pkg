@@ -136,21 +136,6 @@ int main(int argc, char **argv ) {
         return 0;     
     }
 
-/*
-        
-        // creates datatype
-        ofstream csvDataInput;
-        // reads csvFile, ios::app = adds text at the end of the file
-	    csvDataInput.open("testResults.csv", ios::in | ios::app);
-        if (csvDataInput.is_open()) 
-	    {
-		    csvDataInput << "\nStart of new Program cycle.   ";	
-	    }else
-        {
-            cout << "Could not load CSV-File" << endl;
-            return 0;
-        }  
-*/
     //////////////// ROS ////////////////
     ros::init(argc, argv, "DFSnode");
     ros::NodeHandle nh("~"); 
@@ -221,15 +206,7 @@ int main(int argc, char **argv ) {
         ros::spinOnce();
         
     }  
-/*
-        // Write data to csv
-        //unsigned int counterNodes = navigation.cntNode; 
-        cout << "Counter Nodes: " << DFS.getNodeNumber() << endl;
-        csvDataInput << "Counter Nodes: ";
-        csvDataInput << DFS.getNodeNumber();
-        csvDataInput.close();
 
-*/
     system("~jakob/SOA_ws/src/soa_pkg/kill.bash");
 return 0; 
 }
