@@ -26,9 +26,9 @@ var NAVTREE =
     [ "Description", "index.html#autotoc_md1", null ],
     [ "Install", "index.html#autotoc_md2", null ],
     [ "Starting", "index.html#autotoc_md3", null ],
-    [ "How it works", "index.html#autotoc_md4", [
-      [ "ros commands:", "index.html#autotoc_md5", null ],
-      [ "git commands:", "index.html#autotoc_md6", null ]
+    [ "For editors quick commands", "index.html#autotoc_md4", [
+      [ "Usefull ROS commands:", "index.html#autotoc_md5", null ],
+      [ "Usefull GIT commands:", "index.html#autotoc_md6", null ]
     ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],

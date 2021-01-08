@@ -4,7 +4,8 @@ SOAR: Turtlebot Waffle Labyrinth Algorithm
 
 ## Description
 Student semester project in service and objectoriented algorithms in robotics (soar) @ FHTW
-See Doxygen documentation under /docs/html/index.html
+
+See Doxygen documentation [here](index.html)
 
 ## Install
 
@@ -20,12 +21,8 @@ See Doxygen documentation under /docs/html/index.html
 `$ cd /PathTo/soa_pkg`  
 `$ bash SOA.sh`
 
-# How it works
-See paper in /doc
-
-
-## ros commands:
-
+## For editors quick commands
+### Usefull ROS commands:
 
 `rqt`       - startet rqt explorer, damit kann man topics anzeigen, schreiben und zb. auf cmd vel schreiben. 
 
@@ -34,7 +31,7 @@ See paper in /doc
 `roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch` - öffnet Teleoperator Manuelle Steuerung Turtlebot
 
 
-## git commands: 
+### Usefull GIT commands: 
 
 `git pull` - pull request fuer den aktuellen Stand vom git (am besten immer machen bevor man zu arbeiten beginnt. 
 
