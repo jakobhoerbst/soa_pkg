@@ -1,20 +1,42 @@
+/*     
+    Maze Solving Algorithm:
+    operations 
+    Version 1
+    Autor: Hoerbst
+    Contributor: Gmeiner
+ */
+
 #include <math.h>
 #include <vector>
 
 using namespace std;
 
-struct Quaternion {
+/*! \brief Quaternion Values
+ *
+ *   
+ */
+struct Quaternion
+{
     double w, x, y, z;
 };
 
-struct EulerAngles {
+/*! \brief Euler Values
+ *
+ *  
+ */
+struct EulerAngles
+{
     double roll, pitch, yaw;
 };
 
 const double PI = 3.14159265359;
 
-EulerAngles ToEulerAngles(Quaternion q) {
-
+/*! \brief Quaternion to Euler Angle transformation
+ *
+ *  Transformation based on https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+ */
+EulerAngles ToEulerAngles(Quaternion q)
+{
     EulerAngles angles;
 
     // roll (x-axis rotation)
@@ -37,9 +59,12 @@ EulerAngles ToEulerAngles(Quaternion q) {
     return angles;
 }
 
+/*! \brief Euler Angles to Quaternion Transformation
+ *
+ *  Transformation based on https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+ */
 Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch (Y), roll (X)
 {
-
     double cy = cos(yaw * 0.5);
     double sy = sin(yaw * 0.5);
     double cp = cos(pitch * 0.5);
@@ -56,13 +81,22 @@ Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch
     return q;
 }
 
-void angleTo360(double &angle){
+/*! \brief brief descr
+ *
+ *  Detailed description starts here.
+ */
+void angleTo360(double &angle)
+{
     if(angle < 0) 
         angle = -angle; 
     else
         angle = 360 - angle; 
 }
 
+/*! \brief brief descr
+ *
+ *  Detailed description starts here.
+ */
 float mapValue(float x, float in_min, float in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

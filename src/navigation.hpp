@@ -1,44 +1,59 @@
+/*     
+    Maze Solving Algorithm:
+    navigations 
+    Version 1
+    Autor: Hoerbst
+    Contributor: Gmeiner
+ */
+
 #include "ros/ros.h"
                    
 using namespace std;
 
-class navigationClass{
-public: 
-    navigationClass(ros::Publisher &drive);
-    bool moveTo(float desiredPose[2]);
-    float *currentPose;
+/*! \brief brief descr
+ *
+ *  Detailed description starts here.
+ */
+class navigationClass
+{
+    public: 
+        navigationClass(ros::Publisher &drive);     
+        bool moveTo(float desiredPose[2]);          
+        float *currentPose;                         /*!< Pointer to main */
 
-private: 
-    bool motion(ros::Publisher &drive, float desPose[3], float curPose[3]);
-    
-    int navigationState = 0; 
-    ros::Publisher drivePub;
+    private: 
+        bool motion(ros::Publisher &drive, float desPose[3], float curPose[3]);
+        
+        int navigationState = 0; 
+        ros::Publisher drivePub;
 
-    // setup 
-    const float toleranceDistance = 0.1;  
-    const float toleranceAngle = 2; 
-    const float toleranceAngleLinVel = 30; 
-    const float angularVel = 1;
-    const float linearVel = 0.3;
-    const float decelDist = 0.5;
-
+        const float toleranceDistance = 0.1;        /*!< setup */
+        const float toleranceAngle = 2;             /*!< setup */ 
+        const float toleranceAngleLinVel = 30;      /*!< setup */ 
+        const float angularVel = 1;                 /*!< setup */
+        const float linearVel = 0.3;                /*!< setup */
+        const float decelDist = 0.5;                /*!< setup */
 };
+/*! \brief Brauchts den? der ist ja leer .... 
+ *
+ *  Detailed description starts here.
+ */
+navigationClass::navigationClass(ros::Publisher &drive): drivePub(drive){}
 
-navigationClass::navigationClass(ros::Publisher &drive): drivePub(drive){
-}
-
-////////////////////////////////      ROTATE    ////////////////////////////////
-bool navigationClass::moveTo(float desiredPose[2]){
-
+/*! \brief brief descr
+ *
+ *  Detailed description starts here.
+ */
+bool navigationClass::moveTo(float desiredPose[2])
+{
     float desiredAngle; 
-    switch(navigationState){
+    switch(navigationState)
+    {
         // waiting for new goals
         case 0: 
             navigationState ++;
             cout << "TURTLEBOT MOTION:" << endl; 
-            cout << "  new state: " << navigationState << ":   New goal received" << endl; 
-            //cout << "desPosition " << desiredPose[0] << ", " << desiredPose[1] << endl;
-            //cout << "curPosition " << currentPose[0] << ", " << currentPose[1] << endl;     
+            cout << "  new state: " << navigationState << ":   New goal received" << endl;    
             break; 
 
         // publish nav_status: in motion 
@@ -57,7 +72,8 @@ bool navigationClass::moveTo(float desiredPose[2]){
 
         // align towards new goal
         case 3: 
-            if(motion(drivePub, desiredPose, currentPose)){
+            if(motion(drivePub, desiredPose, currentPose))
+            {
                 navigationState ++; 
                 cout << "  new state: " << navigationState << ":   Goal reached" << endl;
             }
@@ -65,21 +81,23 @@ bool navigationClass::moveTo(float desiredPose[2]){
 
         // drive to new goal 
         case 4: 
-
             navigationState = 0;       
             return true;
     }
-
     return false; 
 }
 
-////////////////////////////////      ROTATE    ////////////////////////////////
-bool navigationClass::motion(ros::Publisher &drive, float desPose[3], float curPose[3]){
-
+/*! \brief brief descr
+ *
+ *  Detailed description starts here.
+ */
+bool navigationClass::motion(ros::Publisher &drive, float desPose[3], float curPose[3])
+{
     float difPose[3] = {0,0,0}; 
 
     // calculate absolute angle to goal     
-    for(int i = 0; i < 2; i++){    
+    for(int i = 0; i < 2; i++)
+    {    
         difPose[i] = desPose[i] - curPose[i];
         if(abs(difPose[i]) <  toleranceDistance) 
             difPose[i] = 0;          
@@ -102,22 +120,21 @@ bool navigationClass::motion(ros::Publisher &drive, float desPose[3], float curP
 
     geometry_msgs::Twist driveVal;
 
-    if(distToGoal > toleranceDistance){
-
+    if(distToGoal > toleranceDistance)
+    {
         driveVal.angular.z = mapValue(relAngle, -90, 90, -angularVel, angularVel);
 
         driveVal.linear.x = mapValue(abs(relAngle), 0, toleranceAngleLinVel, linearVel, 0);
         if(distToGoal < decelDist)   
             driveVal.linear.x = mapValue(driveVal.linear.x, decelDist, 0, driveVal.linear.x, 0);
         drive.publish(driveVal);
-
     }
-    else{
+    else
+    {
         driveVal.angular.z = 0;
         driveVal.linear.x = 0;
         drive.publish(driveVal);
         return 1; 
     }
-
     return 0;  
 }

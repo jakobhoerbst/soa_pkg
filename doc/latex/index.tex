@@ -1,0 +1,38 @@
+S\+O\+AR\+: Turtlebot Waffle Labyrinth Algorithm\hypertarget{index_autotoc_md1}{}\doxysubsection{Description}\label{index_autotoc_md1}
+short text\hypertarget{index_autotoc_md2}{}\doxysubsection{Install}\label{index_autotoc_md2}
+
+\begin{DoxyEnumerate}
+\item Go to your catkin workspace and download the rep ~\newline
+ {\ttfamily \$ cd catkin\+\_\+ws/src} ~\newline
+ {\ttfamily \$ git clone \href{https://github.com/jakobhoerbst/soa_pkg/}{\texttt{ https\+://github.\+com/jakobhoerbst/soa\+\_\+pkg/}}}
+\item Install Package via catkin\+\_\+make ~\newline
+ {\ttfamily \$ cd catkin\+\_\+ws} or {\ttfamily \$ cd ..} ~\newline
+ {\ttfamily \$ catkin\+\_\+make}
+\end{DoxyEnumerate}\hypertarget{index_autotoc_md3}{}\doxysubsection{Starting}\label{index_autotoc_md3}
+{\ttfamily \$ cd /\+Path\+To/soa\+\_\+pkg} ~\newline
+ {\ttfamily \$ bash S\+O\+A.\+sh}\hypertarget{index_autotoc_md4}{}\doxysubsection{How it works}\label{index_autotoc_md4}
+textwithpictures\hypertarget{index_autotoc_md5}{}\doxysubsubsection{ros commands\+:}\label{index_autotoc_md5}
+{\ttfamily rqt} -\/ startet rqt explorer, damit kann man topics anzeigen, schreiben und zb. auf cmd vel schreiben.
+
+{\ttfamily gzclient} -\/ öffnet gazebo (wenn die gui zb. im launchfile deaktiviert ist)
+
+{\ttfamily roslaunch turtlebot3\+\_\+teleop turtlebot3\+\_\+teleop\+\_\+key.\+launch} -\/ öffnet Teleoperator Manuelle Steuerung Turtlebot\hypertarget{index_autotoc_md6}{}\doxysubsubsection{git commands\+:}\label{index_autotoc_md6}
+{\ttfamily git pull} -\/ pull request fuer den aktuellen Stand vom git (am besten immer machen bevor man zu arbeiten beginnt.
+
+{\ttfamily git add .} -\/ fuegt alle files hinzu (statt dem punkt können auch einzelne files ausgewaehlt werden)
+
+{\ttfamily git status} -\/ zeigt Aenderungen vom aktuellen Stand auf deiner Maschine im Vgl. zum Git an.
+
+{\ttfamily git commit -\/m \char`\"{}hierstehtdein\+Kommentar\char`\"{}} -\/ den folgenden push kommentieren
+
+{\ttfamily git push} -\/ push des aktuellen Stands
+
+{\ttfamily git push origin \mbox{[}name\+\_\+of\+\_\+your\+\_\+new\+\_\+branch\mbox{]}} -\/ push von dem aktuellen branch
+
+{\ttfamily git checkout -\/b \mbox{[}name\+\_\+of\+\_\+your\+\_\+new\+\_\+branch\mbox{]}} -\/ neuer branch auf local machine erstellen
+
+{\ttfamily git checkout \mbox{[}branch name\mbox{]}} -\/ change branch
+
+{\ttfamily git branch -\/d local\+Branch\+Name} -\/ delete branch locally
+
+{\ttfamily git push origin -\/-\/delete remote\+Branch\+Name} -\/ delete branch remotely 

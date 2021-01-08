@@ -1,7 +1,5 @@
 /*
 
-next steps: 
-
 sources: 
 time
 https://www.tutorialspoint.com/cplusplus/cpp_date_time.html
@@ -9,12 +7,18 @@ https://en.cppreference.com/w/cpp/chrono
 
 */
 
+#include <iostream>
 #include <fstream>
 #include <ctime>
 #include <chrono>
 
 using namespace std;
 
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
 class dataRecording{
     public:
         dataRecording(string argument);

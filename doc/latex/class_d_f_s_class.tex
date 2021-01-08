@@ -1,0 +1,326 @@
+\hypertarget{class_d_f_s_class}{}\doxysubsection{D\+F\+S\+Class Class Reference}
+\label{class_d_f_s_class}\index{DFSClass@{DFSClass}}
+
+
+Logic Depth-\/\+First Search Algorithm.  
+
+
+
+
+{\ttfamily \#include $<$D\+F\+S.\+hpp$>$}
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_d_f_s_class_1_1coordinates_struct}{coordinates\+Struct}}
+\item 
+struct \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_d_f_s_class_a18aa64869e8fdf230bce47dc848ce10a}{D\+F\+S\+Class}} (float \mbox{\hyperlink{class_d_f_s_class_a6730ccf5caf7d606984f6f9d02044913}{scan}}\mbox{[}360\mbox{]}, float next\+Pos\mbox{[}2\mbox{]})
+\begin{DoxyCompactList}\small\item\em Logic Depth-\/\+First Search Algorithm. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_f_s_class_a01dcc15c8249d59dd5ae6a4b2b16d12b}{handle\+Node}} ()
+\begin{DoxyCompactList}\small\item\em Short Expl. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_d_f_s_class_a9e169c4bae8720415f7c0e9639316cb0}{get\+Node\+Number}} ()
+\begin{DoxyCompactList}\small\item\em Short Expl. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float $\ast$ \mbox{\hyperlink{class_d_f_s_class_a01cad46a31a9afe96e097423c9e14af2}{current\+Pose}}
+\begin{DoxyCompactList}\small\item\em Pointer to main for current\+Pose. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_d_f_s_class_abf2982df0324a4690f84b1ddc8a102c3}{directions}} ()
+\begin{DoxyCompactList}\small\item\em Calculates mean distances. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_f_s_class_a8999cca86a19b0e288d03605ba027837}{check\+Exit}} ()
+\begin{DoxyCompactList}\small\item\em Checks if exit is reached yet. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{class_d_f_s_class_a3145f5e44dc55ca1c10856c0a76da287}{get\+Orientation}} ()
+\begin{DoxyCompactList}\small\item\em Gets the current Orientation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_f_s_class_a0241e1a35bcf0e8f0b30d6436cd45423}{set\+Status}} (vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&node, double new\+Status)
+\begin{DoxyCompactList}\small\item\em Brief description. Brief description continued. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_f_s_class_a6730ccf5caf7d606984f6f9d02044913}{scan}} (vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&node)
+\begin{DoxyCompactList}\small\item\em Brief description. Brief description continued. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_f_s_class_ad09d68eeae124b5f0bc729216accd478}{check\+If\+Visited}} (vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&node)
+\begin{DoxyCompactList}\small\item\em Brief description. Brief description continued. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_f_s_class_ac98ea9a8dfd799c16eec41479d7644f9}{correct\+Node\+Position}} (vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&node)
+\begin{DoxyCompactList}\small\item\em Brief description. Brief description continued. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_f_s_class_aa83fb06c9496719637a2f629fd2505ed}{print\+Node}} (vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ current\+Node)
+\begin{DoxyCompactList}\small\item\em Brief description. Brief description continued. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const float \mbox{\hyperlink{class_d_f_s_class_a50d5a2270f2247effe2b8c33acaa63d5}{width}} = 1.\+25
+\item 
+const float \mbox{\hyperlink{class_d_f_s_class_ae18ad8eea6966ce538ebfa0c4b0a1bef}{wall\+Thickness}} = 0.\+15
+\item 
+const float \mbox{\hyperlink{class_d_f_s_class_ab96eb841de9dfa5da8a7a46082ccf758}{path\+Width}} = 1.\+1
+\item 
+const float \mbox{\hyperlink{class_d_f_s_class_a95eaece2797a62928d5eac91567729dc}{exit\+Distance}} = 2.\+5
+\item 
+const double \mbox{\hyperlink{class_d_f_s_class_ad27f77cedbd8cf02faecc1f02f1ad610}{closed}} = 0.\+8
+\item 
+const double \mbox{\hyperlink{class_d_f_s_class_a16a7c60dc8ebcb90e83fc4e5c94abab4}{current}} = 0.\+8
+\item 
+const double \mbox{\hyperlink{class_d_f_s_class_abc3bb9f60265c9750ec0e5d17797446a}{visited}} = 0.\+4
+\item 
+vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \mbox{\hyperlink{class_d_f_s_class_a7f88dc12e7766542f0499f5056738ebc}{graph}}
+\item 
+vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1coordinates_struct}{coordinates\+Struct}} $>$ \mbox{\hyperlink{class_d_f_s_class_ac4a3dd267ebf4a3dcbdc92b17c6d0a62}{visited\+Vector}}
+\item 
+float $\ast$ \mbox{\hyperlink{class_d_f_s_class_a18ea9cc59dcb23e3292444c399775329}{scan\+Result}}
+\item 
+float $\ast$ \mbox{\hyperlink{class_d_f_s_class_a521726c6f8a23bbe42022449fdbac4a5}{next\+Position}}
+\item 
+int \mbox{\hyperlink{class_d_f_s_class_a4c79b98cf2ae0bd10cb1c46a6addda0c}{orientation}} = 0
+\item 
+float \mbox{\hyperlink{class_d_f_s_class_a7410d9e5a2b0cb101f637fef98fbc749}{oriented\+Distances}} \mbox{[}5\mbox{]} = \{0,0,0,0,0\}
+\item 
+bool \mbox{\hyperlink{class_d_f_s_class_ae7adc33e2ad50c203d41fbc8c9189105}{new\+Movement}} = true
+\item 
+bool \mbox{\hyperlink{class_d_f_s_class_a59c36b9d7148f96503305f217dd7c0a2}{escaped}} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Detailed Description}
+Logic Depth-\/\+First Search Algorithm. 
+
+Long description \mbox{\hyperlink{class_d_f_s_class}{D\+F\+S\+Class}} 
+
+\doxysubsubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_d_f_s_class_a18aa64869e8fdf230bce47dc848ce10a}\label{class_d_f_s_class_a18aa64869e8fdf230bce47dc848ce10a}} 
+\index{DFSClass@{DFSClass}!DFSClass@{DFSClass}}
+\index{DFSClass@{DFSClass}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{DFSClass()}{DFSClass()}}
+{\footnotesize\ttfamily D\+F\+S\+Class\+::\+D\+F\+S\+Class (\begin{DoxyParamCaption}\item[{float}]{scan\mbox{[}360\mbox{]},  }\item[{float}]{next\+Pos\mbox{[}2\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Logic Depth-\/\+First Search Algorithm. 
+
+Long description \mbox{\hyperlink{class_d_f_s_class}{D\+F\+S\+Class}} 
+\begin{DoxyParams}{Parameters}
+{\em scan} & \mbox{[}360\mbox{]} Description \\
+\hline
+{\em next\+Pos} & \mbox{[}2\mbox{]} Description \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_d_f_s_class_a8999cca86a19b0e288d03605ba027837}\label{class_d_f_s_class_a8999cca86a19b0e288d03605ba027837}} 
+\index{DFSClass@{DFSClass}!checkExit@{checkExit}}
+\index{checkExit@{checkExit}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{checkExit()}{checkExit()}}
+{\footnotesize\ttfamily bool D\+F\+S\+Class\+::check\+Exit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks if exit is reached yet. 
+
+This Method checks if the robot has reached one exit of the maze by ... \mbox{\Hypertarget{class_d_f_s_class_ad09d68eeae124b5f0bc729216accd478}\label{class_d_f_s_class_ad09d68eeae124b5f0bc729216accd478}} 
+\index{DFSClass@{DFSClass}!checkIfVisited@{checkIfVisited}}
+\index{checkIfVisited@{checkIfVisited}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{checkIfVisited()}{checkIfVisited()}}
+{\footnotesize\ttfamily bool D\+F\+S\+Class\+::check\+If\+Visited (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Brief description. Brief description continued. 
+
+Detailed description starts here. \mbox{\Hypertarget{class_d_f_s_class_ac98ea9a8dfd799c16eec41479d7644f9}\label{class_d_f_s_class_ac98ea9a8dfd799c16eec41479d7644f9}} 
+\index{DFSClass@{DFSClass}!correctNodePosition@{correctNodePosition}}
+\index{correctNodePosition@{correctNodePosition}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{correctNodePosition()}{correctNodePosition()}}
+{\footnotesize\ttfamily void D\+F\+S\+Class\+::correct\+Node\+Position (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Brief description. Brief description continued. 
+
+Detailed description starts here. \mbox{\Hypertarget{class_d_f_s_class_abf2982df0324a4690f84b1ddc8a102c3}\label{class_d_f_s_class_abf2982df0324a4690f84b1ddc8a102c3}} 
+\index{DFSClass@{DFSClass}!directions@{directions}}
+\index{directions@{directions}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{directions()}{directions()}}
+{\footnotesize\ttfamily void D\+F\+S\+Class\+::directions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Calculates mean distances. 
+
+Calculates mean distances to fall for front, right, back, left side of turtle \mbox{\Hypertarget{class_d_f_s_class_a9e169c4bae8720415f7c0e9639316cb0}\label{class_d_f_s_class_a9e169c4bae8720415f7c0e9639316cb0}} 
+\index{DFSClass@{DFSClass}!getNodeNumber@{getNodeNumber}}
+\index{getNodeNumber@{getNodeNumber}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{getNodeNumber()}{getNodeNumber()}}
+{\footnotesize\ttfamily int D\+F\+S\+Class\+::get\+Node\+Number (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Short Expl. 
+
+Long Expl.... \mbox{\Hypertarget{class_d_f_s_class_a3145f5e44dc55ca1c10856c0a76da287}\label{class_d_f_s_class_a3145f5e44dc55ca1c10856c0a76da287}} 
+\index{DFSClass@{DFSClass}!getOrientation@{getOrientation}}
+\index{getOrientation@{getOrientation}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{getOrientation()}{getOrientation()}}
+{\footnotesize\ttfamily int D\+F\+S\+Class\+::get\+Orientation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Gets the current Orientation. 
+
+more info ... \mbox{\Hypertarget{class_d_f_s_class_a01dcc15c8249d59dd5ae6a4b2b16d12b}\label{class_d_f_s_class_a01dcc15c8249d59dd5ae6a4b2b16d12b}} 
+\index{DFSClass@{DFSClass}!handleNode@{handleNode}}
+\index{handleNode@{handleNode}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{handleNode()}{handleNode()}}
+{\footnotesize\ttfamily bool D\+F\+S\+Class\+::handle\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Short Expl. 
+
+Long Expl.... \mbox{\Hypertarget{class_d_f_s_class_aa83fb06c9496719637a2f629fd2505ed}\label{class_d_f_s_class_aa83fb06c9496719637a2f629fd2505ed}} 
+\index{DFSClass@{DFSClass}!printNode@{printNode}}
+\index{printNode@{printNode}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{printNode()}{printNode()}}
+{\footnotesize\ttfamily void D\+F\+S\+Class\+::print\+Node (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$}]{current\+Node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Brief description. Brief description continued. 
+
+Detailed description starts here. \mbox{\Hypertarget{class_d_f_s_class_a6730ccf5caf7d606984f6f9d02044913}\label{class_d_f_s_class_a6730ccf5caf7d606984f6f9d02044913}} 
+\index{DFSClass@{DFSClass}!scan@{scan}}
+\index{scan@{scan}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{scan()}{scan()}}
+{\footnotesize\ttfamily void D\+F\+S\+Class\+::scan (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Brief description. Brief description continued. 
+
+Detailed description starts here. \mbox{\Hypertarget{class_d_f_s_class_a0241e1a35bcf0e8f0b30d6436cd45423}\label{class_d_f_s_class_a0241e1a35bcf0e8f0b30d6436cd45423}} 
+\index{DFSClass@{DFSClass}!setStatus@{setStatus}}
+\index{setStatus@{setStatus}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{setStatus()}{setStatus()}}
+{\footnotesize\ttfamily void D\+F\+S\+Class\+::set\+Status (\begin{DoxyParamCaption}\item[{vector$<$ \mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}} $>$ \&}]{node,  }\item[{double}]{new\+Status }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Brief description. Brief description continued. 
+
+Detailed description starts here. 
+
+\doxysubsubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_d_f_s_class_ad27f77cedbd8cf02faecc1f02f1ad610}\label{class_d_f_s_class_ad27f77cedbd8cf02faecc1f02f1ad610}} 
+\index{DFSClass@{DFSClass}!closed@{closed}}
+\index{closed@{closed}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{closed}{closed}}
+{\footnotesize\ttfamily const double D\+F\+S\+Class\+::closed = 0.\+8\hspace{0.3cm}{\ttfamily [private]}}
+
+Values from using cv\+::\+Mat for Visualization \mbox{\Hypertarget{class_d_f_s_class_a16a7c60dc8ebcb90e83fc4e5c94abab4}\label{class_d_f_s_class_a16a7c60dc8ebcb90e83fc4e5c94abab4}} 
+\index{DFSClass@{DFSClass}!current@{current}}
+\index{current@{current}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{current}{current}}
+{\footnotesize\ttfamily const double D\+F\+S\+Class\+::current = 0.\+8\hspace{0.3cm}{\ttfamily [private]}}
+
+Values from using cv\+::\+Mat for Visualization \mbox{\Hypertarget{class_d_f_s_class_a01cad46a31a9afe96e097423c9e14af2}\label{class_d_f_s_class_a01cad46a31a9afe96e097423c9e14af2}} 
+\index{DFSClass@{DFSClass}!currentPose@{currentPose}}
+\index{currentPose@{currentPose}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{currentPose}{currentPose}}
+{\footnotesize\ttfamily float$\ast$ D\+F\+S\+Class\+::current\+Pose}
+
+
+
+Pointer to main for current\+Pose. 
+
+\mbox{\Hypertarget{class_d_f_s_class_a59c36b9d7148f96503305f217dd7c0a2}\label{class_d_f_s_class_a59c36b9d7148f96503305f217dd7c0a2}} 
+\index{DFSClass@{DFSClass}!escaped@{escaped}}
+\index{escaped@{escaped}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{escaped}{escaped}}
+{\footnotesize\ttfamily bool D\+F\+S\+Class\+::escaped = false\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{class_d_f_s_class_a95eaece2797a62928d5eac91567729dc}\label{class_d_f_s_class_a95eaece2797a62928d5eac91567729dc}} 
+\index{DFSClass@{DFSClass}!exitDistance@{exitDistance}}
+\index{exitDistance@{exitDistance}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{exitDistance}{exitDistance}}
+{\footnotesize\ttfamily const float D\+F\+S\+Class\+::exit\+Distance = 2.\+5\hspace{0.3cm}{\ttfamily [private]}}
+
+Maze Setup Value \mbox{\Hypertarget{class_d_f_s_class_a7f88dc12e7766542f0499f5056738ebc}\label{class_d_f_s_class_a7f88dc12e7766542f0499f5056738ebc}} 
+\index{DFSClass@{DFSClass}!graph@{graph}}
+\index{graph@{graph}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{graph}{graph}}
+{\footnotesize\ttfamily vector$<$\mbox{\hyperlink{struct_d_f_s_class_1_1nodestruct}{nodestruct}}$>$ D\+F\+S\+Class\+::graph\hspace{0.3cm}{\ttfamily [private]}}
+
+... of ... ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_ae7adc33e2ad50c203d41fbc8c9189105}\label{class_d_f_s_class_ae7adc33e2ad50c203d41fbc8c9189105}} 
+\index{DFSClass@{DFSClass}!newMovement@{newMovement}}
+\index{newMovement@{newMovement}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{newMovement}{newMovement}}
+{\footnotesize\ttfamily bool D\+F\+S\+Class\+::new\+Movement = true\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{class_d_f_s_class_a521726c6f8a23bbe42022449fdbac4a5}\label{class_d_f_s_class_a521726c6f8a23bbe42022449fdbac4a5}} 
+\index{DFSClass@{DFSClass}!nextPosition@{nextPosition}}
+\index{nextPosition@{nextPosition}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{nextPosition}{nextPosition}}
+{\footnotesize\ttfamily float$\ast$ D\+F\+S\+Class\+::next\+Position\hspace{0.3cm}{\ttfamily [private]}}
+
+Pointer to Main ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_a4c79b98cf2ae0bd10cb1c46a6addda0c}\label{class_d_f_s_class_a4c79b98cf2ae0bd10cb1c46a6addda0c}} 
+\index{DFSClass@{DFSClass}!orientation@{orientation}}
+\index{orientation@{orientation}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{orientation}{orientation}}
+{\footnotesize\ttfamily int D\+F\+S\+Class\+::orientation = 0\hspace{0.3cm}{\ttfamily [private]}}
+
+... of ... ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_a7410d9e5a2b0cb101f637fef98fbc749}\label{class_d_f_s_class_a7410d9e5a2b0cb101f637fef98fbc749}} 
+\index{DFSClass@{DFSClass}!orientedDistances@{orientedDistances}}
+\index{orientedDistances@{orientedDistances}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{orientedDistances}{orientedDistances}}
+{\footnotesize\ttfamily float D\+F\+S\+Class\+::oriented\+Distances\mbox{[}5\mbox{]} = \{0,0,0,0,0\}\hspace{0.3cm}{\ttfamily [private]}}
+
+... of ... ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_ab96eb841de9dfa5da8a7a46082ccf758}\label{class_d_f_s_class_ab96eb841de9dfa5da8a7a46082ccf758}} 
+\index{DFSClass@{DFSClass}!pathWidth@{pathWidth}}
+\index{pathWidth@{pathWidth}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{pathWidth}{pathWidth}}
+{\footnotesize\ttfamily const float D\+F\+S\+Class\+::path\+Width = 1.\+1\hspace{0.3cm}{\ttfamily [private]}}
+
+Maze Setup Value -\/ width for traversing with waffle \mbox{\Hypertarget{class_d_f_s_class_a18ea9cc59dcb23e3292444c399775329}\label{class_d_f_s_class_a18ea9cc59dcb23e3292444c399775329}} 
+\index{DFSClass@{DFSClass}!scanResult@{scanResult}}
+\index{scanResult@{scanResult}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{scanResult}{scanResult}}
+{\footnotesize\ttfamily float$\ast$ D\+F\+S\+Class\+::scan\+Result\hspace{0.3cm}{\ttfamily [private]}}
+
+Pointer to Main ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_abc3bb9f60265c9750ec0e5d17797446a}\label{class_d_f_s_class_abc3bb9f60265c9750ec0e5d17797446a}} 
+\index{DFSClass@{DFSClass}!visited@{visited}}
+\index{visited@{visited}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{visited}{visited}}
+{\footnotesize\ttfamily const double D\+F\+S\+Class\+::visited = 0.\+4\hspace{0.3cm}{\ttfamily [private]}}
+
+Values from using cv\+::\+Mat for Visualization \mbox{\Hypertarget{class_d_f_s_class_ac4a3dd267ebf4a3dcbdc92b17c6d0a62}\label{class_d_f_s_class_ac4a3dd267ebf4a3dcbdc92b17c6d0a62}} 
+\index{DFSClass@{DFSClass}!visitedVector@{visitedVector}}
+\index{visitedVector@{visitedVector}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{visitedVector}{visitedVector}}
+{\footnotesize\ttfamily vector$<$\mbox{\hyperlink{struct_d_f_s_class_1_1coordinates_struct}{coordinates\+Struct}}$>$ D\+F\+S\+Class\+::visited\+Vector\hspace{0.3cm}{\ttfamily [private]}}
+
+... of ... ~\newline
+ \mbox{\Hypertarget{class_d_f_s_class_ae18ad8eea6966ce538ebfa0c4b0a1bef}\label{class_d_f_s_class_ae18ad8eea6966ce538ebfa0c4b0a1bef}} 
+\index{DFSClass@{DFSClass}!wallThickness@{wallThickness}}
+\index{wallThickness@{wallThickness}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{wallThickness}{wallThickness}}
+{\footnotesize\ttfamily const float D\+F\+S\+Class\+::wall\+Thickness = 0.\+15\hspace{0.3cm}{\ttfamily [private]}}
+
+Maze Setup Value \mbox{\Hypertarget{class_d_f_s_class_a50d5a2270f2247effe2b8c33acaa63d5}\label{class_d_f_s_class_a50d5a2270f2247effe2b8c33acaa63d5}} 
+\index{DFSClass@{DFSClass}!width@{width}}
+\index{width@{width}!DFSClass@{DFSClass}}
+\doxyparagraph{\texorpdfstring{width}{width}}
+{\footnotesize\ttfamily const float D\+F\+S\+Class\+::width = 1.\+25\hspace{0.3cm}{\ttfamily [private]}}
+
+Maze Setup Value -\/ grid length of one segment 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/grooty/catkin\+\_\+ws/src/soa\+\_\+pkg/src/\mbox{\hyperlink{_d_f_s_8hpp}{D\+F\+S.\+hpp}}\end{DoxyCompactItemize}

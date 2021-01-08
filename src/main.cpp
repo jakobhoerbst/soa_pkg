@@ -1,22 +1,23 @@
 /*
+    Maze Solving Algorithm:
+    Main Program
+    Version 1
+    Autor: Hoerbst
+    Contributor: Gmeiner
 
-next steps: 
-_ ground truth nicht mehr verwenden
-_ namespace weg
+    sources: 
+    Quarternion - Euler
+    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
-sources: 
-Quarternion - Euler
-https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    0 ... DEAD END
+    1 ... right 
+    2 ... down
+    3 ... left 
+    4 ... up     
 
-0 ... DEAD END
-1 ... right 
-2 ... down
-3 ... left 
-4 ... up     
+    jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch 
 
-jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch 
-
-*/
+ */
 
 #include "ros/ros.h"
 #include <iostream>
@@ -37,36 +38,25 @@ jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch
 
 using namespace std;
 
-// LiDAR 
-float scanResult[360]; 
-bool initialLidar = false;
+float scanResult[360];          /*!< LiDAR scanning values  */
+bool initialLidar = false;      /*!< ...  */
+float poseGT[3] = {0,0,0};      /*!< Ground Truth Position - Initial: 0,0,0  */
+bool initialGT = false;         /*!< ...  */
+float poseOdom[3] = {0,0,0};    /*!< Odometrie (odom) Position - Initial: 0,0,0  */
+bool initialOdom = false;       /*!< ...  */
+bool positionReached = true;    /*!< Feedback from Navigation  */
+float nextPosition[2] = {0,0};  /*!< Next Position from DFS to navigation  */
 
-// ground truth position 
-float poseGT[3] = {0,0,0};
-bool initialGT = false; 
+long currentSeconds = 0;        /*!< Current time in Seconds for time measurement  */
+long initialSeconds = 0;        /*!< Initial Seconds for time measurement  */ 
 
-// odom position
-float poseOdom[3] = {0,0,0};
-bool initialOdom = false; 
 
-// feedback from navigation
-bool positionReached = true;
-
-// next Position from DFS to navigation
-float nextPosition[2] = {0,0};
-
-// for time measurement
-long currentSeconds = 0; 
-long initialSeconds = 0; 
-
-////////////////////////////////       SUB      ////////////////////////////////
-////////////////////////////////       SUB      ////////////////////////////////
-////////////////////////////////       SUB      ////////////////////////////////
-
-////////////////////////////////callbackOdometry////////////////////////////////
+/*! \brief Odometry Ros Subscriber
+ *
+ *  Detailed description starts here.
+ */
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
-
     poseOdom[0] = odometry -> pose.pose.position.x; 
     poseOdom[1] = odometry -> pose.pose.position.y;
 
@@ -81,12 +71,14 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
     poseOdom[2] = (orientationE.yaw*180.0)/PI;
 
     initialOdom = true; 
-
 }
 
-////////////////////////////      callbackGT        ////////////////////////////
-void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
-
+/*! \brief Ground Truth Ros Subscriber
+ *
+ *  Detailed description starts here.
+ */
+void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT)
+{
     poseGT[0] = GT->pose[2].position.x;
     poseGT[1] = GT->pose[2].position.y;
 
@@ -101,13 +93,14 @@ void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT){
     poseGT[2] = (orientationE.yaw*180.0)/PI;
 
     initialGT = true;
-
 }
 
-////////////////////////////////  callbackLiDAR ////////////////////////////////
+/*! \brief LiDAR Ros Subscriber
+ *
+ *  Detailed description starts here.
+ */
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
-
     initialLidar = true; 
    // inRange = 0; 
   
@@ -115,14 +108,15 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
         scanResult[359-i] = (LiDAR->ranges[i]);
 
     currentSeconds = LiDAR->header.stamp.sec; 
-
 }
 
-////////////////////////////////      main      ////////////////////////////////
-////////////////////////////////      main      ////////////////////////////////
-////////////////////////////////      main      ////////////////////////////////
-int main(int argc, char **argv ) {
-    
+/*! \brief Project Main
+ *
+ *  Parameter 1: odom/GT
+ *  Choice between "odom" as odometry based approach or "GT" as an approach unsing ground truth
+ */
+int main(int argc, char **argv )
+{
     string argument = argv[1];
 
     cout << " - PROJECT 2 -" << endl << endl;
@@ -131,12 +125,13 @@ int main(int argc, char **argv ) {
         cout << "using: ground truth " << endl;
     else if(argument == "odom") 
         cout << "using: odom" << endl; 
-    else{
+    else
+    {
         cout << "ERROR with input argument" << endl; 
         return 0;     
     }
 
-    //////////////// ROS ////////////////
+    // ROS
     ros::init(argc, argv, "DFSnode");
     ros::NodeHandle nh("~"); 
     
@@ -160,11 +155,13 @@ int main(int argc, char **argv ) {
     CSV.start();
 
     // set pointer to GT or odom
-    if(argument == "GT"){
+    if(argument == "GT")
+    {
         DFS.currentPose = poseGT;
         navigation.currentPose = poseGT; 
     }
-    else if(argument == "odom"){
+    else if(argument == "odom")
+    {
         DFS.currentPose = poseOdom;
         navigation.currentPose = poseOdom; 
     }
@@ -172,7 +169,8 @@ int main(int argc, char **argv ) {
     // startup and waiting for initial sensor data
     while(ros::ok())
     {
-        if(initialLidar && initialGT && initialOdom){
+        if(initialLidar && initialGT && initialOdom)
+        {
             cout << "STARTUP complete" << endl; 
             initialSeconds = currentSeconds;
 
@@ -194,19 +192,15 @@ int main(int argc, char **argv ) {
                 std::chrono::duration<double> durationReal = finish - start;
                 CSV.writeSuccess(DFS.getNodeNumber(), (currentSeconds-initialSeconds), durationReal);
                 break;
-
             }
-
         } 
   
         // navigate to next movement
         if(navigation.moveTo(nextPosition))
             positionReached = true; 
-
         ros::spinOnce();
-        
     }  
+    //system("~jakob/SOA_ws/src/soa_pkg/kill.bash");
 
-    system("~jakob/SOA_ws/src/soa_pkg/kill.bash");
 return 0; 
 }
