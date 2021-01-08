@@ -33,7 +33,8 @@ do
     roslaunch soa_pkg rvizLaunch.launch&
 
     sleep 5
-    rosrun soa_pkg main GT&
+    # arg: odom or GT
+    rosrun soa_pkg main odom&
 
     echo "TEST RUN: " $i 
     sleep 900

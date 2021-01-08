@@ -200,7 +200,7 @@ int main(int argc, char **argv )
             positionReached = true; 
         ros::spinOnce();
     }  
-
     //system("~jakob/SOA_ws/src/soa_pkg/kill.bash");
+
 return 0; 
 }
