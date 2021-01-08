@@ -3,7 +3,8 @@ SOAR: Turtlebot Waffle Labyrinth Algorithm
 
 
 ## Description
-short text
+Student semester project in service and objectoriented algorithms in robotics (soar) @ FHTW
+See Doxygen documentation under /docs/html/index.html
 
 ## Install
 
@@ -20,7 +21,7 @@ short text
 `$ bash SOA.sh`
 
 # How it works
-textwithpictures
+See paper in /doc
 
 
 ## ros commands:
