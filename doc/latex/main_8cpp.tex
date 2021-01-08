@@ -1,0 +1,167 @@
+\hypertarget{main_8cpp}{}\doxysubsection{/home/grooty/catkin\+\_\+ws/src/soa\+\_\+pkg/src/main.cpp File Reference}
+\label{main_8cpp}\index{/home/grooty/catkin\_ws/src/soa\_pkg/src/main.cpp@{/home/grooty/catkin\_ws/src/soa\_pkg/src/main.cpp}}
+{\ttfamily \#include \char`\"{}ros/ros.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include \char`\"{}nav\+\_\+msgs/\+Odometry.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}geometry\+\_\+msgs/\+Twist.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}geometry\+\_\+msgs/\+Pose.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}sensor\+\_\+msgs/\+Laser\+Scan.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}std\+\_\+msgs/\+Int8.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gazebo\+\_\+msgs/\+Model\+States.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include \char`\"{}operations.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}D\+F\+S.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}navigation.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}data\+Recording.\+hpp\char`\"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{main_8cpp_a4318512ffd72934e07052dae4605bb53}{callback\+Odometry}} (const nav\+\_\+msgs\+::\+Odometry\+::\+Const\+Ptr \&odometry)
+\begin{DoxyCompactList}\small\item\em Odometry Ros Subscriber. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_a9001f9ebd5ddd6aef64f6bd3e0286e0a}{callback\+GT}} (const gazebo\+\_\+msgs\+::\+Model\+States\+::\+Const\+Ptr \&GT)
+\begin{DoxyCompactList}\small\item\em Ground Truth Ros Subscriber. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{main_8cpp_ac97861f53e5fa185b2654bb8b8801bf7}{callback\+Li\+D\+AR}} (const sensor\+\_\+msgs\+::\+Laser\+Scan\+::\+Const\+Ptr \&Li\+D\+AR)
+\begin{DoxyCompactList}\small\item\em Li\+D\+AR Ros Subscriber. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em Project Main. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{main_8cpp_ab62691d67eea050a5b8ac637fd93f9cd}{scan\+Result}} \mbox{[}360\mbox{]}
+\item 
+bool \mbox{\hyperlink{main_8cpp_a739af4154e1c6e2ef4ca89f246a12856}{initial\+Lidar}} = false
+\item 
+float \mbox{\hyperlink{main_8cpp_a4cd09e2c147fcfcd7137cb167689e499}{pose\+GT}} \mbox{[}3\mbox{]} = \{0,0,0\}
+\item 
+bool \mbox{\hyperlink{main_8cpp_ae117616fed0c0d7023c1d17bf402a986}{initial\+GT}} = false
+\item 
+float \mbox{\hyperlink{main_8cpp_a30fef11a84174014d30a1bc2134fa4f7}{pose\+Odom}} \mbox{[}3\mbox{]} = \{0,0,0\}
+\item 
+bool \mbox{\hyperlink{main_8cpp_a477d18d3cec28f291addef58286d1e6b}{initial\+Odom}} = false
+\item 
+bool \mbox{\hyperlink{main_8cpp_a503cd32022e079b5d461e90cf54df18a}{position\+Reached}} = true
+\item 
+float \mbox{\hyperlink{main_8cpp_ac663231e4a7af864e1591d328a92fd65}{next\+Position}} \mbox{[}2\mbox{]} = \{0,0\}
+\item 
+long \mbox{\hyperlink{main_8cpp_ad64aaabe4c7776393d0efcfc2c7a80f5}{current\+Seconds}} = 0
+\item 
+long \mbox{\hyperlink{main_8cpp_a4942230815e8f96fca1e8554a2e89d9c}{initial\+Seconds}} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\mbox{\Hypertarget{main_8cpp_a9001f9ebd5ddd6aef64f6bd3e0286e0a}\label{main_8cpp_a9001f9ebd5ddd6aef64f6bd3e0286e0a}} 
+\index{main.cpp@{main.cpp}!callbackGT@{callbackGT}}
+\index{callbackGT@{callbackGT}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{callbackGT()}{callbackGT()}}
+{\footnotesize\ttfamily void callback\+GT (\begin{DoxyParamCaption}\item[{const gazebo\+\_\+msgs\+::\+Model\+States\+::\+Const\+Ptr \&}]{GT }\end{DoxyParamCaption})}
+
+
+
+Ground Truth Ros Subscriber. 
+
+Detailed description starts here. \mbox{\Hypertarget{main_8cpp_ac97861f53e5fa185b2654bb8b8801bf7}\label{main_8cpp_ac97861f53e5fa185b2654bb8b8801bf7}} 
+\index{main.cpp@{main.cpp}!callbackLiDAR@{callbackLiDAR}}
+\index{callbackLiDAR@{callbackLiDAR}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{callbackLiDAR()}{callbackLiDAR()}}
+{\footnotesize\ttfamily void callback\+Li\+D\+AR (\begin{DoxyParamCaption}\item[{const sensor\+\_\+msgs\+::\+Laser\+Scan\+::\+Const\+Ptr \&}]{Li\+D\+AR }\end{DoxyParamCaption})}
+
+
+
+Li\+D\+AR Ros Subscriber. 
+
+Detailed description starts here. \mbox{\Hypertarget{main_8cpp_a4318512ffd72934e07052dae4605bb53}\label{main_8cpp_a4318512ffd72934e07052dae4605bb53}} 
+\index{main.cpp@{main.cpp}!callbackOdometry@{callbackOdometry}}
+\index{callbackOdometry@{callbackOdometry}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{callbackOdometry()}{callbackOdometry()}}
+{\footnotesize\ttfamily void callback\+Odometry (\begin{DoxyParamCaption}\item[{const nav\+\_\+msgs\+::\+Odometry\+::\+Const\+Ptr \&}]{odometry }\end{DoxyParamCaption})}
+
+
+
+Odometry Ros Subscriber. 
+
+Detailed description starts here. \mbox{\Hypertarget{main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}\label{main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{main.cpp@{main.cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+
+
+Project Main. 
+
+Parameter 1\+: odom/\+GT Choice between \char`\"{}odom\char`\"{} as odometry based approach or \char`\"{}\+G\+T\char`\"{} as an approach unsing ground truth 
+
+\doxysubsubsection{Variable Documentation}
+\mbox{\Hypertarget{main_8cpp_ad64aaabe4c7776393d0efcfc2c7a80f5}\label{main_8cpp_ad64aaabe4c7776393d0efcfc2c7a80f5}} 
+\index{main.cpp@{main.cpp}!currentSeconds@{currentSeconds}}
+\index{currentSeconds@{currentSeconds}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{currentSeconds}{currentSeconds}}
+{\footnotesize\ttfamily long current\+Seconds = 0}
+
+Current time in Seconds for time measurement ~\newline
+ \mbox{\Hypertarget{main_8cpp_ae117616fed0c0d7023c1d17bf402a986}\label{main_8cpp_ae117616fed0c0d7023c1d17bf402a986}} 
+\index{main.cpp@{main.cpp}!initialGT@{initialGT}}
+\index{initialGT@{initialGT}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{initialGT}{initialGT}}
+{\footnotesize\ttfamily bool initial\+GT = false}
+
+... ~\newline
+ \mbox{\Hypertarget{main_8cpp_a739af4154e1c6e2ef4ca89f246a12856}\label{main_8cpp_a739af4154e1c6e2ef4ca89f246a12856}} 
+\index{main.cpp@{main.cpp}!initialLidar@{initialLidar}}
+\index{initialLidar@{initialLidar}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{initialLidar}{initialLidar}}
+{\footnotesize\ttfamily bool initial\+Lidar = false}
+
+... ~\newline
+ \mbox{\Hypertarget{main_8cpp_a477d18d3cec28f291addef58286d1e6b}\label{main_8cpp_a477d18d3cec28f291addef58286d1e6b}} 
+\index{main.cpp@{main.cpp}!initialOdom@{initialOdom}}
+\index{initialOdom@{initialOdom}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{initialOdom}{initialOdom}}
+{\footnotesize\ttfamily bool initial\+Odom = false}
+
+... ~\newline
+ \mbox{\Hypertarget{main_8cpp_a4942230815e8f96fca1e8554a2e89d9c}\label{main_8cpp_a4942230815e8f96fca1e8554a2e89d9c}} 
+\index{main.cpp@{main.cpp}!initialSeconds@{initialSeconds}}
+\index{initialSeconds@{initialSeconds}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{initialSeconds}{initialSeconds}}
+{\footnotesize\ttfamily long initial\+Seconds = 0}
+
+Initial Seconds for time measurement ~\newline
+ \mbox{\Hypertarget{main_8cpp_ac663231e4a7af864e1591d328a92fd65}\label{main_8cpp_ac663231e4a7af864e1591d328a92fd65}} 
+\index{main.cpp@{main.cpp}!nextPosition@{nextPosition}}
+\index{nextPosition@{nextPosition}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{nextPosition}{nextPosition}}
+{\footnotesize\ttfamily float next\+Position\mbox{[}2\mbox{]} = \{0,0\}}
+
+Next Position from D\+FS to navigation ~\newline
+ \mbox{\Hypertarget{main_8cpp_a4cd09e2c147fcfcd7137cb167689e499}\label{main_8cpp_a4cd09e2c147fcfcd7137cb167689e499}} 
+\index{main.cpp@{main.cpp}!poseGT@{poseGT}}
+\index{poseGT@{poseGT}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{poseGT}{poseGT}}
+{\footnotesize\ttfamily float pose\+GT\mbox{[}3\mbox{]} = \{0,0,0\}}
+
+Ground Truth Position -\/ Initial\+: 0,0,0 ~\newline
+ \mbox{\Hypertarget{main_8cpp_a30fef11a84174014d30a1bc2134fa4f7}\label{main_8cpp_a30fef11a84174014d30a1bc2134fa4f7}} 
+\index{main.cpp@{main.cpp}!poseOdom@{poseOdom}}
+\index{poseOdom@{poseOdom}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{poseOdom}{poseOdom}}
+{\footnotesize\ttfamily float pose\+Odom\mbox{[}3\mbox{]} = \{0,0,0\}}
+
+Odometrie (odom) Position -\/ Initial\+: 0,0,0 ~\newline
+ \mbox{\Hypertarget{main_8cpp_a503cd32022e079b5d461e90cf54df18a}\label{main_8cpp_a503cd32022e079b5d461e90cf54df18a}} 
+\index{main.cpp@{main.cpp}!positionReached@{positionReached}}
+\index{positionReached@{positionReached}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{positionReached}{positionReached}}
+{\footnotesize\ttfamily bool position\+Reached = true}
+
+Feedback from Navigation ~\newline
+ \mbox{\Hypertarget{main_8cpp_ab62691d67eea050a5b8ac637fd93f9cd}\label{main_8cpp_ab62691d67eea050a5b8ac637fd93f9cd}} 
+\index{main.cpp@{main.cpp}!scanResult@{scanResult}}
+\index{scanResult@{scanResult}!main.cpp@{main.cpp}}
+\doxyparagraph{\texorpdfstring{scanResult}{scanResult}}
+{\footnotesize\ttfamily float scan\+Result\mbox{[}360\mbox{]}}
+
+Li\+D\+AR scanning values ~\newline
+ 

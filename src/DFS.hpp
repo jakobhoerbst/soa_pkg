@@ -1,50 +1,67 @@
+/*  
+    Maze Solving Algorithm:
+    DFS - Depth First Search Algorithm 
+    Version 1
+    Autor: Hoerbst
+    Contributor: Gmeiner
+ */
+
 #include "ros/ros.h"
                    
 using namespace std;
 
+/**
+    * \brief Logic Depth-First Search Algorithm
+    * 
+    * Long description DFSClass
+**/
 class DFSClass{
+/**
+    * \brief Logic Depth-First Search Algorithm
+    * 
+    * Long description DFSClass
+    * @param scan [360] Description
+    * @param nextPos [2] Description
+**/
 public: 
     DFSClass(float scan[360], float nextPos[2]);
     bool handleNode();
-    float *currentPose;
+    /// Pointer to main for currentPose
+    float *currentPose; 
     int getNodeNumber();
 
 private:
+    const float width           = 1.25;     /*!< Maze Setup Value - grid length of one segment */    
+    const float wallThickness   = 0.15;     /*!< Maze Setup Value */ 
+    const float pathWidth       = 1.1;      /*!< Maze Setup Value - width for traversing with waffle */
+    const float exitDistance    = 2.5;      /*!< Maze Setup Value */
+    const double closed         = 0.8;      /*!< Values from using cv::Mat for Visualization */
+    const double current        = 0.8;      /*!< Values from using cv::Mat for Visualization */
+    const double visited        = 0.4;      /*!< Values from using cv::Mat for Visualization */
 
-    // SETUP
-    const float width           = 1.25;         // kantenlänge ein einem Segment 
-    const float wallThickness   = 0.15; 
-    const float pathWidth       = 1.1;          // befahrbare Pfadbreit
-    const float exitDistance    = 2.5;
-    // values from using cv::Mat for visualization
-    const double closed        = 0.8; 
-    const double current       = 0.8;
-    const double visited       = 0.4;
-
-    //////////////// directed graph ////////////////
-    struct nodestruct{
-        double x; 
-        double y; 
-
-        double dir[5];                          //dead end, r, d, l, u
-
-        int move; 
+    struct nodestruct
+    {
+        double x;                           /*!< x-Value of ...  */ 
+        double y;                           /*!< y-Value of ...  */
+        double dir[5];                      /*!< Directions: Dead end, right, down, left, up  */                       
+        int move;                           /*!< ...move...  */
     };
-    vector<nodestruct> graph;
+    vector<nodestruct> graph;               /*!< ... of ...  */
 
-    struct coordinatesStruct{
-        double x; 
-        double y; 
+    struct coordinatesStruct
+    {
+        double x;                           /*!< x-Value of ...  */ 
+        double y;                           /*!< y-Value of ...  */
     };
-    vector<coordinatesStruct> visitedVector;
+    vector<coordinatesStruct> visitedVector; /*!< ... of ...  */
 
     // pointer to main 
-    float *scanResult;
-    float *nextPosition;
+    float *scanResult;                      /*!< Pointer to Main  */
+    float *nextPosition;                    /*!< Pointer to Main  */
 
     // orientation 
-    int     orientation = 0; 
-    float   orientedDistances[5] = {0,0,0,0,0};
+    int     orientation = 0;                        /*!< ... of ...  */
+    float   orientedDistances[5] = {0,0,0,0,0};     /*!< ... of ...  */
 
     //
     bool    newMovement = true; 
@@ -62,28 +79,38 @@ private:
 
 };
 
-DFSClass::DFSClass(float scan[360], float nextPos[2]): scanResult(scan), nextPosition(nextPos){
+DFSClass::DFSClass(float scan[360], float nextPos[2]): scanResult(scan), nextPosition(nextPos)
+{
     graph.push_back(nodestruct());
     visitedVector.push_back(coordinatesStruct()); 
 }
 
 ////////////////////////////      getNodeNumber     ////////////////////////////
-int DFSClass::getNodeNumber(){
-
+/**
+ * \brief Short Expl
+ *
+ *  Long Expl....
+ **/
+int DFSClass::getNodeNumber()
+{
     return graph.size();
-
 }
 
 ////////////////////////////       handleNode       ////////////////////////////
-bool DFSClass::handleNode(){
-   
+/**
+ * \brief Short Expl
+ *
+ *  Long Expl....
+ **/
+bool DFSClass::handleNode()
+{
     cout << "__________________________________" << endl; 
-    //cout << "new position reached" << endl; 
     cout << "DFS algorithm:" << endl; 
 
     getOrientation();
     directions();
-    if(checkExit()){
+    if(checkExit())
+    {
         cout << endl; 
         cout << "----------------------------------" << endl; 
         cout << "            EXIT FOUND" << endl; 
@@ -94,7 +121,8 @@ bool DFSClass::handleNode(){
     }
 
     // scan if new node is reached
-    if(newMovement){
+    if(newMovement)
+    {
         scan(graph);
         newMovement = false; 
         setStatus(graph, visited);
@@ -109,16 +137,17 @@ bool DFSClass::handleNode(){
         prevDirection = graph[graph.size()-2].move;
 
     // deciding next movement (prefered: keep previous direction)
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < 4; i++)
+    {
         if((prevDirection+i)>4)
             prevDirection -= 4; 
 
-        if(graph[graph.size()-1].dir[(prevDirection+i)] == 0){ 
+        if(graph[graph.size()-1].dir[(prevDirection+i)] == 0)
+        { 
             graph[graph.size()-1].move = (prevDirection+i); 
             newMovement = true; 
             break; 
         }
-      
     }    
     if(!newMovement)
         graph[graph.size()-1].move = 0;
@@ -128,7 +157,8 @@ bool DFSClass::handleNode(){
 
     //move
     int motion = graph[graph.size()-1].move;
-    switch(motion){
+    switch(motion)
+    {
         case 0: // move back 
             cout << "  - DEAD END -" << endl; 
             graph.pop_back();
@@ -159,7 +189,6 @@ bool DFSClass::handleNode(){
             graph[graph.size()-1].y = graph[graph.size()-2].y + width;
             newMovement = !checkIfVisited(graph); 
             break; 
-
     }
 
     // next node
@@ -169,16 +198,22 @@ bool DFSClass::handleNode(){
     return false; 
 }
 
-
 ////////////////////////////       directions       ////////////////////////////
 // calculates mean distances to fall for front, right, back, left side of turtle
-void DFSClass::directions(){
-    
+/**
+ * \brief Calculates mean distances
+ *
+ *  Calculates mean distances to fall for front, right, back, left side of turtle
+ **/
+void DFSClass::directions()
+{
     float dirDistance[5] = {0,0,0,0,0}; 
     int range = 10; 
 
-    for(int j = 0; j < 4; j++){
-        for(int i = j*90-range; i < j*90+range; i++){
+    for(int j = 0; j < 4; j++)
+    {
+        for(int i = j*90-range; i < j*90+range; i++)
+        {
             if(i<0)
                 dirDistance[j+1] += scanResult[i+360];
             else
@@ -187,29 +222,26 @@ void DFSClass::directions(){
         dirDistance[j+1] = dirDistance[j+1]/(2*range);
     }
 
-    for(int i = 1; i < 5; i++){
+    for(int i = 1; i < 5; i++)
+    {
         if( (orientation+(i-1)) > 4 )
             orientedDistances[orientation+(i-1)-4] = dirDistance[i];
         else
             orientedDistances[orientation+(i-1)] = dirDistance[i]; 
     }   
 
-/*
-    cout << "[-dirDistance-]  Mean distance to wall of turtle to: " << endl; 
-    cout << "right: " << orientedDistances[1]; 
-    cout << "\tdown: " << orientedDistances[2];
-    cout << "\tleft: " << orientedDistances[3];
-    cout << "\tup: " << orientedDistances[4] << endl;
-*/
-
 }
 
-
-////////////////////////////        checkExit       ////////////////////////////
-bool DFSClass::checkExit(){
-
+/**
+ * \brief Checks if exit is reached yet
+ *
+ *  This Method checks if the robot has reached one exit of the maze by ...
+ **/
+bool DFSClass::checkExit()
+{
     int counter = 0; 
-    for(int i = 1; i < 5; i++){
+    for(int i = 1; i < 5; i++)
+    {
         if(orientedDistances[i] > exitDistance) 
             counter ++;  
     }   
@@ -218,21 +250,23 @@ bool DFSClass::checkExit(){
         return true; 
 
     return false; 
-
 }
 
 
 ////////////////////////////    get orientation     ////////////////////////////
-int DFSClass::getOrientation(){
+/**
+ * \brief Gets the current Orientation
+ *
+ *  more info ...
+ **/
+int DFSClass::getOrientation()
+{
   //  cout << "orientation difference: " << orientation - initOrientation << endl; 
   //  cout << "initial Orientation" << initOrientation << endl; 
-
     //r, d, l, u    
 
     int toleranceAngle = 45; 
-    
-    //cout << "currentPose[2]: " << currentPose[2]; 
-    
+        
     if(abs(currentPose[2]) < toleranceAngle) 
         orientation = 1; 
     else if(currentPose[2] < 90+toleranceAngle && currentPose[2] > 90-toleranceAngle) 
@@ -245,12 +279,14 @@ int DFSClass::getOrientation(){
         cout << "ERROR at finding orientation" << endl;  
 
     //cout << "\torientation: " << orientation << endl; 
-
-    // Sometimes error in catkin_make: no return statement in non-void !
     return orientation;
 }
 
-////////////////////////////       setStatus        ////////////////////////////
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
 void DFSClass::setStatus(vector<nodestruct> &node, double newStatus){
 
     int motion = 0; 
@@ -262,7 +298,8 @@ void DFSClass::setStatus(vector<nodestruct> &node, double newStatus){
     else
         cout << "- ERROR: newStatus -" << endl;  
 
-    switch(motion){
+    switch(motion)
+    {
         case 0: 
             break;
         case 1: 
@@ -293,10 +330,15 @@ void DFSClass::setStatus(vector<nodestruct> &node, double newStatus){
 
 }
 
-////////////////////////////         scan           ////////////////////////////
-void DFSClass::scan(vector<nodestruct> &node){
-    
-    for(int i = 1; i < 5; i++){
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
+void DFSClass::scan(vector<nodestruct> &node)
+{
+    for(int i = 1; i < 5; i++)
+    {
         if(orientedDistances[i] > pathWidth)
             node[node.size()-1].dir[i] = 0;
         else 
@@ -305,17 +347,20 @@ void DFSClass::scan(vector<nodestruct> &node){
 
     node[node.size()-1].x = currentPose[0];
     node[node.size()-1].y = currentPose[1];
-
-    //printNode(node);
 }
 
-////////////////////////////     checkIfVisited     ////////////////////////////
-bool DFSClass::checkIfVisited(vector<nodestruct> &node){
-
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
+bool DFSClass::checkIfVisited(vector<nodestruct> &node)
+{
     coordinatesStruct currentPos = {node[node.size()-1].x, node[node.size()-1].y};
 
     for(int i = 0; i < (visitedVector.size()-1); i++){
-        if(visitedVector[i].x == node[node.size()-1].x && visitedVector[i].y == node[node.size()-1].y){
+        if(visitedVector[i].x == node[node.size()-1].x && visitedVector[i].y == node[node.size()-1].y)
+        {
             cout << " - VISITED BEFORE -" << endl; 
             //visumaze.at<double>(NV[NV.size()-1].y,NV[NV.size()-1].x) = 0.1;    
             node.pop_back();
@@ -328,26 +373,34 @@ bool DFSClass::checkIfVisited(vector<nodestruct> &node){
     return 0;
 }
 
-////////////////////////////  correctNodePosition   ////////////////////////////
-void DFSClass::correctNodePosition(vector<nodestruct> &node){
-
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
+void DFSClass::correctNodePosition(vector<nodestruct> &node)
+{
     float minimumPosition[2] = {-5.625, -5.625};
     
     for(int i = 0; i < 10; i++){
-        if(abs(node[node.size()-1].x-(minimumPosition[0]+width*i)) < 0.2){
+        if(abs(node[node.size()-1].x-(minimumPosition[0]+width*i)) < 0.2)
+        {
             node[node.size()-1].x = (minimumPosition[0]+width*i);
         }
-        if(abs(node[node.size()-1].y-(minimumPosition[1]+width*i)) < 0.2){
+        if(abs(node[node.size()-1].y-(minimumPosition[1]+width*i)) < 0.2)
+        {
             node[node.size()-1].y = (minimumPosition[1]+width*i);
         }
     }
-
 }
 
-
-////////////////////////////       printNode        ////////////////////////////
-void DFSClass::printNode(vector<nodestruct> currentNode){
-
+/*! \brief Brief description.
+ *         Brief description continued.
+ *
+ *  Detailed description starts here.
+ */
+void DFSClass::printNode(vector<nodestruct> currentNode)
+{
     cout << "  node: " << currentNode.size();
     cout << " pos: ("  << currentNode[currentNode.size()-1].x;
     cout << ", "  << currentNode[currentNode.size()-1].y;
@@ -377,5 +430,4 @@ void DFSClass::printNode(vector<nodestruct> currentNode){
             cout << endl;    
             break;
     }
-
 }

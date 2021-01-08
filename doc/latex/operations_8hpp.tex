@@ -1,0 +1,79 @@
+\hypertarget{operations_8hpp}{}\doxysubsection{/home/grooty/catkin\+\_\+ws/src/soa\+\_\+pkg/src/operations.hpp File Reference}
+\label{operations_8hpp}\index{/home/grooty/catkin\_ws/src/soa\_pkg/src/operations.hpp@{/home/grooty/catkin\_ws/src/soa\_pkg/src/operations.hpp}}
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_quaternion}{Quaternion}}
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{struct_quaternion}{Quaternion}} Values. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}}
+\begin{DoxyCompactList}\small\item\em Euler Values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} \mbox{\hyperlink{operations_8hpp_af544e37e00cfe2aab1fb181ea96541dc}{To\+Euler\+Angles}} (\mbox{\hyperlink{struct_quaternion}{Quaternion}} q)
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{struct_quaternion}{Quaternion}} to Euler Angle transformation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_quaternion}{Quaternion}} \mbox{\hyperlink{operations_8hpp_a27691ea8c7f429ed97e0611920b4b3be}{To\+Quaternion}} (double yaw, double pitch, double roll)
+\begin{DoxyCompactList}\small\item\em Euler Angles to \mbox{\hyperlink{struct_quaternion}{Quaternion}} Transformation. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{operations_8hpp_a6a85a4dcd99926316ba4f5416978f883}{angle\+To360}} (double \&angle)
+\begin{DoxyCompactList}\small\item\em brief descr \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{operations_8hpp_adbe8e23de5da67ad857f8d9a53c73074}{map\+Value}} (float x, float in\+\_\+min, float in\+\_\+max, float out\+\_\+min, float out\+\_\+max)
+\begin{DoxyCompactList}\small\item\em brief descr \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const double \mbox{\hyperlink{operations_8hpp_a952eac791b596a61bba0a133a3bb439f}{PI}} = 3.\+14159265359
+\end{DoxyCompactItemize}
+
+
+\doxysubsubsection{Function Documentation}
+\mbox{\Hypertarget{operations_8hpp_a6a85a4dcd99926316ba4f5416978f883}\label{operations_8hpp_a6a85a4dcd99926316ba4f5416978f883}} 
+\index{operations.hpp@{operations.hpp}!angleTo360@{angleTo360}}
+\index{angleTo360@{angleTo360}!operations.hpp@{operations.hpp}}
+\doxyparagraph{\texorpdfstring{angleTo360()}{angleTo360()}}
+{\footnotesize\ttfamily void angle\+To360 (\begin{DoxyParamCaption}\item[{double \&}]{angle }\end{DoxyParamCaption})}
+
+
+
+brief descr 
+
+Detailed description starts here. \mbox{\Hypertarget{operations_8hpp_adbe8e23de5da67ad857f8d9a53c73074}\label{operations_8hpp_adbe8e23de5da67ad857f8d9a53c73074}} 
+\index{operations.hpp@{operations.hpp}!mapValue@{mapValue}}
+\index{mapValue@{mapValue}!operations.hpp@{operations.hpp}}
+\doxyparagraph{\texorpdfstring{mapValue()}{mapValue()}}
+{\footnotesize\ttfamily float map\+Value (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{in\+\_\+min,  }\item[{float}]{in\+\_\+max,  }\item[{float}]{out\+\_\+min,  }\item[{float}]{out\+\_\+max }\end{DoxyParamCaption})}
+
+
+
+brief descr 
+
+Detailed description starts here. \mbox{\Hypertarget{operations_8hpp_af544e37e00cfe2aab1fb181ea96541dc}\label{operations_8hpp_af544e37e00cfe2aab1fb181ea96541dc}} 
+\index{operations.hpp@{operations.hpp}!ToEulerAngles@{ToEulerAngles}}
+\index{ToEulerAngles@{ToEulerAngles}!operations.hpp@{operations.hpp}}
+\doxyparagraph{\texorpdfstring{ToEulerAngles()}{ToEulerAngles()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_euler_angles}{Euler\+Angles}} To\+Euler\+Angles (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_quaternion}{Quaternion}}}]{q }\end{DoxyParamCaption})}
+
+
+
+\mbox{\hyperlink{struct_quaternion}{Quaternion}} to Euler Angle transformation. 
+
+Transformation based on \href{https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Conversion\+\_\+between\+\_\+quaternions\+\_\+and\+\_\+\+Euler\+\_\+angles}} \mbox{\Hypertarget{operations_8hpp_a27691ea8c7f429ed97e0611920b4b3be}\label{operations_8hpp_a27691ea8c7f429ed97e0611920b4b3be}} 
+\index{operations.hpp@{operations.hpp}!ToQuaternion@{ToQuaternion}}
+\index{ToQuaternion@{ToQuaternion}!operations.hpp@{operations.hpp}}
+\doxyparagraph{\texorpdfstring{ToQuaternion()}{ToQuaternion()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{struct_quaternion}{Quaternion}} To\+Quaternion (\begin{DoxyParamCaption}\item[{double}]{yaw,  }\item[{double}]{pitch,  }\item[{double}]{roll }\end{DoxyParamCaption})}
+
+
+
+Euler Angles to \mbox{\hyperlink{struct_quaternion}{Quaternion}} Transformation. 
+
+Transformation based on \href{https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Conversion\+\_\+between\+\_\+quaternions\+\_\+and\+\_\+\+Euler\+\_\+angles}} 
+
+\doxysubsubsection{Variable Documentation}
+\mbox{\Hypertarget{operations_8hpp_a952eac791b596a61bba0a133a3bb439f}\label{operations_8hpp_a952eac791b596a61bba0a133a3bb439f}} 
+\index{operations.hpp@{operations.hpp}!PI@{PI}}
+\index{PI@{PI}!operations.hpp@{operations.hpp}}
+\doxyparagraph{\texorpdfstring{PI}{PI}}
+{\footnotesize\ttfamily const double PI = 3.\+14159265359}
+
