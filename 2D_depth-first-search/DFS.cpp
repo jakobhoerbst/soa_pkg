@@ -1,7 +1,14 @@
 /*
-    jakob hoerbst
+    Creator: jakob hoerbst
     03.11.2020
     MMR3 - Mechatronik & Robotik - SOA
+
+    Editor: marc gmeiner
+    02.01.2021
+
+    Input Parameter:
+    1. Amount of runs: integer
+    2. Execution Speed im [ms]: integer
 
     SOURCES: 
     struct from function
@@ -14,6 +21,8 @@
     http://www.cplusplus.com/reference/string/string/getline/
     read from file 
     https://www.gormanalysis.com/blog/reading-and-writing-csv-files-with-cpp/
+    time
+    https://www.geeksforgeeks.org/measure-execution-time-function-cpp/
 */
 
 #include <iostream> 
@@ -35,13 +44,12 @@ static double closed = 0.8;
 static double current = 0.8;
 static double visited  = 0.4;
 cv::Mat visumaze; 
+int visitiedNodes = 0;
 
 struct nodestruct{
     int x; 
     int y; 
-
     double dir[5]; //r, d, l, u
-
     int move; 
 };
  
@@ -163,7 +171,6 @@ void printNode(vector<nodestruct> currentNode){
             "\td: " << currentNode[currentNode.size()-1].dir[2] << 
             "\tl: " << currentNode[currentNode.size()-1].dir[3] << 
             "\tmove: " << currentNode[currentNode.size()-1].move << endl;
-
 }
 
 ////////////////////////////     checkIfVisited     ////////////////////////////
@@ -187,117 +194,153 @@ bool checkIfVisited(vector<nodestruct> &NV){
 ////////////////////////////                        ////////////////////////////
 ////////////////////////////          main          ////////////////////////////
 ////////////////////////////                        ////////////////////////////
-int main(){
- 
-    // get maze to Mat from csv file 
-    double mazearr[45][45];
-    getMaze("maze.csv", mazearr);
-    cv::Mat maze(45, 45, CV_64F, mazearr);
-    visumaze = maze; 
-
-    // tree: vector of struct
-    vector<nodestruct> nodelist; 
-    nodelist.push_back(nodestruct());
-
-    // spawn to random position within the maze
-    std::srand (time(NULL));
-
-    int rand01 = std::rand()%10 + 1;
-    int rand02 = std::rand()%10 + 1;
+int main(int argc, char **argv){
     
-    nodelist[0].x = 4*rand01; 
-    nodelist[0].y = 4*rand02; 
-    nodelist[0].move = 0; 
+    int amountTests = atoi(argv[1]);
+    int executionSpeed = atoi(argv[2]);
+    if (argc > 3)
+    {
+        cout << "Invalid Parameter!" << endl;
+        return -1;
+    }     
 
-    int move = 0;
-    bool newMovement = true; 
-        
-    while(1){
-        //cout << "_________________________________________________" << endl; 
-
-        // show maze simulation
-        visumaze.at<double>(nodelist[nodelist.size()-1].y,nodelist[nodelist.size()-1].x) = current;    
-        show(visumaze); 
-        visumaze.at<double>(nodelist[nodelist.size()-1].y,nodelist[nodelist.size()-1].x) = 0; 
-        
-        // scan if new node is reached
-        if(newMovement){
-            nodelist[nodelist.size()-1] = scan(maze, nodelist[nodelist.size()-1]);
-            newMovement = false; 
-            nodelist = setStatus(nodelist, visited);
-        }
-        
-        // check if maze is solved
-        if(checkForExit(nodelist[nodelist.size()-1])){
-            cout << " - EXIT FOUND - " << endl; 
-            break;
-        }
-        
-        // set previous direction (necessary for first node)
-        int prevDirection; 
-        if(nodelist.size()<2)
-            prevDirection = 1; 
-        else
-            prevDirection = nodelist[nodelist.size()-2].move;
- 
-        // deciding next movement (prefered: keep previous direction)
-        for(int i = 0; i < 4; i++){
-            if((prevDirection+i)>4)
-                prevDirection -= 4; 
-
-            if(nodelist[nodelist.size()-1].dir[(prevDirection+i)] == 0){ 
-                nodelist[nodelist.size()-1].move = (prevDirection+i); 
-                newMovement = true; 
-                break; 
-            }
-          
-        } 
-        if(!newMovement)
-            nodelist[nodelist.size()-1].move = 0;
-
-
-        printNode(nodelist); 
-
-        //move
-        int motion = nodelist[nodelist.size()-1].move;
-        switch(motion){
-            case 0: // move back 
-                cout << " - DEAD END -" << endl; 
-                nodelist.pop_back();
-                nodelist = setStatus(nodelist, closed);
-                
-                break;
-            case 1: // move right
-                nodelist.push_back(nodestruct());
-                nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x + 4;
-                nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y;
-                newMovement = !checkIfVisited(nodelist);         
-                break;
-            case 2: // move dowm
-                nodelist.push_back(nodestruct());
-                nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x;
-                nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y + 4;
-                newMovement = !checkIfVisited(nodelist); 
-                break;
-            case 3: // move left
-                nodelist.push_back(nodestruct());
-                nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x - 4;
-                nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y;
-                newMovement = !checkIfVisited(nodelist);
-                break;
-            case 4: // move up
-                nodelist.push_back(nodestruct());
-                nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x;
-                nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y - 4;
-                newMovement = !checkIfVisited(nodelist); 
-                break; 
-
-        }
-
-
-        cv::waitKey(100);
-        //cv::waitKey(0);    
+     // creates datatype
+    ofstream csvDataInput;
+    // reads csvFile, ios::app = adds text at the end of the file
+	csvDataInput.open("testResults.csv", ios::in | ios::app);
+    if (csvDataInput.is_open()) 
+	{
+		csvDataInput << "\nStart of new Program cycle.   \n";
+        csvDataInput << "\n Exit Found \tIteration \tTime needed[ms] \t[s]\n";
+	}else
+    {
+        cout << "Could not load CSV-File" << endl;
+        return 0;
     }
- 
+    
+    for (int i = 0; i < amountTests; i++)
+    {    
+        visitiedNodes = 0;
+        auto start = std::chrono::high_resolution_clock::now();
+        // get maze to Mat from csv file 
+        double mazearr[45][45];
+        getMaze("maze.csv", mazearr);
+        cv::Mat maze(45, 45, CV_64F, mazearr);
+        visumaze = maze; 
+        // tree: vector of struct
+        vector<nodestruct> nodelist; 
+        nodelist.push_back(nodestruct());
+
+        // spawn to random position within the maze
+        std::srand (time(NULL));
+        int rand01 = std::rand()%10 + 1;
+        int rand02 = std::rand()%10 + 1;
+        
+        nodelist[0].x = 4*rand01; 
+        nodelist[0].y = 4*rand02; 
+        nodelist[0].move = 0; 
+
+        int move = 0;
+        bool newMovement = true; 
+    
+
+        while(1)
+        {
+            //cout << "_________________________________________________" << endl; 
+            
+            // show maze simulation
+            visumaze.at<double>(nodelist[nodelist.size()-1].y,nodelist[nodelist.size()-1].x) = current;    
+            show(visumaze); 
+            visumaze.at<double>(nodelist[nodelist.size()-1].y,nodelist[nodelist.size()-1].x) = 0; 
+            
+            // scan if new node is reached
+            if(newMovement){
+                nodelist[nodelist.size()-1] = scan(maze, nodelist[nodelist.size()-1]);
+                newMovement = false; 
+                nodelist = setStatus(nodelist, visited);
+            }
+            
+            // check if maze is solved
+            if(checkForExit(nodelist[nodelist.size()-1]))
+            {
+                cout << " - EXIT FOUND - " << endl;
+                // Write data to csv
+                auto stop = std::chrono::high_resolution_clock::now();
+                auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+                auto duration_sec = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
+                csvDataInput << "1\t" << i+1 << "\t" << duration_ms.count() << "\t" << duration_sec.count() << endl;            
+                break;
+            }
+            
+            // set previous direction (necessary for first node)
+            int prevDirection; 
+            if(nodelist.size()<2)
+                prevDirection = 1; 
+            else
+                prevDirection = nodelist[nodelist.size()-2].move;
+    
+            // deciding next movement (prefered: keep previous direction)
+            for(int i = 0; i < 4; i++){
+                if((prevDirection+i)>4)
+                    prevDirection -= 4; 
+
+                if(nodelist[nodelist.size()-1].dir[(prevDirection+i)] == 0){ 
+                    nodelist[nodelist.size()-1].move = (prevDirection+i); 
+                    newMovement = true; 
+                    break; 
+                }
+            
+            } 
+            if(!newMovement)
+                nodelist[nodelist.size()-1].move = 0;
+
+
+            printNode(nodelist); 
+
+            //move
+            int motion = nodelist[nodelist.size()-1].move;
+            switch(motion)
+            {
+                case 0: // move back 
+                    cout << " - DEAD END -" << endl; 
+                    nodelist.pop_back();
+                    nodelist = setStatus(nodelist, closed);
+                    
+                    break;
+                case 1: // move right
+                    nodelist.push_back(nodestruct());
+                    nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x + 4;
+                    nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y;
+                    newMovement = !checkIfVisited(nodelist);         
+                    break;
+                case 2: // move dowm
+                    nodelist.push_back(nodestruct());
+                    nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x;
+                    nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y + 4;
+                    newMovement = !checkIfVisited(nodelist); 
+                    break;
+                case 3: // move left
+                    nodelist.push_back(nodestruct());
+                    nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x - 4;
+                    nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y;
+                    newMovement = !checkIfVisited(nodelist);
+                    break;
+                case 4: // move up
+                    nodelist.push_back(nodestruct());
+                    nodelist[nodelist.size()-1].x = nodelist[nodelist.size()-2].x;
+                    nodelist[nodelist.size()-1].y = nodelist[nodelist.size()-2].y - 4;
+                    newMovement = !checkIfVisited(nodelist); 
+                    break; 
+
+            }
+            //visitiedNodes += 1;
+            //cout << "Visited Node: " << visitiedNodes << endl;
+
+            cv::waitKey(executionSpeed);
+            //cv::waitKey(0);    
+        }
+    }
+    //cv::waitKey(0);
+    csvDataInput.close();
     return 0; 
 }
