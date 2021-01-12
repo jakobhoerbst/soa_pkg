@@ -4,21 +4,22 @@
  * MMR3 SOAR Project 2 - Maze Solving Algorithm
  * 
  * @section Description
+ * Student semester project in service and object oriented algorithms in robotics (soar) @FHTW. \n
  * This is a Code documentation to the Paper "Maze Solving Algorithm" by Gmeiner Marc and Hoerbst Jakob. \n
  * All necessary instructions to run the code are listed here. \n
- * Author: Hoerbst Jakob \n
- * Contributor: Gmeiner Marc
+ * Code-Author: Hoerbst Jakob \n
+ * Code-Contributor: Gmeiner Marc
  * 
  * @section System-Recommendations
  * This code is tested with two different systems: \n
- * 1. System:
- * - Ubuntu 21.04 LTS
- * - ROS Noetic
- * - 8192 MB RAM
- * 2. System:
- * - OS
- * - ROS Version
- * - RAM
+ * 1. System: \n
+ * -Ubuntu 21.04 LTS \n
+ * -ROS Noetic \n
+ * -8192 MB RAM \n
+ * 2. System: \n
+ * -OS \n
+ * -ROS Version \n
+ * -RAM \n
  * 
  * 
  * @section Installation
