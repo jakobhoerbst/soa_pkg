@@ -1,3 +1,56 @@
+/**
+ * 
+ * \mainpage
+ * MMR3 SOAR Project 2 - Maze Solving Algorithm
+ * 
+ * @section Description
+ * This is a Code documentation to the Paper "Maze Solving Algorithm" by Gmeiner Marc and Hoerbst Jakob. \n
+ * All necessary instructions to run the code are listed here. \n
+ * Author: Hoerbst Jakob \n
+ * Contributor: Gmeiner Marc
+ * 
+ * @section System-Recommendations
+ * This code is tested with two different systems: \n
+ * 1. System:
+ * - Ubuntu 21.04 LTS
+ * - ROS Noetic
+ * - 8192 MB RAM
+ * 2. System:
+ * - OS
+ * - ROS Version
+ * - RAM
+ * 
+ * 
+ * @section Installation
+ * 1. Go to your catkin workspace and download the repository  
+ * `$ cd /PathTo/catkin_ws/src`  
+ * `$ git clone https://github.com/jakobhoerbst/soa_pkg/`
+ * 
+ * 2. Install Package via catkin_make  
+ * `$ cd catkin_ws` or `$ cd ..`  
+ * `$ catkin_make`
+ * 
+ * @section Starting
+ * With `testingSequence.sh` (instead of `start.sh`) the program will be executed 100 times (`start.sh` = 1 Run). \n
+ * In line 32-33 it must be selected if odometry or ground truth is used for position gathering. \n
+ * Ground Truth is pre-selected. \n
+ * 
+ * 
+ * `$ cd /PathTo/catkin_ws/soa_pkg`  
+ * `$ bash start.sh`
+ * 
+ * @section Legend
+ * 
+ * Meaning of the numbers in the console: \n
+ * 0 ... DEAD END \n
+ * 1 ... right \n
+ * 2 ... down \n
+ * 3 ... left \n
+ * 4 ... up 
+ * 
+ */
+
+
 /*
     Maze Solving Algorithm:
     Main Program
@@ -16,7 +69,6 @@
     4 ... up     
 
     jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch 
-
  */
 
 #include "ros/ros.h"
