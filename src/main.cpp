@@ -1,7 +1,7 @@
 /**
  * 
  * \mainpage
- * MMR3 SOAR Project 2 - Maze Solving Algorithm
+ * MMR3 SOAR Project 2 - Maze Solving Algorithm with Turtlebot Waffle
  * 
  * @section Description
  * Student semester project in service and object oriented algorithms in robotics (soar) @FHTW. \n
