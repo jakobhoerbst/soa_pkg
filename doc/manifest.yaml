@@ -1,0 +1,18 @@
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
+depends:
+- nav_msgs
+- sensor_msgs
+- std_msgs
+- roscpp
+- catkin
+description: The soa_pkg package
+license: TODO
+maintainers: jakob <jakob@todo.todo>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: ''
