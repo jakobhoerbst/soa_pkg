@@ -3,11 +3,11 @@ authors: ''
 brief: ''
 bugtracker: ''
 depends:
-- roscpp
-- nav_msgs
 - sensor_msgs
-- catkin
 - std_msgs
+- nav_msgs
+- roscpp
+- catkin
 description: The soa_pkg package
 license: TODO
 maintainers: jakob <jakob@todo.todo>
