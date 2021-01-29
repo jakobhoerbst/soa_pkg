@@ -25,225 +25,224 @@ $(function() {
 <div class="title">main.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="main_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">    Maze Solving Algorithm:</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">    Main Program</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">    Version 1</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">    Autor: Hoerbst</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">    Contributor: Gmeiner</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">    sources: </span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">    Quarternion - Euler</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">    0 ... DEAD END</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">    1 ... right </span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">    2 ... down</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="comment">    3 ... left </span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment">    4 ... up     </span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">    jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch </span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment"> */</span></div>
+<a href="main_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">    Maze Solving Algorithm:</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">    Main Program</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">    Version 1</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">    Autor: Hoerbst</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">    Contributor: Gmeiner</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">    sources: </span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">    Quarternion - Euler</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">    0 ... DEAD END</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">    1 ... right </span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">    2 ... down</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">    3 ... left </span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">    4 ... up     </span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">    jakob@ubuntu:~$ roslaunch turtlebot3_bringup turtlebot3_model.launch </span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;ros/ros.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;nav_msgs/Odometry.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;geometry_msgs/Twist.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;geometry_msgs/Pose.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;sensor_msgs/LaserScan.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;std_msgs/Int8.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;gazebo_msgs/ModelStates.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">// own header                                                   </span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="operations_8hpp.html">operations.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="DFS_8hpp.html">DFS.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="navigation_8hpp.html">navigation.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="dataRecording_8hpp.html">dataRecording.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">using namespace </span>std;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">   40</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>[360];          </div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">   41</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> = <span class="keyword">false</span>;      </div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">   43</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[3] = {0,0,0};      </div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">   44</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> = <span class="keyword">false</span>;         </div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">   46</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[3] = {0,0,0};    </div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">   47</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a> = <span class="keyword">false</span>;       </div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">   49</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">true</span>;    </div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">   50</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>[2] = {0,0};  </div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">   52</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a> = 0;        </div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">   53</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a> = 0;        </div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">   61</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a>(<span class="keyword">const</span> nav_msgs::Odometry::ConstPtr&amp; odometry)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;{</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[0] = odometry -&gt; pose.pose.position.x; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[1] = odometry -&gt; pose.pose.position.y;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="structQuaternion.html">Quaternion</a> orientationQ; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a65c93d8db6c57203447bd0594b608512">x</a> = odometry -&gt; pose.pose.orientation.x; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#acfea23e3ba2b57356fe36b4d8f4c52f3">y</a> = odometry -&gt; pose.pose.orientation.y; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a90bbdb05526bddfbc3247dcc9a5cace4">z</a> = odometry -&gt; pose.pose.orientation.z; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#aeded08fcb4e8d0866e612ed81cb44aa7">w</a> = odometry -&gt; pose.pose.orientation.w;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <a class="code" href="structEulerAngles.html">EulerAngles</a> orientationE; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    orientationE = <a class="code" href="operations_8hpp.html#af544e37e00cfe2aab1fb181ea96541dc">ToEulerAngles</a>(orientationQ); </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[2] = (orientationE.<a class="code" href="structEulerAngles.html#a4dc9e3ffc0285a52e2e1d26b43e270a6">yaw</a>*180.0)/<a class="code" href="operations_8hpp.html#a952eac791b596a61bba0a133a3bb439f">PI</a>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a> = <span class="keyword">true</span>; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#include &quot;ros/ros.h&quot;</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#include &quot;nav_msgs/Odometry.h&quot;</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#include &quot;geometry_msgs/Twist.h&quot;</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="preprocessor">#include &quot;geometry_msgs/Pose.h&quot;</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">#include &quot;sensor_msgs/LaserScan.h&quot;</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#include &quot;std_msgs/Int8.h&quot;</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#include &quot;gazebo_msgs/ModelStates.h&quot;</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#include &lt;chrono&gt;</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">// own header                                                   </span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="operations_8hpp.html">operations.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="DFS_8hpp.html">DFS.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="navigation_8hpp.html">navigation.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="dataRecording_8hpp.html">dataRecording.hpp</a>&quot;</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">using namespace </span>std;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">   98</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>[360];          </div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">   99</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> = <span class="keyword">false</span>;      </div>
-<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">  101</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[3] = {0,0,0};      </div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">  102</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> = <span class="keyword">false</span>;         </div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">  104</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[3] = {0,0,0};    </div>
-<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">  105</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a> = <span class="keyword">false</span>;       </div>
-<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">  107</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">true</span>;    </div>
-<div class="line"><a name="l00108"></a><span class="lineno"><a class="line" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">  108</a></span>&#160;<span class="keywordtype">float</span> <a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>[2] = {0,0};  </div>
-<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">  110</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a> = 0;        </div>
-<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">  111</a></span>&#160;<span class="keywordtype">long</span> <a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a> = 0;        </div>
-<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">  119</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a>(<span class="keyword">const</span> nav_msgs::Odometry::ConstPtr&amp; odometry)</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;{</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[0] = odometry -&gt; pose.pose.position.x; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[1] = odometry -&gt; pose.pose.position.y;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <a class="code" href="structQuaternion.html">Quaternion</a> orientationQ; </div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a65c93d8db6c57203447bd0594b608512">x</a> = odometry -&gt; pose.pose.orientation.x; </div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#acfea23e3ba2b57356fe36b4d8f4c52f3">y</a> = odometry -&gt; pose.pose.orientation.y; </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a90bbdb05526bddfbc3247dcc9a5cace4">z</a> = odometry -&gt; pose.pose.orientation.z; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#aeded08fcb4e8d0866e612ed81cb44aa7">w</a> = odometry -&gt; pose.pose.orientation.w;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">   84</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a>(<span class="keyword">const</span> gazebo_msgs::ModelStates::ConstPtr&amp; GT)</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[0] = GT-&gt;pose[2].position.x;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[1] = GT-&gt;pose[2].position.y;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="structQuaternion.html">Quaternion</a> orientationQ; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a65c93d8db6c57203447bd0594b608512">x</a> = GT-&gt;pose[2].orientation.x; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#acfea23e3ba2b57356fe36b4d8f4c52f3">y</a> = GT-&gt;pose[2].orientation.y; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a90bbdb05526bddfbc3247dcc9a5cace4">z</a> = GT-&gt;pose[2].orientation.z; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#aeded08fcb4e8d0866e612ed81cb44aa7">w</a> = GT-&gt;pose[2].orientation.w;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="structEulerAngles.html">EulerAngles</a> orientationE; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    orientationE = <a class="code" href="operations_8hpp.html#af544e37e00cfe2aab1fb181ea96541dc">ToEulerAngles</a>(orientationQ); </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[2] = (orientationE.<a class="code" href="structEulerAngles.html#a4dc9e3ffc0285a52e2e1d26b43e270a6">yaw</a>*180.0)/<a class="code" href="operations_8hpp.html#a952eac791b596a61bba0a133a3bb439f">PI</a>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">  107</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a>(<span class="keyword">const</span> sensor_msgs::LaserScan::ConstPtr&amp; LiDAR)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;{</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> = <span class="keyword">true</span>; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;   <span class="comment">// inRange = 0; </span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; 360; i++)</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>[359-i] = (LiDAR-&gt;ranges[i]);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a> = LiDAR-&gt;header.stamp.sec; </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">  124</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv )</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;{</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordtype">string</span> argument = argv[1];</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    cout &lt;&lt; <span class="stringliteral">&quot; - PROJECT 2 -&quot;</span> &lt;&lt; endl &lt;&lt; endl;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <a class="code" href="structEulerAngles.html">EulerAngles</a> orientationE; </div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    orientationE = <a class="code" href="operations_8hpp.html#af544e37e00cfe2aab1fb181ea96541dc">ToEulerAngles</a>(orientationQ); </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>[2] = (orientationE.<a class="code" href="structEulerAngles.html#a4dc9e3ffc0285a52e2e1d26b43e270a6">yaw</a>*180.0)/<a class="code" href="operations_8hpp.html#a952eac791b596a61bba0a133a3bb439f">PI</a>;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a> = <span class="keyword">true</span>; </div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno"><a class="line" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">  142</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a>(<span class="keyword">const</span> gazebo_msgs::ModelStates::ConstPtr&amp; GT)</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;{</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[0] = GT-&gt;pose[2].position.x;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[1] = GT-&gt;pose[2].position.y;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <a class="code" href="structQuaternion.html">Quaternion</a> orientationQ; </div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a65c93d8db6c57203447bd0594b608512">x</a> = GT-&gt;pose[2].orientation.x; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#acfea23e3ba2b57356fe36b4d8f4c52f3">y</a> = GT-&gt;pose[2].orientation.y; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#a90bbdb05526bddfbc3247dcc9a5cace4">z</a> = GT-&gt;pose[2].orientation.z; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    orientationQ.<a class="code" href="structQuaternion.html#aeded08fcb4e8d0866e612ed81cb44aa7">w</a> = GT-&gt;pose[2].orientation.w;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <a class="code" href="structEulerAngles.html">EulerAngles</a> orientationE; </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    orientationE = <a class="code" href="operations_8hpp.html#af544e37e00cfe2aab1fb181ea96541dc">ToEulerAngles</a>(orientationQ); </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>[2] = (orientationE.<a class="code" href="structEulerAngles.html#a4dc9e3ffc0285a52e2e1d26b43e270a6">yaw</a>*180.0)/<a class="code" href="operations_8hpp.html#a952eac791b596a61bba0a133a3bb439f">PI</a>;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;}</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">  165</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a>(<span class="keyword">const</span> sensor_msgs::LaserScan::ConstPtr&amp; LiDAR)</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;{</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> = <span class="keyword">true</span>; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;   <span class="comment">// inRange = 0; </span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i = 0; i &lt; 360; i++)</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>[359-i] = (LiDAR-&gt;ranges[i]);</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a> = LiDAR-&gt;header.stamp.sec; </div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;}</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno"><a class="line" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">  182</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> **argv )</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;{</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordtype">string</span> argument = argv[1];</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;GT&quot;</span>)</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;using: ground truth &quot;</span> &lt;&lt; endl;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;odom&quot;</span>) </div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;using: odom&quot;</span> &lt;&lt; endl; </div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;ERROR with input argument&quot;</span> &lt;&lt; endl; </div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <span class="keywordflow">return</span> 0;     </div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="comment">// ROS</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    ros::init(argc, argv, <span class="stringliteral">&quot;DFSnode&quot;</span>);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    ros::NodeHandle nh(<span class="stringliteral">&quot;~&quot;</span>); </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    ros::Subscriber subscriberLiDAR;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    ros::Subscriber subscriberGT;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    ros::Subscriber subscriberOdometry; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    ros::Publisher drivePub;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    subscriberLiDAR     = nh.subscribe(<span class="stringliteral">&quot;/scan&quot;</span>, 100, <a class="code" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a>);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    subscriberGT        = nh.subscribe(<span class="stringliteral">&quot;/gazebo/model_states&quot;</span>, 100, <a class="code" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a>);</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    subscriberOdometry  = nh.subscribe(<span class="stringliteral">&quot;/odom&quot;</span>, 100, <a class="code" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a>);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    drivePub = nh.advertise&lt;geometry_msgs::Twist&gt;(<span class="stringliteral">&quot;/cmd_vel&quot;</span>, 100);</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="comment">// classes for navigation and DFS algorithm</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <a class="code" href="classnavigationClass.html">navigationClass</a> navigation(drivePub);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <a class="code" href="classDFSClass.html">DFSClass</a> DFS(<a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>, <a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>);</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <a class="code" href="classdataRecording.html">dataRecording</a> CSV(argument);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    </div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    CSV.<a class="code" href="classdataRecording.html#a020443e83b18d41d20d2dc9197234c94">start</a>();</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="comment">// set pointer to GT or odom</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;GT&quot;</span>)</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    {</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        DFS.<a class="code" href="classDFSClass.html#a01cad46a31a9afe96e097423c9e14af2">currentPose</a> = <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        navigation.currentPose = <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>; </div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    }</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;odom&quot;</span>)</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    {</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        DFS.<a class="code" href="classDFSClass.html#a01cad46a31a9afe96e097423c9e14af2">currentPose</a> = <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        navigation.currentPose = <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>; </div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    }</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="comment">// startup and waiting for initial sensor data</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keywordflow">while</span>(ros::ok())</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    {</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;        <span class="keywordflow">if</span>(<a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> &amp;&amp; <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> &amp;&amp; <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a>)</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;            cout &lt;&lt; <span class="stringliteral">&quot;STARTUP complete&quot;</span> &lt;&lt; endl; </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;            <a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a> = <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a>;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            <span class="keywordflow">break</span>;             </div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        }</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    cout &lt;&lt; <span class="stringliteral">&quot; - PROJECT 2 -&quot;</span> &lt;&lt; endl &lt;&lt; endl;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;GT&quot;</span>)</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;using: ground truth &quot;</span> &lt;&lt; endl;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;odom&quot;</span>) </div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;using: odom&quot;</span> &lt;&lt; endl; </div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        cout &lt;&lt; <span class="stringliteral">&quot;ERROR with input argument&quot;</span> &lt;&lt; endl; </div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordflow">return</span> 0;     </div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    }</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="comment">// ROS</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    ros::init(argc, argv, <span class="stringliteral">&quot;DFSnode&quot;</span>);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    ros::NodeHandle nh(<span class="stringliteral">&quot;~&quot;</span>); </div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    </div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    ros::Subscriber subscriberLiDAR;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    ros::Subscriber subscriberGT;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    ros::Subscriber subscriberOdometry; </div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160; </div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    ros::Publisher drivePub;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    subscriberLiDAR     = nh.subscribe(<span class="stringliteral">&quot;/scan&quot;</span>, 100, <a class="code" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a>);</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    subscriberGT        = nh.subscribe(<span class="stringliteral">&quot;/gazebo/model_states&quot;</span>, 100, <a class="code" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a>);</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    subscriberOdometry  = nh.subscribe(<span class="stringliteral">&quot;/odom&quot;</span>, 100, <a class="code" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a>);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    drivePub = nh.advertise&lt;geometry_msgs::Twist&gt;(<span class="stringliteral">&quot;/cmd_vel&quot;</span>, 100);</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160; </div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="comment">// classes for navigation and DFS algorithm</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <a class="code" href="classnavigationClass.html">navigationClass</a> navigation(drivePub);</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <a class="code" href="classDFSClass.html">DFSClass</a> DFS(<a class="code" href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a>, <a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>);</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <a class="code" href="classdataRecording.html">dataRecording</a> CSV(argument);</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    CSV.<a class="code" href="classdataRecording.html#a020443e83b18d41d20d2dc9197234c94">start</a>();</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160; </div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="comment">// set pointer to GT or odom</span></div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;GT&quot;</span>)</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        DFS.<a class="code" href="classDFSClass.html#a01cad46a31a9afe96e097423c9e14af2">currentPose</a> = <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        navigation.currentPose = <a class="code" href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a>; </div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    }</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(argument == <span class="stringliteral">&quot;odom&quot;</span>)</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        DFS.<a class="code" href="classDFSClass.html#a01cad46a31a9afe96e097423c9e14af2">currentPose</a> = <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        navigation.currentPose = <a class="code" href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a>; </div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    }</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160; </div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="comment">// startup and waiting for initial sensor data</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">while</span>(ros::ok())</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    {</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        <span class="keywordflow">if</span>(<a class="code" href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a> &amp;&amp; <a class="code" href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a> &amp;&amp; <a class="code" href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a>)</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        {</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            cout &lt;&lt; <span class="stringliteral">&quot;STARTUP complete&quot;</span> &lt;&lt; endl; </div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;            <a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a> = <a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a>;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            <span class="keywordflow">break</span>;             </div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        }</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        ros::spinOnce();</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="keyword">auto</span> start = std::chrono::high_resolution_clock::now(); </div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160; </div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="comment">// loop solving the maze</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keywordflow">while</span>(ros::ok())</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    {</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// if new position is reached calculate the next movement</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">if</span>(<a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a>){</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            <span class="keywordflow">if</span>(DFS.<a class="code" href="classDFSClass.html#a01dcc15c8249d59dd5ae6a4b2b16d12b">handleNode</a>()){</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                <span class="keyword">auto</span> finish = std::chrono::high_resolution_clock::now();</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                std::chrono::duration&lt;double&gt; durationReal = finish - start;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;                CSV.<a class="code" href="classdataRecording.html#a1479dce057fe2fd72a99e9f7bde7ff41">writeSuccess</a>(DFS.<a class="code" href="classDFSClass.html#a9e169c4bae8720415f7c0e9639316cb0">getNodeNumber</a>(), (<a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a>-<a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a>), durationReal);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;                <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        } </div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  </div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="comment">// navigate to next movement</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="keywordflow">if</span>(navigation.moveTo(<a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>))</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">true</span>; </div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        ros::spinOnce();</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }  </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="comment">//system(&quot;~jakob/SOA_ws/src/soa_pkg/kill.bash&quot;);</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160; </div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="keywordflow">return</span> 0; </div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;}</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        ros::spinOnce();</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    }</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keyword">auto</span> start = std::chrono::high_resolution_clock::now(); </div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">// loop solving the maze</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordflow">while</span>(ros::ok())</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="comment">// if new position is reached calculate the next movement</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <span class="keywordflow">if</span>(<a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a>){</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;            <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;            <span class="keywordflow">if</span>(DFS.<a class="code" href="classDFSClass.html#a01dcc15c8249d59dd5ae6a4b2b16d12b">handleNode</a>()){</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                <span class="keyword">auto</span> finish = std::chrono::high_resolution_clock::now();</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                std::chrono::duration&lt;double&gt; durationReal = finish - start;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                CSV.<a class="code" href="classdataRecording.html#a1479dce057fe2fd72a99e9f7bde7ff41">writeSuccess</a>(DFS.<a class="code" href="classDFSClass.html#a9e169c4bae8720415f7c0e9639316cb0">getNodeNumber</a>(), (<a class="code" href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a>-<a class="code" href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a>), durationReal);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;                <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;            }</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        } </div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  </div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="comment">// navigate to next movement</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">if</span>(navigation.moveTo(<a class="code" href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a>))</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;            <a class="code" href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a> = <span class="keyword">true</span>; </div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        ros::spinOnce();</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }  </div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="comment">//system(&quot;~jakob/SOA_ws/src/soa_pkg/kill.bash&quot;);</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160; </div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="keywordflow">return</span> 0; </div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="amain_8cpp_html_a739af4154e1c6e2ef4ca89f246a12856"><div class="ttname"><a href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a></div><div class="ttdeci">bool initialLidar</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00099">main.cpp:99</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a739af4154e1c6e2ef4ca89f246a12856"><div class="ttname"><a href="main_8cpp.html#a739af4154e1c6e2ef4ca89f246a12856">initialLidar</a></div><div class="ttdeci">bool initialLidar</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00041">main.cpp:41</a></div></div>
 <div class="ttc" id="astructEulerAngles_html"><div class="ttname"><a href="structEulerAngles.html">EulerAngles</a></div><div class="ttdoc">Struct Euler Angles.</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00024">operations.hpp:24</a></div></div>
 <div class="ttc" id="aclassDFSClass_html_a01cad46a31a9afe96e097423c9e14af2"><div class="ttname"><a href="classDFSClass.html#a01cad46a31a9afe96e097423c9e14af2">DFSClass::currentPose</a></div><div class="ttdeci">float * currentPose</div><div class="ttdoc">Pointer to main for currentPose.</div><div class="ttdef"><b>Definition:</b> <a href="DFS_8hpp_source.html#l00027">DFS.hpp:27</a></div></div>
-<div class="ttc" id="amain_8cpp_html_ac663231e4a7af864e1591d328a92fd65"><div class="ttname"><a href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a></div><div class="ttdeci">float nextPosition[2]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00108">main.cpp:108</a></div></div>
+<div class="ttc" id="amain_8cpp_html_ac663231e4a7af864e1591d328a92fd65"><div class="ttname"><a href="main_8cpp.html#ac663231e4a7af864e1591d328a92fd65">nextPosition</a></div><div class="ttdeci">float nextPosition[2]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00050">main.cpp:50</a></div></div>
 <div class="ttc" id="astructQuaternion_html_acfea23e3ba2b57356fe36b4d8f4c52f3"><div class="ttname"><a href="structQuaternion.html#acfea23e3ba2b57356fe36b4d8f4c52f3">Quaternion::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00019">operations.hpp:19</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a3c04138a5bfe5d72780bb7e82a18e627"><div class="ttname"><a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a></div><div class="ttdeci">int main(int argc, char **argv)</div><div class="ttdoc">MAIN Setting up the subscriber and publisher. Creating objects for the different classes Waiting for ...</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00182">main.cpp:182</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a3c04138a5bfe5d72780bb7e82a18e627"><div class="ttname"><a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a></div><div class="ttdeci">int main(int argc, char **argv)</div><div class="ttdoc">MAIN Setting up the subscriber and publisher. Creating objects for the different classes Waiting for ...</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00124">main.cpp:124</a></div></div>
 <div class="ttc" id="astructQuaternion_html"><div class="ttname"><a href="structQuaternion.html">Quaternion</a></div><div class="ttdoc">Struct Quarternion used for Quarternion to Euler calculation.</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00017">operations.hpp:17</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a4cd09e2c147fcfcd7137cb167689e499"><div class="ttname"><a href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a></div><div class="ttdeci">float poseGT[3]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00101">main.cpp:101</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a4cd09e2c147fcfcd7137cb167689e499"><div class="ttname"><a href="main_8cpp.html#a4cd09e2c147fcfcd7137cb167689e499">poseGT</a></div><div class="ttdeci">float poseGT[3]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00043">main.cpp:43</a></div></div>
 <div class="ttc" id="astructQuaternion_html_aeded08fcb4e8d0866e612ed81cb44aa7"><div class="ttname"><a href="structQuaternion.html#aeded08fcb4e8d0866e612ed81cb44aa7">Quaternion::w</a></div><div class="ttdeci">double w</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00019">operations.hpp:19</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a30fef11a84174014d30a1bc2134fa4f7"><div class="ttname"><a href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a></div><div class="ttdeci">float poseOdom[3]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00104">main.cpp:104</a></div></div>
-<div class="ttc" id="amain_8cpp_html_ae117616fed0c0d7023c1d17bf402a986"><div class="ttname"><a href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a></div><div class="ttdeci">bool initialGT</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00102">main.cpp:102</a></div></div>
-<div class="ttc" id="amain_8cpp_html_ad64aaabe4c7776393d0efcfc2c7a80f5"><div class="ttname"><a href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a></div><div class="ttdeci">long currentSeconds</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00110">main.cpp:110</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a30fef11a84174014d30a1bc2134fa4f7"><div class="ttname"><a href="main_8cpp.html#a30fef11a84174014d30a1bc2134fa4f7">poseOdom</a></div><div class="ttdeci">float poseOdom[3]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00046">main.cpp:46</a></div></div>
+<div class="ttc" id="amain_8cpp_html_ae117616fed0c0d7023c1d17bf402a986"><div class="ttname"><a href="main_8cpp.html#ae117616fed0c0d7023c1d17bf402a986">initialGT</a></div><div class="ttdeci">bool initialGT</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00044">main.cpp:44</a></div></div>
+<div class="ttc" id="amain_8cpp_html_ad64aaabe4c7776393d0efcfc2c7a80f5"><div class="ttname"><a href="main_8cpp.html#ad64aaabe4c7776393d0efcfc2c7a80f5">currentSeconds</a></div><div class="ttdeci">long currentSeconds</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00052">main.cpp:52</a></div></div>
 <div class="ttc" id="aoperations_8hpp_html_af544e37e00cfe2aab1fb181ea96541dc"><div class="ttname"><a href="operations_8hpp.html#af544e37e00cfe2aab1fb181ea96541dc">ToEulerAngles</a></div><div class="ttdeci">EulerAngles ToEulerAngles(Quaternion q)</div><div class="ttdoc">Quaternion to Euler Angle transformation.</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00035">operations.hpp:35</a></div></div>
 <div class="ttc" id="aoperations_8hpp_html"><div class="ttname"><a href="operations_8hpp.html">operations.hpp</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a4318512ffd72934e07052dae4605bb53"><div class="ttname"><a href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a></div><div class="ttdeci">void callbackOdometry(const nav_msgs::Odometry::ConstPtr &amp;odometry)</div><div class="ttdoc">Callback for odometry subscriber Writing odometry feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00119">main.cpp:119</a></div></div>
-<div class="ttc" id="amain_8cpp_html_ab62691d67eea050a5b8ac637fd93f9cd"><div class="ttname"><a href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a></div><div class="ttdeci">float scanResult[360]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00098">main.cpp:98</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a4942230815e8f96fca1e8554a2e89d9c"><div class="ttname"><a href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a></div><div class="ttdeci">long initialSeconds</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00111">main.cpp:111</a></div></div>
-<div class="ttc" id="amain_8cpp_html_ac97861f53e5fa185b2654bb8b8801bf7"><div class="ttname"><a href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a></div><div class="ttdeci">void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr &amp;LiDAR)</div><div class="ttdoc">Callback for LiDAR subscriber Writing LiDAR feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00165">main.cpp:165</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a503cd32022e079b5d461e90cf54df18a"><div class="ttname"><a href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a></div><div class="ttdeci">bool positionReached</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00107">main.cpp:107</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a4318512ffd72934e07052dae4605bb53"><div class="ttname"><a href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a></div><div class="ttdeci">void callbackOdometry(const nav_msgs::Odometry::ConstPtr &amp;odometry)</div><div class="ttdoc">Callback for odometry subscriber Writing odometry feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00061">main.cpp:61</a></div></div>
+<div class="ttc" id="amain_8cpp_html_ab62691d67eea050a5b8ac637fd93f9cd"><div class="ttname"><a href="main_8cpp.html#ab62691d67eea050a5b8ac637fd93f9cd">scanResult</a></div><div class="ttdeci">float scanResult[360]</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00040">main.cpp:40</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a4942230815e8f96fca1e8554a2e89d9c"><div class="ttname"><a href="main_8cpp.html#a4942230815e8f96fca1e8554a2e89d9c">initialSeconds</a></div><div class="ttdeci">long initialSeconds</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00053">main.cpp:53</a></div></div>
+<div class="ttc" id="amain_8cpp_html_ac97861f53e5fa185b2654bb8b8801bf7"><div class="ttname"><a href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a></div><div class="ttdeci">void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr &amp;LiDAR)</div><div class="ttdoc">Callback for LiDAR subscriber Writing LiDAR feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00107">main.cpp:107</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a503cd32022e079b5d461e90cf54df18a"><div class="ttname"><a href="main_8cpp.html#a503cd32022e079b5d461e90cf54df18a">positionReached</a></div><div class="ttdeci">bool positionReached</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00049">main.cpp:49</a></div></div>
 <div class="ttc" id="aoperations_8hpp_html_a952eac791b596a61bba0a133a3bb439f"><div class="ttname"><a href="operations_8hpp.html#a952eac791b596a61bba0a133a3bb439f">PI</a></div><div class="ttdeci">const double PI</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00029">operations.hpp:29</a></div></div>
 <div class="ttc" id="adataRecording_8hpp_html"><div class="ttname"><a href="dataRecording_8hpp.html">dataRecording.hpp</a></div></div>
 <div class="ttc" id="aclassdataRecording_html_a020443e83b18d41d20d2dc9197234c94"><div class="ttname"><a href="classdataRecording.html#a020443e83b18d41d20d2dc9197234c94">dataRecording::start</a></div><div class="ttdeci">int start()</div><div class="ttdoc">start first data for new run is current date and time</div><div class="ttdef"><b>Definition:</b> <a href="dataRecording_8hpp_source.html#l00056">dataRecording.hpp:56</a></div></div>
 <div class="ttc" id="aclassDFSClass_html_a01dcc15c8249d59dd5ae6a4b2b16d12b"><div class="ttname"><a href="classDFSClass.html#a01dcc15c8249d59dd5ae6a4b2b16d12b">DFSClass::handleNode</a></div><div class="ttdeci">bool handleNode()</div><div class="ttdoc">handleNode main method of DFS algorithm. Decides for next movement</div><div class="ttdef"><b>Definition:</b> <a href="DFS_8hpp_source.html#l00099">DFS.hpp:99</a></div></div>
 <div class="ttc" id="aclassDFSClass_html_a9e169c4bae8720415f7c0e9639316cb0"><div class="ttname"><a href="classDFSClass.html#a9e169c4bae8720415f7c0e9639316cb0">DFSClass::getNodeNumber</a></div><div class="ttdeci">int getNodeNumber()</div><div class="ttdoc">getNodeNumber returns size of vector (Number of used nodes)</div><div class="ttdef"><b>Definition:</b> <a href="DFS_8hpp_source.html#l00089">DFS.hpp:89</a></div></div>
 <div class="ttc" id="aclassdataRecording_html_a1479dce057fe2fd72a99e9f7bde7ff41"><div class="ttname"><a href="classdataRecording.html#a1479dce057fe2fd72a99e9f7bde7ff41">dataRecording::writeSuccess</a></div><div class="ttdeci">void writeSuccess(int usedNodes, long duration, std::chrono::duration&lt; double &gt; durationReal)</div><div class="ttdoc">writeSuccess if turtlebot escaped from the maze following data is written to the csv file: ° used nod...</div><div class="ttdef"><b>Definition:</b> <a href="dataRecording_8hpp_source.html#l00079">dataRecording.hpp:79</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a9001f9ebd5ddd6aef64f6bd3e0286e0a"><div class="ttname"><a href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a></div><div class="ttdeci">void callbackGT(const gazebo_msgs::ModelStates::ConstPtr &amp;GT)</div><div class="ttdoc">Callback for ground truth subscriber Writing ground truth feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00142">main.cpp:142</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a9001f9ebd5ddd6aef64f6bd3e0286e0a"><div class="ttname"><a href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a></div><div class="ttdeci">void callbackGT(const gazebo_msgs::ModelStates::ConstPtr &amp;GT)</div><div class="ttdoc">Callback for ground truth subscriber Writing ground truth feedback to parameters:</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00084">main.cpp:84</a></div></div>
 <div class="ttc" id="astructEulerAngles_html_a4dc9e3ffc0285a52e2e1d26b43e270a6"><div class="ttname"><a href="structEulerAngles.html#a4dc9e3ffc0285a52e2e1d26b43e270a6">EulerAngles::yaw</a></div><div class="ttdeci">double yaw</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00026">operations.hpp:26</a></div></div>
 <div class="ttc" id="aclassnavigationClass_html"><div class="ttname"><a href="classnavigationClass.html">navigationClass</a></div><div class="ttdoc">navigationClass navigation the turtlebot from current position to the next goal</div><div class="ttdef"><b>Definition:</b> <a href="navigation_8hpp_source.html#l00016">navigation.hpp:16</a></div></div>
 <div class="ttc" id="aclassdataRecording_html"><div class="ttname"><a href="classdataRecording.html">dataRecording</a></div><div class="ttdoc">dataRecoring used to collect data from the test runs and save it to csv file</div><div class="ttdef"><b>Definition:</b> <a href="dataRecording_8hpp_source.html#l00020">dataRecording.hpp:20</a></div></div>
 <div class="ttc" id="astructQuaternion_html_a90bbdb05526bddfbc3247dcc9a5cace4"><div class="ttname"><a href="structQuaternion.html#a90bbdb05526bddfbc3247dcc9a5cace4">Quaternion::z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00019">operations.hpp:19</a></div></div>
 <div class="ttc" id="anavigation_8hpp_html"><div class="ttname"><a href="navigation_8hpp.html">navigation.hpp</a></div></div>
-<div class="ttc" id="amain_8cpp_html_a477d18d3cec28f291addef58286d1e6b"><div class="ttname"><a href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a></div><div class="ttdeci">bool initialOdom</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00105">main.cpp:105</a></div></div>
+<div class="ttc" id="amain_8cpp_html_a477d18d3cec28f291addef58286d1e6b"><div class="ttname"><a href="main_8cpp.html#a477d18d3cec28f291addef58286d1e6b">initialOdom</a></div><div class="ttdeci">bool initialOdom</div><div class="ttdef"><b>Definition:</b> <a href="main_8cpp_source.html#l00047">main.cpp:47</a></div></div>
 <div class="ttc" id="aDFS_8hpp_html"><div class="ttname"><a href="DFS_8hpp.html">DFS.hpp</a></div></div>
 <div class="ttc" id="astructQuaternion_html_a65c93d8db6c57203447bd0594b608512"><div class="ttname"><a href="structQuaternion.html#a65c93d8db6c57203447bd0594b608512">Quaternion::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition:</b> <a href="operations_8hpp_source.html#l00019">operations.hpp:19</a></div></div>
 <div class="ttc" id="aclassDFSClass_html"><div class="ttname"><a href="classDFSClass.html">DFSClass</a></div><div class="ttdoc">Logic Depth-First Search Algorithm.</div><div class="ttdef"><b>Definition:</b> <a href="DFS_8hpp_source.html#l00016">DFS.hpp:16</a></div></div>
@@ -252,7 +251,7 @@ $(function() {
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/soa_pkg">soa_pkg</a><br />
 Author(s): </br />
-<small>autogenerated on Fri Jan 29 2021 15:47:28</small>
+<small>autogenerated on Fri Jan 29 2021 17:48:01</small>
 </div>
 </body>
 </html>
