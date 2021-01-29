@@ -1,0 +1,6 @@
+- builder: doxygen
+  name: SOAR Project 2
+  file_patterns: '*.c *.cpp *.hpp *.cc *.hh *.dox *.md'
+  exclude_patterns: '*/OpenCV_DFS/*'
+  use_mdfile_as_mainpage: README.md
+

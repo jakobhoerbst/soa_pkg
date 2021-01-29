@@ -73,16 +73,16 @@ Include dependency graph for main.cpp:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a9001f9ebd5ddd6aef64f6bd3e0286e0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">callbackGT</a> (const gazebo_msgs::ModelStates::ConstPtr &amp;GT)</td></tr>
-<tr class="memdesc:a9001f9ebd5ddd6aef64f6bd3e0286e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ground Truth Ros Subscriber.  <a href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">More...</a><br /></td></tr>
+<tr class="memdesc:a9001f9ebd5ddd6aef64f6bd3e0286e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for ground truth subscriber Writing ground truth feedback to parameters:  <a href="main_8cpp.html#a9001f9ebd5ddd6aef64f6bd3e0286e0a">More...</a><br /></td></tr>
 <tr class="separator:a9001f9ebd5ddd6aef64f6bd3e0286e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac97861f53e5fa185b2654bb8b8801bf7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">callbackLiDAR</a> (const sensor_msgs::LaserScan::ConstPtr &amp;LiDAR)</td></tr>
-<tr class="memdesc:ac97861f53e5fa185b2654bb8b8801bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">LiDAR Ros Subscriber.  <a href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">More...</a><br /></td></tr>
+<tr class="memdesc:ac97861f53e5fa185b2654bb8b8801bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for LiDAR subscriber Writing LiDAR feedback to parameters:  <a href="main_8cpp.html#ac97861f53e5fa185b2654bb8b8801bf7">More...</a><br /></td></tr>
 <tr class="separator:ac97861f53e5fa185b2654bb8b8801bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4318512ffd72934e07052dae4605bb53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">callbackOdometry</a> (const nav_msgs::Odometry::ConstPtr &amp;odometry)</td></tr>
-<tr class="memdesc:a4318512ffd72934e07052dae4605bb53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Odometry Ros Subscriber.  <a href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">More...</a><br /></td></tr>
+<tr class="memdesc:a4318512ffd72934e07052dae4605bb53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for odometry subscriber Writing odometry feedback to parameters:  <a href="main_8cpp.html#a4318512ffd72934e07052dae4605bb53">More...</a><br /></td></tr>
 <tr class="separator:a4318512ffd72934e07052dae4605bb53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c04138a5bfe5d72780bb7e82a18e627"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main</a> (int argc, char **argv)</td></tr>
-<tr class="memdesc:a3c04138a5bfe5d72780bb7e82a18e627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project Main hallohallohalo Parameter 1: odom/GT Choice between "odom" as odometry based approach or "GT" as an approach unsing ground truth.  <a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">More...</a><br /></td></tr>
+<tr class="memdesc:a3c04138a5bfe5d72780bb7e82a18e627"><td class="mdescLeft">&#160;</td><td class="mdescRight">MAIN Setting up the subscriber and publisher. Creating objects for the different classes Waiting for initial feedback from the topic Loop for main code of the DFS algorithm and finishes when the alogrithm found exit.  <a href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">More...</a><br /></td></tr>
 <tr class="separator:a3c04138a5bfe5d72780bb7e82a18e627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
@@ -125,10 +125,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Ground Truth Ros Subscriber. </p>
-<p>Detailed description starts here. </p>
+<p>Callback for ground truth subscriber Writing ground truth feedback to parameters: </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">poseGT[3]</td><td>getting position and orientation from GT feeback </td></tr>
+    <tr><td class="paramname">initialGT</td><td>true if initial feedback is received </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00133">133</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00142">142</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -148,10 +154,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>LiDAR Ros Subscriber. </p>
-<p>Detailed description starts here. </p>
+<p>Callback for LiDAR subscriber Writing LiDAR feedback to parameters: </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scanResult[360]</td><td>LiDAR feedback (0°-359°) </td></tr>
+    <tr><td class="paramname">currentSeconds</td><td>time stamp from topic (for simulated time measurement) </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00155">155</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00165">165</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -171,10 +183,16 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Odometry Ros Subscriber. </p>
-<p>Detailed description starts here. </p>
+<p>Callback for odometry subscriber Writing odometry feedback to parameters: </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">poseOdom[3]</td><td>getting position and orientation from odometry feeback </td></tr>
+    <tr><td class="paramname">initialOdom</td><td>true if initial feedback is received </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00111">111</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00119">119</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -204,9 +222,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Project Main hallohallohalo Parameter 1: odom/GT Choice between "odom" as odometry based approach or "GT" as an approach unsing ground truth. </p>
+<p>MAIN Setting up the subscriber and publisher. Creating objects for the different classes Waiting for initial feedback from the topic Loop for main code of the DFS algorithm and finishes when the alogrithm found exit. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00171">171</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00182">182</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -225,7 +243,7 @@ Variables</h2></td></tr>
 <p>Current time in Seconds for time measurement <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00103">103</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00110">110</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -240,10 +258,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>... <br  />
- </p>
+<p>set to true on first GT feedback </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00097">97</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00102">102</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -258,10 +275,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>... <br  />
- </p>
+<p>set to true on first LiDAR feedback </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00095">95</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00099">99</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -276,10 +292,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>... <br  />
- </p>
+<p>et to true on first odom feedback </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00099">99</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00105">105</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -297,7 +312,7 @@ Variables</h2></td></tr>
 <p>Initial Seconds for time measurement <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00104">104</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00111">111</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -315,7 +330,7 @@ Variables</h2></td></tr>
 <p>Next Position from DFS to navigation <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00101">101</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00108">108</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -330,10 +345,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Ground Truth Position - Initial: 0,0,0 <br  />
+<p>Ground Truth Pose - Initial: 0,0,0 <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00096">96</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00101">101</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -348,10 +363,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Odometrie (odom) Position - Initial: 0,0,0 <br  />
+<p>Odometrie (odom) Pose - Initial: 0,0,0 <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00098">98</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00104">104</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +384,7 @@ Variables</h2></td></tr>
 <p>Feedback from Navigation <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00100">100</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00107">107</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -387,7 +402,7 @@ Variables</h2></td></tr>
 <p>LiDAR scanning values <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00094">94</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00098">98</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -397,7 +412,7 @@ Variables</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/soa_pkg">soa_pkg</a><br />
 Author(s): </br />
-<small>autogenerated on Fri Jan 29 2021 14:07:39</small>
+<small>autogenerated on Fri Jan 29 2021 15:47:28</small>
 </div>
 </body>
 </html>

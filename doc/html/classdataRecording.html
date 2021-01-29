@@ -27,7 +27,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Brief description. Brief description continued.  
+<p>dataRecoring used to collect data from the test runs and save it to csv file  
  <a href="classdataRecording.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>&gt;</code></p>
@@ -37,8 +37,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac73ae8b35e502efd58f3e36ba60da6f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdataRecording.html#ac73ae8b35e502efd58f3e36ba60da6f7">dataRecording</a> (string argument)</td></tr>
 <tr class="separator:ac73ae8b35e502efd58f3e36ba60da6f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a020443e83b18d41d20d2dc9197234c94"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdataRecording.html#a020443e83b18d41d20d2dc9197234c94">start</a> ()</td></tr>
+<tr class="memdesc:a020443e83b18d41d20d2dc9197234c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">start first data for new run is current date and time  <a href="classdataRecording.html#a020443e83b18d41d20d2dc9197234c94">More...</a><br /></td></tr>
 <tr class="separator:a020443e83b18d41d20d2dc9197234c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1479dce057fe2fd72a99e9f7bde7ff41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdataRecording.html#a1479dce057fe2fd72a99e9f7bde7ff41">writeSuccess</a> (int usedNodes, long duration, std::chrono::duration&lt; double &gt; durationReal)</td></tr>
+<tr class="memdesc:a1479dce057fe2fd72a99e9f7bde7ff41"><td class="mdescLeft">&#160;</td><td class="mdescRight">writeSuccess if turtlebot escaped from the maze following data is written to the csv file: ° used nodes (excl. the nodes that where explored but closed due to dead ends ° duration (simulated time) ° "ESCAPED" if the robot solved the maze ° duration (real time)  <a href="classdataRecording.html#a1479dce057fe2fd72a99e9f7bde7ff41">More...</a><br /></td></tr>
 <tr class="separator:a1479dce057fe2fd72a99e9f7bde7ff41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
@@ -56,10 +58,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ae409cbc2b1059f68c39999d8f8ae15a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Brief description. Brief description continued. </p>
-<p>Detailed description starts here. </p>
+<div class="textblock"><p>dataRecoring used to collect data from the test runs and save it to csv file </p>
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00022">22</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00020">20</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac73ae8b35e502efd58f3e36ba60da6f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac73ae8b35e502efd58f3e36ba60da6f7">&#9670;&nbsp;</a></span>dataRecording()</h2>
@@ -77,7 +78,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00036">36</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00034">34</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -105,7 +106,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00051">51</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00049">49</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -132,7 +133,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00041">41</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00039">39</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -150,6 +151,8 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>start first data for new run is current date and time </p>
 
 <p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00056">56</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
@@ -187,7 +190,9 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00073">73</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p>writeSuccess if turtlebot escaped from the maze following data is written to the csv file: ° used nodes (excl. the nodes that where explored but closed due to dead ends ° duration (simulated time) ° "ESCAPED" if the robot solved the maze ° duration (real time) </p>
+
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00079">79</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -212,7 +217,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00029">29</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00027">27</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -236,7 +241,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00030">30</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dataRecording_8hpp_source.html#l00028">28</a> of file <a class="el" href="dataRecording_8hpp_source.html">dataRecording.hpp</a>.</p>
 
 </div>
 </div>
@@ -249,7 +254,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/soa_pkg">soa_pkg</a><br />
 Author(s): </br />
-<small>autogenerated on Fri Jan 29 2021 14:07:39</small>
+<small>autogenerated on Fri Jan 29 2021 15:47:28</small>
 </div>
 </body>
 </html>
