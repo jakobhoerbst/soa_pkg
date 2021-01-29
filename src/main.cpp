@@ -164,7 +164,7 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 }
 
 /*! \brief Project Main
- *
+ * hallohallohalo
  *  Parameter 1: odom/GT
  *  Choice between "odom" as odometry based approach or "GT" as an approach unsing ground truth
  */

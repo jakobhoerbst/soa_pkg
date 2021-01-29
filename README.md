@@ -13,9 +13,9 @@ This code is tested with two different systems:
 -ROS Noetic 
 -8192 MB RAM
 2. System: 
--OS 
--ROS Version 
--RAM 
+-Ubuntu 18.04 LTS
+-ROS Melodic 
+-16 GB RAM  
 
 ## Install
 
@@ -28,12 +28,16 @@ This code is tested with two different systems:
 `$ catkin_make`
 
 ## Starting
-With `testingSequence.sh` (instead of `start.sh`) the program will be executed 100 times (`start.sh` = 1 Run). 
-In line 32-33 it must be selected if odometry or ground truth is used for position gathering. 
-Ground Truth is pre-selected.
-
+For a single run: 
 `$ cd /PathTo/catkin_ws/src/soa_pkg`  
-`$ bash SOA.sh`
+`$ bash start.bash`
+(For changing from GT to odom comment line 32 and decomment line 33 in start.bash)
+
+For starting series of 100 runs: 
+`$ cd /PathTo/catkin_ws/src/soa_pkg`  
+`$ bash 100timesStart.bash`
+(For changing from GT to odom edit line 37 in 100timesStart.bash)
+
 
 ### Contribution
 Code-Author: Hoerbst Jakob
