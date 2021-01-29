@@ -11,18 +11,15 @@
 
 using namespace std;
 
-/*! \brief Quaternion Values
- *
- *   
+/*! \brief Struct Quarternion
+ * used for Quarternion to Euler calculation
  */
 struct Quaternion
 {
     double w, x, y, z;
 };
 
-/*! \brief Euler Values
- *
- *  
+/*! \brief Struct Euler Angles
  */
 struct EulerAngles
 {
@@ -81,9 +78,8 @@ Quaternion ToQuaternion(double yaw, double pitch, double roll) // yaw (Z), pitch
     return q;
 }
 
-/*! \brief brief descr
- *
- *  Detailed description starts here.
+/*! \brief angleTo360
+ * mapping angle form -180 ... 180 to 0 ... 359
  */
 void angleTo360(double &angle)
 {
@@ -93,9 +89,8 @@ void angleTo360(double &angle)
         angle = 360 - angle; 
 }
 
-/*! \brief brief descr
- *
- *  Detailed description starts here.
+/*! \brief mapValue
+ * mapping input into range returning mapped value
  */
 float mapValue(float x, float in_min, float in_max, float out_min, float out_max)
 {

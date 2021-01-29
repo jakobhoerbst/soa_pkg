@@ -14,10 +14,8 @@ https://en.cppreference.com/w/cpp/chrono
 
 using namespace std;
 
-/*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
+/*! \brief dataRecoring
+ * used to collect data from the test runs and save it to csv file 
  */
 class dataRecording{
     public:
@@ -52,7 +50,9 @@ void dataRecording::closeFile(){
     csvFile.close(); 
 }
 
-
+/*! \brief start
+ * first data for new run is current date and time 
+ */
 int dataRecording::start(){
     time_t now = time(NULL);
     tm *ltm = localtime(&now);
@@ -69,7 +69,13 @@ int dataRecording::start(){
     csvFile << hour << ":" << minute << ":" << second << "; "; 
     closeFile();
 }
-
+/*! \brief writeSuccess
+ * if turtlebot escaped from the maze following data is written to the csv file: 
+ * ° used nodes (excl. the nodes that where explored but closed due to dead ends
+ * ° duration (simulated time)
+ * ° "ESCAPED" if the robot solved the maze 
+ * ° duration (real time)
+ */
 void dataRecording::writeSuccess(int usedNodes, long duration,std::chrono::duration<double> durationReal){
     std::cout << std::endl << "duration: " << durationReal.count() << "s"<< std::endl;
 

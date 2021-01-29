@@ -10,9 +10,8 @@
                    
 using namespace std;
 
-/*! \brief brief descr
- *
- *  Detailed description starts here.
+/*! \brief navigationClass 
+ * navigation the turtlebot from current position to the next goal 
  */
 class navigationClass
 {
@@ -27,22 +26,20 @@ class navigationClass
         int navigationState = 0; 
         ros::Publisher drivePub;
 
-        const float toleranceDistance = 0.1;        /*!< setup */
-        const float toleranceAngle = 2;             /*!< setup */ 
-        const float toleranceAngleLinVel = 30;      /*!< setup */ 
-        const float angularVel = 1;                 /*!< setup */
-        const float linearVel = 0.3;                /*!< setup */
-        const float decelDist = 0.5;                /*!< setup */
+        const float toleranceDistance = 0.1;        /*!< toleranceDistance for motion */
+        const float toleranceAngle = 2;             /*!< toleranceAngle for starting motion */ 
+        const float toleranceAngleLinVel = 30;      /*!< mapping speed in relation to angle to goal */ 
+        const float angularVel = 1;                 /*!< angular Velocity */
+        const float linearVel = 0.3;                /*!< linear Velocity */
+        const float decelDist = 0.5;                /*!< distance to goal where robot starts decellerating */
 };
-/*! \brief Brauchts den? der ist ja leer .... 
- *
- *  Detailed description starts here.
- */
+
+
 navigationClass::navigationClass(ros::Publisher &drive): drivePub(drive){}
 
-/*! \brief brief descr
- *
- *  Detailed description starts here.
+/*! \brief moveTo.
+ * main method for navigation
+ * gets desired pose as input
  */
 bool navigationClass::moveTo(float desiredPose[2])
 {
@@ -87,9 +84,9 @@ bool navigationClass::moveTo(float desiredPose[2])
     return false; 
 }
 
-/*! \brief brief descr
- *
- *  Detailed description starts here.
+/*! \brief motion 
+ * called from moveTo 
+ * controlls robot and return true if the robot reached the new position 
  */
 bool navigationClass::motion(ros::Publisher &drive, float desPose[3], float curPose[3])
 {

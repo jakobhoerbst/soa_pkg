@@ -12,14 +12,11 @@ using namespace std;
 
 /**
     * \brief Logic Depth-First Search Algorithm
-    * 
-    * Long description DFSClass
 **/
 class DFSClass{
 /**
-    * \brief Logic Depth-First Search Algorithm
-    * 
-    * Long description DFSClass
+    * \brief Depth-first search algorithm
+    * this class holds the main logic for solving the maze. 
     * @param scan [360] Description
     * @param nextPos [2] Description
 **/
@@ -32,32 +29,31 @@ public:
 
 private:
     const float width           = 1.25;     /*!< Maze Setup Value - grid length of one segment */    
-    const float wallThickness   = 0.15;     /*!< Maze Setup Value */ 
     const float pathWidth       = 1.1;      /*!< Maze Setup Value - width for traversing with waffle */
-    const float exitDistance    = 2.5;      /*!< Maze Setup Value */
+    const float exitDistance    = 2.5;      /*!< treshold for scan feedback */
     const double closed         = 0.8;      /*!< Values from using cv::Mat for Visualization */
     const double current        = 0.8;      /*!< Values from using cv::Mat for Visualization */
     const double visited        = 0.4;      /*!< Values from using cv::Mat for Visualization */
 
     struct nodestruct
     {
-        double x;                           /*!< x-Value of ...  */ 
-        double y;                           /*!< y-Value of ...  */
+        double x;                           /*!< x-Value of node  */ 
+        double y;                           /*!< y-Value of node  */
         double dir[5];                      /*!< Directions: Dead end, right, down, left, up  */                       
-        int move;                           /*!< ...move...  */
+        int move;                           /*!< previous orientation */
     };
-    vector<nodestruct> graph;               /*!< ... of ...  */
+    vector<nodestruct> graph;               /*!< directed graph of nodestructs - this vector holds main information for the algorithm*/
 
     struct coordinatesStruct
     {
-        double x;                           /*!< x-Value of ...  */ 
-        double y;                           /*!< y-Value of ...  */
+        double x;                           /*!< x-value of visited node  */ 
+        double y;                           /*!< y-value of visited node  */
     };
-    vector<coordinatesStruct> visitedVector; /*!< ... of ...  */
+    vector<coordinatesStruct> visitedVector; /*!< vector of visited nodes */
 
     // pointer to main 
-    float *scanResult;                      /*!< Pointer to Main  */
-    float *nextPosition;                    /*!< Pointer to Main  */
+    float *scanResult;                      /*!< pointer to scanResults form main */
+    float *nextPosition;                    /*!< pointer to next Position form main */
 
     // orientation 
     int     orientation = 0;                        /*!< ... of ...  */
@@ -87,9 +83,8 @@ DFSClass::DFSClass(float scan[360], float nextPos[2]): scanResult(scan), nextPos
 
 ////////////////////////////      getNodeNumber     ////////////////////////////
 /**
- * \brief Short Expl
- *
- *  Long Expl....
+ * \brief getNodeNumber
+ * returns size of vector (Number of used nodes) 
  **/
 int DFSClass::getNodeNumber()
 {
@@ -98,9 +93,8 @@ int DFSClass::getNodeNumber()
 
 ////////////////////////////       handleNode       ////////////////////////////
 /**
- * \brief Short Expl
- *
- *  Long Expl....
+ * \brief handleNode 
+ * main method of DFS algorithm. Decides for next movement 
  **/
 bool DFSClass::handleNode()
 {
@@ -256,8 +250,6 @@ bool DFSClass::checkExit()
 ////////////////////////////    get orientation     ////////////////////////////
 /**
  * \brief Gets the current Orientation
- *
- *  more info ...
  **/
 int DFSClass::getOrientation()
 {
@@ -283,9 +275,6 @@ int DFSClass::getOrientation()
 }
 
 /*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
  */
 void DFSClass::setStatus(vector<nodestruct> &node, double newStatus){
 
@@ -330,10 +319,8 @@ void DFSClass::setStatus(vector<nodestruct> &node, double newStatus){
 
 }
 
-/*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
+/*! \brief scan
+ * uses scan values and writes to vector if there is a wall or not for all directions
  */
 void DFSClass::scan(vector<nodestruct> &node)
 {
@@ -349,10 +336,8 @@ void DFSClass::scan(vector<nodestruct> &node)
     node[node.size()-1].y = currentPose[1];
 }
 
-/*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
+/*! \brief checkIfVistied 
+ * checks the vector with visited nodes and compares if the new node has already been visited
  */
 bool DFSClass::checkIfVisited(vector<nodestruct> &node)
 {
@@ -373,10 +358,8 @@ bool DFSClass::checkIfVisited(vector<nodestruct> &node)
     return 0;
 }
 
-/*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
+/*! \brief correctNodePosition 
+ * turtlebot is not always on the exact position. therefore this position is corrected before it is saved to the graph 
  */
 void DFSClass::correctNodePosition(vector<nodestruct> &node)
 {
@@ -394,10 +377,8 @@ void DFSClass::correctNodePosition(vector<nodestruct> &node)
     }
 }
 
-/*! \brief Brief description.
- *         Brief description continued.
- *
- *  Detailed description starts here.
+/*! \brief printNode
+ * print the current node to the terminal (for debugging) 
  */
 void DFSClass::printNode(vector<nodestruct> currentNode)
 {

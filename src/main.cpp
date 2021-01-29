@@ -17,9 +17,9 @@
  * -ROS Noetic \n
  * -8192 MB RAM \n
  * 2. System: \n
- * -OS \n
- * -ROS Version \n
- * -RAM \n
+ * -Ubuntu 18.04 LTS
+ * -ROS Melodic 
+ * -16 GB RAM  
  * 
  * 
  * @section Installation
@@ -32,13 +32,17 @@
  * `$ catkin_make`
  * 
  * @section Starting
- * With `testingSequence.sh` (instead of `start.sh`) the program will be executed 100 times (`start.sh` = 1 Run). \n
- * In line 32-33 it must be selected if odometry or ground truth is used for position gathering. \n
- * Ground Truth is pre-selected. \n
  * 
+ * For a single run: 
+ * `$ cd /PathTo/catkin_ws/src/soa_pkg`  
+ * `$ bash start.bash`
+ * (For changing from GT to odom comment line 32 and decomment line 33 in start.bash)
+
+ * For starting series of 100 runs: 
+ * `$ cd /PathTo/catkin_ws/src/soa_pkg`  
+ * `$ bash 100timesStart.bash`
+ * (For changing from GT to odom edit line 37 in 100timesStart.bash)
  * 
- * `$ cd /PathTo/catkin_ws/soa_pkg`  
- * `$ bash start.sh`
  * 
  * @section Legend
  * 
@@ -92,11 +96,14 @@
 using namespace std;
 
 float scanResult[360];          /*!< LiDAR scanning values  */
-bool initialLidar = false;      /*!< ...  */
-float poseGT[3] = {0,0,0};      /*!< Ground Truth Position - Initial: 0,0,0  */
-bool initialGT = false;         /*!< ...  */
-float poseOdom[3] = {0,0,0};    /*!< Odometrie (odom) Position - Initial: 0,0,0  */
-bool initialOdom = false;       /*!< ...  */
+bool initialLidar = false;      /*!< set to true on first LiDAR feedback*/
+
+float poseGT[3] = {0,0,0};      /*!< Ground Truth Pose - Initial: 0,0,0  */
+bool initialGT = false;         /*!< set to true on first GT feedback */
+
+float poseOdom[3] = {0,0,0};    /*!< Odometrie (odom) Pose - Initial: 0,0,0  */
+bool initialOdom = false;       /*!< et to true on first odom feedback */
+
 bool positionReached = true;    /*!< Feedback from Navigation  */
 float nextPosition[2] = {0,0};  /*!< Next Position from DFS to navigation  */
 
@@ -104,9 +111,10 @@ long currentSeconds = 0;        /*!< Current time in Seconds for time measuremen
 long initialSeconds = 0;        /*!< Initial Seconds for time measurement  */ 
 
 
-/*! \brief Odometry Ros Subscriber
- *
- *  Detailed description starts here.
+/*! \brief Callback for odometry subscriber
+ *  Writing odometry feedback to parameters:
+ *  @param poseOdom[3] getting position and orientation from odometry feeback 
+ *  @param initialOdom true if initial feedback is received
  */
 void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
 {
@@ -126,9 +134,10 @@ void callbackOdometry(const nav_msgs::Odometry::ConstPtr& odometry)
     initialOdom = true; 
 }
 
-/*! \brief Ground Truth Ros Subscriber
- *
- *  Detailed description starts here.
+/*! \brief Callback for ground truth subscriber
+ *  Writing ground truth feedback to parameters:
+ *  @param poseGT[3] getting position and orientation from GT feeback 
+ *  @param initialGT true if initial feedback is received
  */
 void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT)
 {
@@ -148,9 +157,10 @@ void callbackGT(const gazebo_msgs::ModelStates::ConstPtr& GT)
     initialGT = true;
 }
 
-/*! \brief LiDAR Ros Subscriber
- *
- *  Detailed description starts here.
+/*! \brief Callback for LiDAR subscriber
+ *  Writing LiDAR feedback to parameters:
+ *  @param scanResult[360] LiDAR feedback (0°-359°)
+ *  @param currentSeconds time stamp from topic (for simulated time measurement)
  */
 void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
 {
@@ -163,10 +173,11 @@ void callbackLiDAR(const sensor_msgs::LaserScan::ConstPtr& LiDAR)
     currentSeconds = LiDAR->header.stamp.sec; 
 }
 
-/*! \brief Project Main
- * hallohallohalo
- *  Parameter 1: odom/GT
- *  Choice between "odom" as odometry based approach or "GT" as an approach unsing ground truth
+/*! \brief MAIN
+ * Setting up the subscriber and publisher. 
+ * Creating objects for the different classes
+ * Waiting for initial feedback from the topic
+ * Loop for main code of the DFS algorithm and finishes when the alogrithm found exit
  */
 int main(int argc, char **argv )
 {

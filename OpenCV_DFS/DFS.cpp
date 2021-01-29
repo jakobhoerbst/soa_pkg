@@ -3,12 +3,8 @@
     03.11.2020
     MMR3 - Mechatronik & Robotik - SOA
 
-    Editor: marc gmeiner
+    Editor: marc gmeiner (test runs and logging)
     02.01.2021
-
-    Input Parameter:
-    1. Amount of runs: integer
-    2. Execution Speed im [ms]: integer
 
     SOURCES: 
     struct from function
@@ -27,7 +23,7 @@
 
 #include <iostream> 
 #include <opencv2/opencv.hpp> 
-#include <opencv2/xfeatures2d.hpp>
+//#include <opencv2/xfeatures2d.hpp>
 #include <chrono>
 #include <opencv2/core/types.hpp>
 
@@ -195,7 +191,8 @@ bool checkIfVisited(vector<nodestruct> &NV){
 ////////////////////////////          main          ////////////////////////////
 ////////////////////////////                        ////////////////////////////
 int main(int argc, char **argv){
-    
+    int executionSpeed = 50;
+/*
     int amountTests = atoi(argv[1]);
     int executionSpeed = atoi(argv[2]);
     if (argc > 3)
@@ -220,6 +217,7 @@ int main(int argc, char **argv){
     
     for (int i = 0; i < amountTests; i++)
     {    
+*/
         visitiedNodes = 0;
         auto start = std::chrono::high_resolution_clock::now();
         // get maze to Mat from csv file 
@@ -268,7 +266,7 @@ int main(int argc, char **argv){
                 auto stop = std::chrono::high_resolution_clock::now();
                 auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
                 auto duration_sec = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
-                csvDataInput << "1\t" << i+1 << "\t" << duration_ms.count() << "\t" << duration_sec.count() << endl;            
+      //          csvDataInput << "1\t" << i+1 << "\t" << duration_ms.count() << "\t" << duration_sec.count() << endl;            
                 break;
             }
             
@@ -339,8 +337,8 @@ int main(int argc, char **argv){
             cv::waitKey(executionSpeed);
             //cv::waitKey(0);    
         }
-    }
+  //  }
     //cv::waitKey(0);
-    csvDataInput.close();
+   // csvDataInput.close();
     return 0; 
 }
